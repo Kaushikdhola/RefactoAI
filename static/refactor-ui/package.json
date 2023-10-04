@@ -5,20 +5,31 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.11",
     "@mui/joy": "^5.0.0-beta.7",
     "@mui/material": "^5.14.10",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "@types/jest": "^27.0.1",
+    "@types/js-cookie": "^3.0.4",
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/uuid": "^9.0.4",
+    "axios": "1.5.1",
+    "js-cookie": "^3.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "5.3.4",
     "react-scripts": "5.0.1",
     "typescript": "^4.4.2",
+    "uuid": "^9.0.1",
     "web-vitals": "^2.1.0"
+  },
+  "options": {
+    "proxy": "http://127.0.0.1:8000"
   },
   "scripts": {
     "start": "react-scripts start",
