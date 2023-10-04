@@ -1,26 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route, Switch } from "react-router-dom";
+import { createContext, useReducer } from "react";
+import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
 
-function App() {
+import { HomePage } from "./components/Home";
+import { Dashboard } from "./components/Dashboard";
+import { initialState, reducer } from "./store/reducer";
+
+export const AuthContext = createContext<any>({});
+
+const App = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <CssVarsProvider disableTransitionOnChange>
+      <CssBaseline />
+      <Box sx={{ display: "flex", minHeight: "100dvh" }}>
+        <AuthContext.Provider value={{ state, dispatch }}>
+          <Switch>
+            <Route path="/">
+              <HomePage />
+            </Route>
+            <Route path="/dashboard">
+              <Dashboard />
+            </Route>
+          </Switch>
+        </AuthContext.Provider>
+      </Box>
+    </CssVarsProvider>
   );
-}
+};
 
 export default App;
