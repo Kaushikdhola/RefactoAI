@@ -8,6 +8,8 @@ default:
     - pip install poetry
     - poetry install
     - poetry shell
+  tags:
+    - group10-runner
 
 
 migrations:
