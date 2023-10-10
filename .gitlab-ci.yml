@@ -3,8 +3,9 @@ default:
   before_script:
     - apt -y update
     - apt -y install apt-utils
-    - apt -y install net-tools python="3.11.4" python3-pip mysql-client="2.1.1" libmysqlclient-dev poetry
+    - apt -y install net-tools python3.11 python3-pip
     - apt -y upgrade
+    - pip install poetry
     - poetry install
     - poetry shell
 
