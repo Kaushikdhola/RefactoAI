@@ -1,6 +1,7 @@
 default:
   image: python:3.11.6-bullseye
   before_script:
+    - python3 -m pip install poetry
     - python3 -m poetry install
     - python3 -m poetry shell
   tags:
