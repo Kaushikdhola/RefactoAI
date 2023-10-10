@@ -13,6 +13,7 @@ backend-test:
   script:
     - python3 manage.py check
     - python3 manage.py test
+    - echo "Test Successful!!"
   tags:
     - python-build
 
