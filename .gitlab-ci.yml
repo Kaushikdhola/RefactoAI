@@ -1,5 +1,4 @@
 default:
-  image: ubuntu:20.04
   before_script:
     - python3 -m poetry install
     - python3 -m poetry shell
