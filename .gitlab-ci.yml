@@ -2,8 +2,8 @@ default:
   image: ubuntu:20.04
   before_script:
     - apt -y update
-    - poetry install
-    - poetry shell
+    - python3 -m poetry install
+    - python3 -m poetry shell
   tags:
     - group10-runner
 
