@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "A github bot which uses LLM for code refactoring"
 authors = ["HATIM SAHABBIRBHAI PATRAWALA <ht760280@dal.ca>"]
 readme = "README.md"
-packages = [{include = "re_factor"}]
+packages = [{include = "core"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
