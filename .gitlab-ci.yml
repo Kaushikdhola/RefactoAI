@@ -1,26 +1,31 @@
 default:
-  image: ubuntu:20.04
+  image: python:3.11.6-bullseye
   before_script:
-    - apt -y update
-    - apt -y install apt-utils
-    - apt -y install net-tools python3.11.4 python3-pip mysql-client=="2.1.1" libmysqlclient-dev poetry
-    - apt -y upgrade
-    - poetry install
-    - poetry shell
+    - python3 -m pip install poetry
+    - python3 -m poetry install
+    - python3 -m poetry shell
+  tags:
+    - group10-runner
 
 
 migrations:
   stage: build
   script:
     - python3 manage.py check
+  tags:
+    - group10-runner
 
 
 django-tests:
   stage: test
   script:
     - python3 manage.py test
+  tags:
+    - group10-runner
 
 deploy:
   stage: deploy
   script: echo "Define your deployment script!"
   environment: production
+  tags:
+    - group10-runner
