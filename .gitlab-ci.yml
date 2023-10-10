@@ -2,10 +2,6 @@ default:
   image: ubuntu:20.04
   before_script:
     - apt -y update
-    - apt -y install apt-utils
-    - apt -y install net-tools python3.11 python3-pip
-    - apt -y upgrade
-    - pip install poetry
     - poetry install
     - poetry shell
   tags:
