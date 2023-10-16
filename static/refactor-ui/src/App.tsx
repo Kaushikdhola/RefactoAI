@@ -4,6 +4,7 @@ import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
 
 import { HomePage } from "./components/Home";
 import { Dashboard } from "./components/Dashboard";
+import { CallBack } from "./components/CallBack";
 import { initialState, reducer } from "./store/reducer";
 
 export const AuthContext = createContext<any>({});
@@ -17,8 +18,11 @@ const App = () => {
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>
         <AuthContext.Provider value={{ state, dispatch }}>
           <Switch>
-            <Route path="/">
+            <Route path="/" exact>
               <HomePage />
+            </Route>
+            <Route path="/callback" exact>
+              <CallBack />
             </Route>
             <Route path="/dashboard">
               <Dashboard />
