@@ -8,59 +8,18 @@ import {
   Typography,
   typographyClasses,
 } from "@mui/joy";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 
 import { AuthContext } from "../../App";
 import { prepareQueryParamsFromObject } from "../../utils/helpers";
-import axios from "axios";
 
 export const HomePage = () => {
-  const { state, dispatch } = useContext(AuthContext);
-  const [data, setData] = useState({ errorMessage: "", isLoading: false });
-  const { client_id, redirect_uri, client_secret } = state;
+  const { state } = useContext(AuthContext);
+  const { client_id, redirect_uri } = state;
   const params = {
     redirect_uri: redirect_uri,
     client_id: client_id,
   };
-
-  useEffect(() => {
-    const url = window.location.href;
-    const hasCode = url.includes("?code=");
-    if (!hasCode) {
-      return;
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const newUrl = url.split("?code=");
-    const code = urlParams.get("code");
-    window.history.pushState({}, "", newUrl[0]);
-    setData({ ...data, isLoading: true });
-
-    const payload = {
-      code: code,
-      client_id: client_id,
-      client_secret: client_secret,
-    };
-
-    ///
-    const githubURL = "https://github.com/login/oauth/access_token";
-
-    axios.post(githubURL, JSON.stringify(payload))?.then((res) => {
-      console.log("res", res);
-    });
-
-    // fetch(`https://github.com/login/oauth/access_token`, {
-    //   method: "POST",
-    //   mode: "cors",
-    //   headers: {
-    //     "Access-Control-Allow-Origin": "*",
-    //     Authorization: `token ${12324324324}`,
-    //   },
-    //   body: JSON.stringify(payload),
-    // })?.then((res) => {
-    //   console.log("res", res)
-    // });
-  }, [state, dispatch, data]);
 
   const handleLogin = () => {
     window?.location?.assign(
