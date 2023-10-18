@@ -1,30 +1,28 @@
-import { Route, Switch } from "react-router-dom";
-import { createContext, useReducer } from "react";
+import { Route, Routes } from "react-router-dom";
 import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
 
 import { HomePage } from "./components/Home";
+import { AuthProvider } from "./hooks/useAuth";
+import { HomeLayout } from "./layout/HomeLayout";
 import { Dashboard } from "./components/Dashboard";
-import { initialState, reducer } from "./store/reducer";
+import { ProtectedLayout } from "./layout/ProtectedLayout";
 
-export const AuthContext = createContext<any>({});
 
 const App = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>
-        <AuthContext.Provider value={{ state, dispatch }}>
-          <Switch>
-            <Route path="/">
-              <HomePage />
+        <AuthProvider>
+          <Routes>
+            <Route element={<HomeLayout />}>
+              <Route path="/" element={<HomePage />} />
             </Route>
-            <Route path="/dashboard">
-              <Dashboard />
+            <Route path="/dashboard" element={<ProtectedLayout />}>
+              <Route path="profile" element={<Dashboard />} />
             </Route>
-          </Switch>
-        </AuthContext.Provider>
+          </Routes>
+        </AuthProvider>
       </Box>
     </CssVarsProvider>
   );

@@ -151,6 +151,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 GITHUB_SECRET = env("GH_SECRET")
 GITHUB_AUTH = env("GH_AUTH")
+GITHUB_CLIENT_ID = env("GITHUB_CLIENT_ID")
+GITHUB_APP_SECRET = env("GITHUB_SECRET")
 
 
 # CORS Settings
@@ -163,4 +165,13 @@ CORS_ALLOW_HEADERS = [
     "access-control-allow-origin",
     "access-control-allow-methods",
     "content-type",
+    "x-csrftoken",
 ]
+
+# SESSION_VARIABLES
+SESSION_CACHE_ALIAS = "default"
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_AGE = 60 * 60 * 7  # keep session valid for 7 hours
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
+SESSION_EXPIRY = 60 * 60 * 7
