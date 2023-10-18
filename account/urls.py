@@ -7,4 +7,5 @@ github_urlpatterns = [path("authorize/", GithubAuthorizationView.as_view())]
 urlpatterns = [
     path("github/", include(github_urlpatterns)),
     path("session/", GithubAuthorizationView.as_view()),
+    path("logout/", GithubAuthorizationView.as_view()),
 ]

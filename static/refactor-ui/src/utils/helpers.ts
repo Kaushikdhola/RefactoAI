@@ -1,5 +1,12 @@
-const prepareQueryParamsFromObject = (params: any) => {
-	return new URLSearchParams(params || {})?.toString();
-}
+import store from "../redux";
 
-export { prepareQueryParamsFromObject }
+const prepareQueryParamsFromObject = (params: any) => {
+  return new URLSearchParams(params || {})?.toString();
+};
+
+const getReduxState = (stateName: string) => {
+  const state: any = store.getState();
+  return state[stateName];
+};
+
+export { prepareQueryParamsFromObject, getReduxState };

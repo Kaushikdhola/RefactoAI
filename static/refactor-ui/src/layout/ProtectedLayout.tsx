@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
 
 import Header from "./Header";
@@ -8,9 +8,10 @@ import { useAuth } from "../hooks/useAuth";
 
 export const ProtectedLayout = () => {
   const { session }: any = useAuth();
+  const location = useLocation();
 
   if (isEmpty(session)) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace state={{ path: location.pathname }}/>;
   }
 
   return (

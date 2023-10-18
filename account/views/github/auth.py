@@ -1,5 +1,6 @@
-from django.conf import settings
+from django.contrib.auth import logout
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 
 from account.proxies.github_account import GitHubAccount
@@ -9,13 +10,11 @@ from core.utils.base_view import BaseView
 class GithubAuthorizationView(BaseView):
     model = GitHubAccount
 
+    @csrf_exempt
     def post(self, request, *args, **kwargs):
         payload = self.parse_payload(request=request)
         code = payload.get("code")
         self.model.authorize(code=code, request=request)
-        request.session["isLoggedIn"] = True
-        request.session.save()
-        request.session.set_expiry(settings.SESSION_EXPIRY)
         return JsonResponse(
             data={"message": "Authorization Successful!!"},
             status=200,
@@ -26,3 +25,8 @@ class GithubAuthorizationView(BaseView):
         """returns session if exists"""
         _session = request.session
         return HttpResponse(JSONRenderer().render(_session))
+
+    def delete(self, request, *args, **kwargs):
+        """logouts the session"""
+        logout(request)
+        return JsonResponse({"message": "Logged out successfully!!"})

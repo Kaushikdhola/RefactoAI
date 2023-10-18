@@ -18,22 +18,8 @@ class GitHubAccount(UserAccount):
         proxy = True
 
     @classmethod
-    def fetch_user_data(cls, token):
-        """fetches user data from access token provided"""
-        user_url = "https://api.github.com/user"
-        headers = {"Accept": "application/json", "Authorization": f"Bearer {token}"}
-        response = requests.get(user_url, headers=headers)
-        return response.json()
-
-    def prepare_session(self):
-        """ """
-        pass
-
-    @classmethod
-    def authorize(cls, code, request):
-        """authorizes and user creation"""
-
-        # get code from the frontend
+    def fetch_access_token(cls, code):
+        """fetches and returns access token from github"""
         if not code:
             raise ValidationError("OAuth code not provided")
 
@@ -42,22 +28,39 @@ class GitHubAccount(UserAccount):
             "client_secret": settings.GITHUB_APP_SECRET,
             "code": code,
         }
-
-        # get access token from github api
         response = requests.post(
             cls.ACCESS_TOKEN_URL,
             headers={"Accept": "application/json"},
             data=token_payload,
         )
-
         response_payload = response.json()
-        access_token = response_payload.get("access_token")
+        return response_payload.get("access_token")
 
+    @classmethod
+    def fetch_user_data(cls, token):
+        """fetches user data from access token provided"""
+        user_url = "https://api.github.com/user"
+        headers = {"Accept": "application/json", "Authorization": f"Bearer {token}"}
+        response = requests.get(user_url, headers=headers)
+        return response.json()
+
+    @classmethod
+    def create_account(cls, user):
+        """creates account and configurations along with it"""
+        pass
+
+    @classmethod
+    def prepare_session(cls, request):
+        """prepares session for the current user login"""
         rotate_token(request=request)
+        request.session["isLoggedIn"] = True
+        request.session.save()
+        request.session.set_expiry(settings.SESSION_EXPIRY)
 
-        # get the user data
-        cls.fetch_user_data(token=access_token)
-        # print(user_data)
-        # create the profile account
-
-        # create the configurations
+    @classmethod
+    def authorize(cls, code, request):
+        """authorizes and user creation"""
+        token = cls.fetch_access_token(code=code)
+        user = cls.fetch_user_data(token=token)
+        cls.create_account(user=user)
+        cls.prepare_session(request=request)

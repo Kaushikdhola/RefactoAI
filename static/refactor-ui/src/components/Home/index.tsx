@@ -8,15 +8,17 @@ import {
   Typography,
   typographyClasses,
 } from "@mui/joy";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { prepareQueryParamsFromObject } from "../../utils/helpers";
 import { POST } from "../../utils/axios";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useAuth } from "../../hooks/useAuth";
 
 export const HomePage = () => {
   const { login }: any = useAuth();
+  const navigate = useNavigate();
+  const { state } = useLocation();
   const params = {
     client_id: process.env.REACT_APP_GITHUB_CLIENT_ID,
   };
@@ -32,16 +34,16 @@ export const HomePage = () => {
     const newUrl = url.split("?code=");
     const code = urlParams.get("code");
     window.history.pushState({}, "", newUrl[0]);
-
     const payload = {
       code: code,
     };
-
     POST(`api/account/github/authorize/`, payload)
     ?.then((res) => {
-      login({ "isLoggedInHatim": true })
+      login(res?.data).then(() => {
+        navigate(state?.path || "/dashboard/home");
+      });
     })
-  }, []);
+  });
 
   const handleLogin = () => {
     window?.location?.assign(

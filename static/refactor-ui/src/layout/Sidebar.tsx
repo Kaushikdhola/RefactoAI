@@ -1,26 +1,62 @@
 import Box from "@mui/joy/Box";
 import List from "@mui/joy/List";
+import { useState } from "react";
 import Sheet from "@mui/joy/Sheet";
 import Avatar from "@mui/joy/Avatar";
 import Divider from "@mui/joy/Divider";
 import ListItem from "@mui/joy/ListItem";
 import Typography from "@mui/joy/Typography";
 import IconButton from "@mui/joy/IconButton";
+import { useNavigate } from "react-router-dom";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import ListItemContent from "@mui/joy/ListItemContent";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import SupportRoundedIcon from "@mui/icons-material/SupportRounded";
+import RepartitionIcon from "@mui/icons-material/Repartition";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
 
 import { closeSidebar } from "./utils";
+import { DELETE } from "../utils/axios";
 import { useAuth } from "../hooks/useAuth";
 import ColorSchemeToggle from "../components/ColorSchemeToggle";
 
 export const Sidebar = () => {
   const { logout }: any = useAuth();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<string>(
+    window.location.pathname?.split("/")?.[2]
+  );
+  const tabs = [
+    {
+      IconComponent: DashboardRoundedIcon,
+      name: "Dashboard",
+      key: "home",
+      path: "/dashboard/home",
+    },
+    {
+      IconComponent: RepartitionIcon,
+      name: "Refactorings",
+      key: "refactorings",
+      path: "/dashboard/refactorings",
+    },
+    {
+      IconComponent: SettingsRoundedIcon,
+      name: "Settings",
+      key: "settings",
+      path: "/dashboard/settings",
+    },
+  ];
+
+  const handleLogout = () => {
+    DELETE(`api/account/logout/`)?.then((res) => {
+      logout(res?.data)?.finally(() => {
+        navigate("/");
+      });
+    });
+  };
+
   return (
     <Sheet
       className="Sidebar"
@@ -103,32 +139,25 @@ export const Sidebar = () => {
             "--ListItem-radius": (theme) => theme.vars.radius.sm,
           }}
         >
-          <ListItem>
-            <ListItemButton>
-              <DashboardRoundedIcon />
-              <ListItemContent>
-                <Typography level="title-sm">Dashboard</Typography>
-              </ListItemContent>
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem>
-            <ListItemButton>
-              <SupportRoundedIcon />
-              <ListItemContent>
-                <Typography level="title-sm">Refactorings</Typography>
-              </ListItemContent>
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem>
-            <ListItemButton>
-              <SettingsRoundedIcon />
-              <ListItemContent>
-                <Typography level="title-sm">Settings</Typography>
-              </ListItemContent>
-            </ListItemButton>
-          </ListItem>
+          {tabs?.map((ins: any, index: number) => {
+            const { IconComponent, name, key, path } = ins;
+            return (
+              <ListItem key={`dashboard-tab-${index}`}>
+                <ListItemButton
+                  selected={activeTab === key}
+                  onClick={() => {
+                    setActiveTab(key);
+                    navigate(path);
+                  }}
+                >
+                  <IconComponent />
+                  <ListItemContent>
+                    <Typography level="title-sm">{name}</Typography>
+                  </ListItemContent>
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
         </List>
       </Box>
       <Divider />
@@ -142,7 +171,12 @@ export const Sidebar = () => {
           <Typography level="title-sm">Hatim Patrawala</Typography>
           <Typography level="body-xs">ht760280@dal.ca</Typography>
         </Box>
-        <IconButton size="sm" variant="plain" color="neutral" onClick={logout}>
+        <IconButton
+          size="sm"
+          variant="plain"
+          color="neutral"
+          onClick={handleLogout}
+        >
           <LogoutRoundedIcon />
         </IconButton>
       </Box>

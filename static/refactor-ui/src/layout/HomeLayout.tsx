@@ -8,7 +8,7 @@ export const HomeLayout = () => {
   const { session }: any = useAuth();
 
   if (!isEmpty(session)) {
-    return <Navigate to="/dashboard/profile" />;
+    return <Navigate to="/dashboard/home" />;
   }
 
   return (
