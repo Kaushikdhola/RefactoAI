@@ -47,7 +47,7 @@ export const HomePage = () => {
 
   const handleLogin = () => {
     window?.location?.assign(
-      `https://github.com/login/oauth/authorize?${prepareQueryParamsFromObject(req_params)}`
+      `https://github.com/login/oauth/authorize?${prepareQueryParamsFromObject(params)}`
     );
   };
 

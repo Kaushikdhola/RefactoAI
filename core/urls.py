@@ -17,14 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-<<<<<<< HEAD
-
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path('account/',include("account.urls")),
-=======
-urlpatterns = [
-    path("admin/", admin.site.urls),
     path("api/account/", include("account.urls")),
->>>>>>> authentication-restructure
 ]
