@@ -1,31 +1,29 @@
-default:
-  image: python:3.11.6-bullseye
+stages:
+  - test
+  - deploy
+
+backend-test:
+  image: python:3.11.4-bullseye
+  stage: test
   before_script:
     - python3 -m pip install poetry
     - python3 -m poetry install
-    - python3 -m poetry shell
-  tags:
-    - group10-runner
-
-
-migrations:
-  stage: build
+    - source $(poetry env info --path)/bin/activate
+    - cat ${ENVIRONMENT_CONFIG} >> .env
   script:
     - python3 manage.py check
-  tags:
-    - group10-runner
-
-
-django-tests:
-  stage: test
-  script:
     - python3 manage.py test
   tags:
-    - group10-runner
+    - python-build
 
-deploy:
-  stage: deploy
-  script: echo "Define your deployment script!"
-  environment: production
+frontend-test:
+  image: node:19-bullseye
+  stage: test
+  before_script:
+    - cd static/refactor-ui
+    - yarn install
+  script:
+    - yarn build
+    - echo "Build Successful!!"
   tags:
-    - group10-runner
+    - react-build

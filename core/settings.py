@@ -39,7 +39,7 @@ DEBUG = env("DEBUG") if APP_ENV != "PRODUCTION" else False
 SECRET_KEY = env("SECRET_KEY")
 
 # TODO(Hatim): Needs to be handled while deploying the code
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [env("ALLOWED_HOST")]
 
 
 # Application definition

@@ -8,18 +8,17 @@ import {
   Typography,
   typographyClasses,
 } from "@mui/joy";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 
 import { AuthContext } from "../../App";
 import { prepareQueryParamsFromObject } from "../../utils/helpers";
-import axios from "axios";
 
 export const HomePage = () => {
-  const { state, dispatch } = useContext(AuthContext);
-  const [data, setData] = useState({ errorMessage: "", isLoading: false });
-  const { client_id, redirect_uri, client_secret } = state;
-  const req_params = {
-    client_id: client_id
+  const { state } = useContext(AuthContext);
+  const { client_id, redirect_uri } = state;
+  const params = {
+    redirect_uri: redirect_uri,
+    client_id: client_id,
   };
 
   const handleLogin = () => {
