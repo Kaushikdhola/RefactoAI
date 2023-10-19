@@ -1,34 +1,37 @@
-import { Route, Switch } from "react-router-dom";
-import { createContext, useReducer } from "react";
+import { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
 import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
 
 import { HomePage } from "./components/Home";
+import Settings from "./components/Settings";
+import { HomeLayout } from "./layout/HomeLayout";
 import { Dashboard } from "./components/Dashboard";
-import { CallBack } from "./components/CallBack";
-import { initialState, reducer } from "./store/reducer";
-
-export const AuthContext = createContext<any>({});
+import { ProtectedLayout } from "./layout/ProtectedLayout";
+import { prepareSessionData } from "./redux/actions/SessionActions";
 
 const App = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect(() => {
+    fetchSession();
+  }, [])
+
+  const fetchSession = async () => {
+    await prepareSessionData();
+  }
 
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>
-        <AuthContext.Provider value={{ state, dispatch }}>
-          <Switch>
-            <Route path="/" exact>
-              <HomePage />
-            </Route>
-            <Route path="/callback" exact>
-              <CallBack />
-            </Route>
-            <Route path="/dashboard">
-              <Dashboard />
-            </Route>
-          </Switch>
-        </AuthContext.Provider>
+        <Routes>
+          <Route element={<HomeLayout />}>
+            <Route path="/" element={<HomePage />} />
+          </Route>
+          <Route path="/dashboard" element={<ProtectedLayout />}>
+            <Route path="home" element={<Dashboard />} />
+            <Route path="refactorings" element={<Dashboard />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
+        </Routes>
       </Box>
     </CssVarsProvider>
   );

@@ -1,7 +1,11 @@
-from django.urls import path
-from account.views.api import Fetch_Access,Fetch_Code
+from django.urls import include, path
+
+from account.views.github.auth import GithubAuthorizationView
+
+github_urlpatterns = [path("authorize/", GithubAuthorizationView.as_view())]
 
 urlpatterns = [
-    path("callback/code/", Fetch_Code.as_view()),
-    path("callback/access_token/", Fetch_Access.as_view()),
-    ]
+    path("github/", include(github_urlpatterns)),
+    path("session/", GithubAuthorizationView.as_view()),
+    path("logout/", GithubAuthorizationView.as_view()),
+]
