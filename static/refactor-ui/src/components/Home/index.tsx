@@ -8,24 +8,46 @@ import {
   Typography,
   typographyClasses,
 } from "@mui/joy";
-import { useContext } from "react";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import { AuthContext } from "../../App";
 import { prepareQueryParamsFromObject } from "../../utils/helpers";
+import { POST } from "../../utils/axios";
+import { useAuth } from "../../hooks/useAuth";
 
 export const HomePage = () => {
-  const { state } = useContext(AuthContext);
-  const { client_id, redirect_uri } = state;
+  const { login }: any = useAuth();
+  const navigate = useNavigate();
+  const { state } = useLocation();
   const params = {
-    redirect_uri: redirect_uri,
-    client_id: client_id,
+    client_id: process.env.REACT_APP_GITHUB_CLIENT_ID,
   };
+
+  useEffect(() => {
+    const url = window.location.href;
+    const hasCode = url.includes("?code=");
+    if (!hasCode) {
+      return;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const newUrl = url.split("?code=");
+    const code = urlParams.get("code");
+    window.history.pushState({}, "", newUrl[0]);
+    const payload = {
+      code: code,
+    };
+    POST(`api/account/github/authorize/`, payload)
+    ?.then((res) => {
+      login(res?.data).then(() => {
+        navigate(state?.path || "/dashboard/home");
+      });
+    })
+  });
 
   const handleLogin = () => {
     window?.location?.assign(
-      `https://github.com/login/oauth/authorize?${prepareQueryParamsFromObject(
-        params
-      )}`
+      `https://github.com/login/oauth/authorize?${prepareQueryParamsFromObject(params)}`
     );
   };
 
