@@ -8,19 +8,22 @@ import { HomeLayout } from "./layout/HomeLayout";
 import { Dashboard } from "./components/Dashboard";
 import { ProtectedLayout } from "./layout/ProtectedLayout";
 import { prepareSessionData } from "./redux/actions/SessionActions";
+import NavBar from "./layout/HomeNavBar";
 
 const App = () => {
   useEffect(() => {
     fetchSession();
-  }, [])
+  }, []);
 
   const fetchSession = async () => {
     await prepareSessionData();
-  }
+  };
 
   return (
-    <CssVarsProvider disableTransitionOnChange>
+    <>
+      {/* <CssVarsProvider disableTransitionOnChange> */}
       <CssBaseline />
+      <NavBar />
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>
         <Routes>
           <Route element={<HomeLayout />}>
@@ -33,7 +36,8 @@ const App = () => {
           </Route>
         </Routes>
       </Box>
-    </CssVarsProvider>
+      {/* </CssVarsProvider> */}
+    </>
   );
 };
 
