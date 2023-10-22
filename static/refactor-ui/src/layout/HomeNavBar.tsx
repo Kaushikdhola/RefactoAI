@@ -13,7 +13,7 @@ import { AccountCircle } from "@mui/icons-material";
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 const pages = ["About Us", "Documentation"];
 
-export default function () {
+export default function NavBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -36,7 +36,7 @@ export default function () {
     setAnchorElUser(null);
   };
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box>
       <AppBar
         sx={{
           position: "absolute",
