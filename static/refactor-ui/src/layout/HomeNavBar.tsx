@@ -13,7 +13,7 @@ import { AccountCircle } from "@mui/icons-material";
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 const pages = ["About Us", "Documentation"];
 
-export default function NavBar() {
+export default function () {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );

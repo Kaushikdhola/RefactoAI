@@ -8,7 +8,6 @@ import { HomeLayout } from "./layout/HomeLayout";
 import { Dashboard } from "./components/Dashboard";
 import { ProtectedLayout } from "./layout/ProtectedLayout";
 import { prepareSessionData } from "./redux/actions/SessionActions";
-import NavBar from "./layout/HomeNavBar";
 
 const App = () => {
   useEffect(() => {
@@ -23,7 +22,6 @@ const App = () => {
     <>
       {/* <CssVarsProvider disableTransitionOnChange> */}
       <CssBaseline />
-      <NavBar />
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>
         <Routes>
           <Route element={<HomeLayout />}>
