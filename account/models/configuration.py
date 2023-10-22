@@ -1,18 +1,16 @@
-from core.models.base import BaseModel
 from django.db import models
 
-class UserConfiguration(models.Model):
-    """Model/Manager for service accounts"""
+from core.models.base import BaseModel
 
-    id=models.UUIDField(
-        primary_key=True,  
-        editable=False,
-        unique=True)
-    
-    commitsnum=models.IntegerField(
-        editable=True)
-    
-    linesnum=models.IntegerField(
-        editable=True)
+
+class UserConfiguration(models.Model):
+    """Model/Manager for service configurations"""
+
+    id = models.UUIDField(primary_key=True)
+    commit_interval = models.IntegerField()
+    max_lines = models.IntegerField()
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         db_table = "UserConfiguration"
