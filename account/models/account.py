@@ -11,6 +11,7 @@ class UserAccount(models.Model):
     GitHub = "GitHub"
     GitLab = "GitLab"
 
+    # adding choices for account type
     ACCOUNT_TYPES = ((GitHub, "github"), (GitLab, "gitlab"))
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
