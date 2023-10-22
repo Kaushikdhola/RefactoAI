@@ -68,7 +68,7 @@ class GitHubAccount(UserAccount):
 
             # adding user record if user does not exits in a table
             try:
-                create = UserAccount(
+                create = cls(
                     account_id=account_data["id"],
                     access_token=token,
                     email=account_data["email"],
@@ -82,9 +82,7 @@ class GitHubAccount(UserAccount):
 
             # updating user specific values if user exits in a table
             except:
-                update = UserAccount.objects.filter(
-                    account_id=account_data["id"]
-                ).update(
+                update = cls.objects.filter(account_id=account_data["id"]).update(
                     access_token=token,
                     email=account_data["email"],
                     user_name=account_data["login"],
@@ -129,7 +127,7 @@ class GitHubAccount(UserAccount):
         # Adding Initial Configurations in UserConfiguraion table
 
         # Retrieving current accound uuid
-        uuid = UserAccount.objects.filter(account_id=account_data["id"]).values("id")
+        uuid = cls.objects.filter(account_id=account_data["id"]).values("id")
         uuid = uuid[0]["id"]
 
         # adding configurations for current user
