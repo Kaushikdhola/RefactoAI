@@ -20,11 +20,12 @@ class UserAccount(models.Model):
     
     #github id
     account_id=models.CharField(
-        max_length=255);
+        max_length=255,
+        unique=True);
+    
     
     access_token=models.CharField(  
-        max_length=255,
-        default="");
+        max_length=255);
 
     email=models.CharField(
         max_length=255);

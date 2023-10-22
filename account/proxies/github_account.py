@@ -2,9 +2,10 @@ import requests
 from django.conf import settings
 from django.middleware.csrf import rotate_token
 from account.models.account import UserAccount
+from account.models.configuration import UserConfiguration
 from core.utils.exceptions import ValidationError
 from datetime import datetime
-from django.utils import timezone
+from django.db.models.signals import post_save
 
 
 class GitHubAccount(UserAccount):
@@ -46,48 +47,56 @@ class GitHubAccount(UserAccount):
         return response.json()
 
     @classmethod
-    def create_account(cls, user,request,token):
+    
+    def add_initial_configurations(cls, uuid):
+        try:
+            print("add")
+            config=UserConfiguration(id=uuid,
+                                     commitsnum=5,
+                                     linesnum=30)
+            config.save()
+        except Exception as e:
+            return e
+
+    @classmethod
+    def create_account(cls, user,request,token,account_data):
         """creates account and configurations along with it"""
-        #todo:kaushik
-        """creates account and configurations along with it"""
-        access_url = "https://api.github.com/user"
-        headers = {'Authorization':request.META.get('HTTP_AUTHORIZATION')}
+        
+        # access_url = "https://api.github.com/user"
+        # headers = {'Authorization':request.META.get('HTTP_AUTHORIZATION')}
         
         try:
-            response = requests.get(access_url,headers=headers)
-            account_data={}
             
-            req_details=['id','email','login','name','company']
-            
-            for i,j in user.items():
-                if i in req_details:
-                    account_data[i] = j
-
-            
-
+            # Adding blank values if email is null
             if account_data['email']==None:
                 account_data['email']=""
-            data={'account_id':account_data['id'],'access_token':token,'email':account_data['email'],'user_name':account_data['login'], 'name':account_data['name'],'company':account_data['company']}
-            
-            
 
-            useraccount, created = UserAccount.objects.get_or_create(account_id=account_data['id'],defaults=data)
-            print("done")
-
+            # data={'account_id':account_data['id'],'access_token':token,'email':account_data['email'],'user_name':account_data['login'], 'name':account_data['name'],'company':account_data['company']}
+            
+            #adding user record if user does not exits in a table
             try:
-                if not created:
-                    print("coming")
-                    UserAccount.objects.update(account_id=account_data['id'],
-                                               defaults={'access_token':token,
-                                                        'email':"kd",
-                                                        'user_name':account_data['login'],
-                                                        'name':account_data['name'],
-                                                        'company':account_data['company'],
-                                                        'updated_at':datetime.now()})
-                    print("exiting")
-            except Exception as e:
-                return e    
+                create=UserAccount(account_id=account_data['id'],
+                                               access_token=token,
+                                                        email=account_data['email'],
+                                                        user_name=account_data['login'],
+                                                        name=account_data['name'],
+                                                        company=account_data['company'],
+                                                        updated_at=datetime.now())
             
+                create.save()
+
+            #updating user specific values if user exits in a table
+            except:
+
+                update=UserAccount.objects.filter(account_id=account_data['id']).update(
+                                               access_token=token,
+                                                        email=account_data['email'],
+                                                        user_name=account_data['login'],
+                                                        name=account_data['name'],
+                                                        company=account_data['company'],
+                                                        updated_at=datetime.now())
+                update.save()
+
         except Exception as e:
             return e
 
@@ -104,6 +113,30 @@ class GitHubAccount(UserAccount):
     def authorize(cls, code, request):
         """authorizes and user creation"""
         token = cls.fetch_access_token(code=code)
+
         user = cls.fetch_user_data(token=token)
-        cls.create_account(user=user,request=request,token=token)
+
+        #defining dictionary to store extracted data
+        account_data={}
+            
+        req_details=['id','email','login','name','company']
+        
+
+        #extracing user data to store in a UserAccount table
+        for i,j in user.items():
+            if i in req_details:
+                account_data[i] = j
+        
+        cls.create_account(user=user,request=request,token=token,account_data=account_data)
+        
+
+        #Adding Initial Configurations in UserConfiguraion table
+
+        #Retrieving current accound uuid
+        uuid=UserAccount.objects.filter(account_id=account_data['id']).values('id')
+        uuid=uuid[0]['id']  
+        
+        #adding configurations for current user
+        cls.add_initial_configurations(uuid=uuid)
+
         cls.prepare_session(request=request)
