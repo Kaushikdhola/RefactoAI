@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import requests
 from django.conf import settings
 from django.middleware.csrf import rotate_token
@@ -48,52 +46,32 @@ class GitHubAccount(UserAccount):
         return response.json()
 
     @classmethod
-    def add_initial_configurations(cls, uuid):
-        try:
-            config = UserConfiguration(
-                id=uuid, commit_interval=5, max_lines=30, updated_at=datetime.now()
-            )
-            config.save()
-        except Exception as e:
-            return e
+    def prepare_configurations(cls, user_id):
+        """creates default configuration when new account is created"""
+        # todo(Hatim) - create configuration method and call this directly
+        UserConfiguration.objects.create(
+            user_id=user_id, commit_interval=5, max_lines=30
+        )
 
     @classmethod
-    def create_account(cls, user, request, token, account_data):
+    def create_account(cls, user, token):
         """creates account and configurations along with it"""
-
-        try:
-            # Adding blank values if email is null
-            if account_data["email"] == None:
-                account_data["email"] = ""
-
-            # adding user record if user does not exits in a table
-            try:
-                create = cls(
-                    account_id=account_data["id"],
-                    access_token=token,
-                    email=account_data["email"],
-                    user_name=account_data["login"],
-                    name=account_data["name"],
-                    company=account_data["company"],
-                    updated_at=datetime.now(),
-                )
-
-                create.save()
-
-            # updating user specific values if user exits in a table
-            except:
-                update = cls.objects.filter(account_id=account_data["id"]).update(
-                    access_token=token,
-                    email=account_data["email"],
-                    user_name=account_data["login"],
-                    name=account_data["name"],
-                    company=account_data["company"],
-                    updated_at=datetime.now(),
-                )
-                update.save()
-
-        except Exception as e:
-            return e
+        account_id = user.get("id")
+        update_values = {
+            "account_id": account_id,
+            "access_token": token,
+            "email": user.get("email"),
+            "user_name": user.get("login"),
+            "name": user.get("name"),
+            "company": user.get("company"),
+            "account_type": "GitHub",
+        }
+        if instance := cls.objects.filter(account_id=account_id).first():
+            instance.set_values(update_values)
+            instance.save()
+        else:
+            instance = cls.objects.create(**update_values)
+            cls.prepare_configurations(instance.id)
 
     @classmethod
     def prepare_session(cls, request):
@@ -107,30 +85,6 @@ class GitHubAccount(UserAccount):
     def authorize(cls, code, request):
         """authorizes and user creation"""
         token = cls.fetch_access_token(code=code)
-
         user = cls.fetch_user_data(token=token)
-
-        # defining dictionary to store extracted data
-        account_data = {}
-
-        req_details = ["id", "email", "login", "name", "company"]
-
-        # extracing user data to store in a UserAccount table
-        for i, j in user.items():
-            if i in req_details:
-                account_data[i] = j
-
-        cls.create_account(
-            user=user, request=request, token=token, account_data=account_data
-        )
-
-        # Adding Initial Configurations in UserConfiguraion table
-
-        # Retrieving current accound uuid
-        uuid = cls.objects.filter(account_id=account_data["id"]).values("id")
-        uuid = uuid[0]["id"]
-
-        # adding configurations for current user
-        cls.add_initial_configurations(uuid=uuid)
-
+        cls.create_account(user=user, token=token)
         cls.prepare_session(request=request)

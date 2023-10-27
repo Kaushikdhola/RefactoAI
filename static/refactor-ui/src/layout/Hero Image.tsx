@@ -20,36 +20,36 @@ const HeroImage = () => (
         from {
           transform: rotate(0deg);
         }
-  
+
         to {
           transform: rotate(360deg);
         }
       }
-  
+
       @keyframes translate {
-  
+
         0%,
         to {
           transform: translateX(0)
         }
-  
+
         50% {
           transform: translateX(24px)
         }
       }
-  
+
       @keyframes translate2 {
-  
+
         0%,
         to {
           transform: translateX(0)
         }
-  
+
         50% {
           transform: translateX(-24px)
         }
       }
-  
+
       @media(prefers-reduced-motion: no-preference) {
         .cog {
           animation: spin 20000ms linear 0s infinite;

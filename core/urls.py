@@ -19,5 +19,5 @@ from django.urls import include, path
 
 urlpatterns = [
     path("api/account/", include("account.urls")),
-    path("github-webhooks/", include("service.urls"))
+    path("github-webhooks/", include("service.urls")),
 ]
