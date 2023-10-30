@@ -1,6 +1,5 @@
 import { GitHub } from "@mui/icons-material";
 import {
-  AspectRatio,
   Box,
   Button,
   Container,
@@ -16,7 +15,7 @@ import { POST } from "../../utils/axios";
 import { useAuth } from "../../hooks/useAuth";
 import "./../../global.css";
 import HeroImage from "../../layout/Hero Image";
-import NavBar from "../../layout/HomeNavBar";
+import { NavBar } from "../../layout/HomeNavBar";
 
 const HERO_STYLES = {
   BG_WRAPPER: "hero-fixer",
@@ -34,6 +33,7 @@ export const HomePage = () => {
   const { state } = useLocation();
   const params = {
     client_id: process.env.REACT_APP_GITHUB_CLIENT_ID,
+    scope: "repo"
   };
 
   useEffect(() => {

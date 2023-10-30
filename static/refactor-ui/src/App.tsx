@@ -26,7 +26,7 @@ const App = () => {
       <CssBaseline />
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>
         <Routes>
-          <Route element={<HomeLayout />}>
+          <Route path="/" element={<HomeLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="about" element={<About />} />
             <Route path="documentation" element={<Documentation />} />

@@ -10,23 +10,19 @@ import Container from "@mui/material/Container";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { AccountCircle } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 const pages = ["About Us", "Documentation"];
 
-export default function NavBar() {
+export const NavBar = () => {
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
-
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
@@ -56,13 +52,14 @@ export default function NavBar() {
             <Typography
               variant="h6"
               noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
+              component={"a"}
+              onClick={() => navigate("/")}
               sx={{
                 mr: 2,
                 display: { xs: "none", md: "flex" },
                 fontFamily: "inherit",
                 fontWeight: 700,
+                cursor: "pointer",
                 letterSpacing: ".3rem",
                 color: "inherit",
                 textDecoration: "none",
@@ -70,6 +67,7 @@ export default function NavBar() {
             >
               Re-Factor
             </Typography>
+
             <Box
               sx={{
                 flexGrow: 1,
@@ -103,8 +101,8 @@ export default function NavBar() {
                   display: { xs: "block", md: "none" },
                 }}
               >
-                {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                {pages?.map((page) => (
+                  <MenuItem key={page} onClick={() => {navigate("/about")}}>
                     <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
                 ))}
@@ -157,4 +155,4 @@ export default function NavBar() {
       </AppBar>
     </Box>
   );
-}
+};
