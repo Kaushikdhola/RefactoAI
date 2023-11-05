@@ -24,3 +24,10 @@ class UserAccount(BaseModel):
 
     class Meta:
         db_table = "UserAccount"
+
+    @classmethod
+    def getUser(cls,account_id):
+        if instance := cls.objects.filter(account=account_id).first():
+            return instance
+        else:
+            return null

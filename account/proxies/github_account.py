@@ -4,6 +4,7 @@ from django.middleware.csrf import rotate_token
 
 from account.models.account import UserAccount
 from account.models.configuration import UserConfiguration
+from account.models.repository import Repository
 from core.utils.exceptions import ValidationError
 
 
@@ -31,7 +32,7 @@ class GitHubAccount(UserAccount):
         }
         response = requests.post(
             cls.ACCESS_TOKEN_URL,
-            headers={"Accept": "application/json"},
+            headers={"Accept": "application/json","scope":"repo"},
             data=token_payload,
         )
         response_payload = response.json()
@@ -48,7 +49,6 @@ class GitHubAccount(UserAccount):
     @classmethod
     def prepare_configurations(cls, user_id):
         """creates default configuration when new account is created"""
-        # todo(Hatim) - create configuration method and call this directly
         UserConfiguration.objects.create(
             user_id=user_id, commit_interval=5, max_lines=30
         )
@@ -74,10 +74,11 @@ class GitHubAccount(UserAccount):
             cls.prepare_configurations(instance.id)
 
     @classmethod
-    def prepare_session(cls, request):
+    def prepare_session(cls, request,access_token):
         """prepares session for the current user login"""
         rotate_token(request=request)
         request.session["isLoggedIn"] = True
+        request.session["access_token"] = access_token
         request.session.save()
         request.session.set_expiry(settings.SESSION_EXPIRY)
 
@@ -86,5 +87,6 @@ class GitHubAccount(UserAccount):
         """authorizes and user creation"""
         token = cls.fetch_access_token(code=code)
         user = cls.fetch_user_data(token=token)
-        cls.create_account(user=user, token=token)
-        cls.prepare_session(request=request)
+        cls.create_account(user=user, token=token)     
+        Repository.prepare_repositores(user=user,token=token)
+        cls.prepare_session(request=request,access_token=token)
