@@ -16,7 +16,7 @@ class UserAccount(BaseModel):
     account_type = models.CharField(
         choices=ACCOUNT_TYPES, max_length=255, default=GITHUB
     )
-    user_name = models.CharField(max_length=255)
+    user_name = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255, null=True)
     company = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

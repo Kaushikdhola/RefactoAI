@@ -43,8 +43,7 @@ class GitHubAccount(UserAccount):
             headers={"Accept": "application/json", "scope": "repo"},
             payload=token_payload,
         )
-        response_payload = response.json()
-        return response_payload.get("access_token")
+        return response.get("access_token")
 
     @classmethod
     def fetch_user_data(cls, access_token):
@@ -63,7 +62,7 @@ class GitHubAccount(UserAccount):
             "Authorization": f"Bearer {access_token}",
         }
         status, response = fetch(method="GET", url=user_url, headers=headers)
-        return response.json()
+        return response
 
     @classmethod
     def prepare_configurations(cls, user_id):
