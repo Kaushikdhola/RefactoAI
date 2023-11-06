@@ -72,6 +72,8 @@ MIDDLEWARE = [
     "core.middlewares.ErrorReportingMiddleware",
 ]
 
+REST_FRAMEWORK = { 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' }
+
 
 ROOT_URLCONF = "core.urls"
 

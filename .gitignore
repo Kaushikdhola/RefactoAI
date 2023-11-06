@@ -161,4 +161,4 @@ cython_debug/
 
 .vscode
 config/
-update_backend.sh
+deploy_prod.sh
