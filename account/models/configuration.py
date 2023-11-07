@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from account.models.account import UserAccount
 from core.models.base import BaseModel
@@ -18,7 +19,7 @@ class UserConfiguration(BaseModel):
 
     @classmethod
     def update(cls,user_id,commit_interval,max_lines):
-        user_account = UserAccount.objects.get(account_id==user_id)
+        user_account = UserAccount.objects.get(account_id=user_id)
         user_configuration = UserConfiguration.objects.get(user=user_account)
         user_configuration.max_lines = max_lines 
         user_configuration.commit_interval = commit_interval 

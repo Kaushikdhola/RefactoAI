@@ -1,5 +1,6 @@
 import requests
 from django.db import models
+from django.db.models import Q
 
 from account.models.account import UserAccount
 from account.models.repository import Repository
@@ -45,6 +46,6 @@ class Branch(BaseModel):
     def sync(cls,user_id,names,repo_id):
         user_instance = UserAccount.getUser(user_id)
         repository_instance = Repository.getRepository(repo_id=repo_id,user_id=user_id)
-        branches_to_delete = Branch.objects.filter(~Q(name__in=branch_names),user=user_account,repository=repository)
+        branches_to_delete = Branch.objects.filter(~Q(name__in=names),user=user_instance,repository=repository_instance)
         # Delete the fetched branches
         branches_to_delete.delete()
