@@ -22,7 +22,7 @@ class Repository(BaseModel):
         for repo in repos:
             repo_id = repo.get("id")
             update_values = {
-                "account": user_intance,
+                "user": user_intance,
                 "repo_id":repo_id,
                 "name": repo.get("name"),
                 "url": repo.get("url"),
@@ -48,6 +48,14 @@ class Repository(BaseModel):
         return reponse.json()
 
     @classmethod
-    def fetch_Repositories(request,user):
+    def fetch_Repositories(cls,request,user):
         repositories =  cls.objects.filter(user=user)
         return repositories
+
+    @classmethod
+    def getRepository(cls,repo_id,user_id):
+        user_instance = UserAccount.getUser(user_id)
+        if instance := cls.objects.filter(repo_id=repo_id,user=user_instance).first():
+            return instance
+        else:
+            return null

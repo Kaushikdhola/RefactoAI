@@ -1,10 +1,12 @@
 import requests
+import json
 from django.conf import settings
 from django.middleware.csrf import rotate_token
 
 from account.models.account import UserAccount
 from account.models.configuration import UserConfiguration
 from account.models.repository import Repository
+from account.models.branch import Branch
 from core.utils.exceptions import ValidationError
 
 
@@ -74,11 +76,14 @@ class GitHubAccount(UserAccount):
             cls.prepare_configurations(instance.id)
 
     @classmethod
-    def prepare_session(cls, request,access_token):
+    def prepare_session(cls, request,user):
         """prepares session for the current user login"""
+        user_id = user.get("id")
+        user_instance = UserAccount.getUser(user_id)
         rotate_token(request=request)
         request.session["isLoggedIn"] = True
-        request.session["access_token"] = access_token
+        request.session["access_token"] = user_instance.access_token
+        request.session["user_id"] = user_id
         request.session.save()
         request.session.set_expiry(settings.SESSION_EXPIRY)
 
@@ -89,4 +94,22 @@ class GitHubAccount(UserAccount):
         user = cls.fetch_user_data(token=token)
         cls.create_account(user=user, token=token)     
         Repository.prepare_repositores(user=user,token=token)
-        cls.prepare_session(request=request,access_token=token)
+        cls.prepare_session(request=request,user=user)
+
+    @classmethod
+    def fetch_branches(cls,request,user_id):
+        user_instance = cls.getUser(user_id)
+        repos = Repository.fetch_Repositories(request,user_instance)
+        all_repos_data = []
+        for repo in repos:
+            branches = Branch.fetch_branches(request,repo)
+            repo_data ={
+                "repo_id":repo.repo_id,
+                "name":repo.name,
+                "url":repo.url,
+                "branches":branches,
+            }
+            all_repos_data.append(repo_data)
+
+        json_data = json.dumps(all_repos_data, indent=4)
+        return json_data
