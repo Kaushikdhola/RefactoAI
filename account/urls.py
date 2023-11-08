@@ -5,7 +5,7 @@ from account.views.github.config import GitHubConfigurationView
 
 github_urlpatterns = [
     path("authorize/", GithubAuthorizationView.as_view()),
-    path("branches/",GitHubConfigurationView.as_view())
+    path("configurations/", GitHubConfigurationView.as_view()),
 ]
 
 urlpatterns = [

@@ -18,10 +18,10 @@ class UserConfiguration(BaseModel):
         db_table = "UserConfiguration"
 
     @classmethod
-    def update(cls,user_id,commit_interval,max_lines):
+    def update(cls, user_id, commit_interval, max_lines):
         user_account = UserAccount.objects.get(account_id=user_id)
         user_configuration = UserConfiguration.objects.get(user=user_account)
-        user_configuration.max_lines = max_lines 
-        user_configuration.commit_interval = commit_interval 
+        user_configuration.max_lines = max_lines
+        user_configuration.commit_interval = commit_interval
         user_configuration.updated_at = timezone.now()
         user_configuration.save()

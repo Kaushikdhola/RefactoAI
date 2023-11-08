@@ -9,6 +9,7 @@ ACCOUNT_TYPES = ((GITHUB, GITHUB), (GITLAB, GITLAB))
 
 class UserAccount(BaseModel):
     """Model/Manager for service accounts"""
+
     account_id = models.CharField(max_length=255, unique=True)
     access_token = models.CharField(max_length=255)
     email = models.CharField(max_length=255, null=True)
@@ -23,10 +24,3 @@ class UserAccount(BaseModel):
 
     class Meta:
         db_table = "UserAccount"
-
-    @classmethod
-    def getUser(cls,account_id):
-        if instance := cls.objects.filter(account_id=account_id).first():
-            return instance
-        else:
-            return null
