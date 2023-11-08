@@ -2,7 +2,7 @@ import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";
 import { StyledEngineProvider } from "@mui/joy";
 import { BrowserRouter } from "react-router-dom";
-
+import "./global.css";
 import App from "./App";
 import store from "./redux";
 import { AuthProvider } from "./hooks/useAuth";
