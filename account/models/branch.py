@@ -21,6 +21,7 @@ class Branch(BaseModel):
 
     @classmethod
     def fetch_branches(cls, user_id, repo):
+        """fetching all branches in a repository"""
         api_url = repo.url + "/branches"
         user_instance = UserAccount.objects.get(account_id=user_id)
         token = user_instance.access_token
@@ -35,12 +36,13 @@ class Branch(BaseModel):
         return filtered_branches
 
     @classmethod
-    def sync(cls, user_id, names, repo_id):
+    def cleanup(cls, user_id, names, repo_id):
+        """deleting the branches that are not configured as source or target"""
         user_instance = UserAccount.objects.get(account_id=user_id)
         repository_instance = Repository.objects.get(
             repo_id=repo_id, user=user_instance
         )
-        branches_to_delete = cls.objects.filter(
+        branches_to_delete = Branch.objects.filter(
             ~Q(name__in=names), user=user_instance, repository=repository_instance
         )
         # Delete the fetched branches

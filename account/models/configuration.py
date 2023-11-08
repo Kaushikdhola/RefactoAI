@@ -18,7 +18,8 @@ class UserConfiguration(BaseModel):
         db_table = "UserConfiguration"
 
     @classmethod
-    def update(cls, user_id, commit_interval, max_lines):
+    def update_configuration(cls, user_id, commit_interval, max_lines):
+        """updating the user specific configurations like max_lines and commit_interval"""
         user_account = UserAccount.objects.get(account_id=user_id)
         user_configuration = UserConfiguration.objects.get(user=user_account)
         user_configuration.max_lines = max_lines

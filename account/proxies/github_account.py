@@ -7,8 +7,8 @@ from django.middleware.csrf import rotate_token
 from account.models.account import UserAccount
 from account.models.branch import Branch
 from account.models.configuration import UserConfiguration
-from account.models.refactor import Refactor
 from account.models.repository import Repository
+from account.models.target_configuration import TargetConfiguration
 from core.utils.exceptions import ValidationError
 
 
@@ -70,11 +70,11 @@ class GitHubAccount(UserAccount):
             "company": user.get("company"),
             "account_type": "GitHub",
         }
-        if instance := cls.objects.filter(account_id=account_id).first():
+        if instance := UserAccount.objects.filter(account_id=account_id).first():
             instance.set_values(update_values)
             instance.save()
         else:
-            instance = cls.objects.create(**update_values)
+            instance = UserAccount.objects.create(**update_values)
             cls.prepare_configurations(instance.id)
 
     @classmethod
@@ -98,7 +98,8 @@ class GitHubAccount(UserAccount):
         cls.prepare_session(request=request, user=user)
 
     @classmethod
-    def fetch_branches(cls, user_id):
+    def fetch_repositories(cls, user_id):
+        """fetching repository details related to the user"""
         user_instance = UserAccount.objects.get(account_id=user_id)
         repos = Repository.objects.filter(user=user_instance)
         all_repos_data = []
@@ -113,8 +114,10 @@ class GitHubAccount(UserAccount):
             all_repos_data.append(repo_data)
         return all_repos_data
 
+    # todo:Kenil - use this function to get refactor configurations
     @classmethod
     def fetch_configurations(cls, user_id):
+        """fetching configuration details related to the user"""
         user_instance = UserAccount.objects.get(account_id=user_id)
         configuration_instance = UserConfiguration.getConfiguration(user_id)
 
@@ -122,7 +125,7 @@ class GitHubAccount(UserAccount):
         repository_details = []
         for repository in repositories:
             repo_id = repository.repo_id
-            commit_configurations = cls.objects.filter(
+            commit_configurations = UserAccount.objects.filter(
                 repository=repository, user=user_instance
             )
             branch_details = []
@@ -133,8 +136,10 @@ class GitHubAccount(UserAccount):
                 branch_details.append(
                     {"name": branch_name, "commit_number": commit_number}
                 )
-            refactor = Refactor.objects.get(user=user_instance, repository=repository)
-            target_branch = refactor.target_branch
+            target_configuration = TargetConfiguration.objects.get(
+                user=user_instance, repository=repository
+            )
+            target_branch = target_configuration.target_branch
             repository_details.append(
                 {
                     "repo_id": repo_id,

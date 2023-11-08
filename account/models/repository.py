@@ -18,7 +18,8 @@ class Repository(BaseModel):
 
     @classmethod
     def prepare_repositories(cls, user, token):
-        repos = cls.fetch_repos(token=token)
+        """creating or updating repositories for a user"""
+        repos = cls.fetch_repositories(token=token)
         account_id = user.get("id")
         user_instance = UserAccount.objects.get(account_id=account_id)
 
@@ -31,18 +32,18 @@ class Repository(BaseModel):
                 "url": repo.get("url"),
             }
             instance = {}
-            if instance := cls.objects.filter(
+            if instance := Repository.objects.filter(
                 user=user_instance, repo_id=repo_id
             ).first():
                 instance.set_values(update_values)
                 instance.save()
             else:
-                instance = cls.objects.create(**update_values)
+                instance = Repository.objects.create(**update_values)
                 instance.save()
 
     @classmethod
-    def fetch_repos(cls, token):
-        """fetches repositories of the user"""
+    def fetch_repositories(cls, token):
+        """fetches all repositories of the user"""
         repo_api = "https://api.github.com/user/repos"
         token_payload = {
             "scope": "repo",
