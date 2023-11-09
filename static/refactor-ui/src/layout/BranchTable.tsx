@@ -7,7 +7,14 @@ import Sheet from "@mui/joy/Sheet";
 import Typography from "@mui/joy/Typography";
 // import { useCountUp } from "use-count-up";
 
-import { Card, CardContent, Chip, Grid, LinearProgress } from "@mui/joy";
+import {
+  Autocomplete,
+  Card,
+  CardContent,
+  Chip,
+  Grid,
+  LinearProgress,
+} from "@mui/joy";
 // import { PieChart } from "@mui/x-charts/PieChart";
 // icons
 
@@ -89,6 +96,11 @@ export default function BranchTable() {
           gap: 2,
         }}
       > */}
+      <Autocomplete
+        placeholder="> Select Repo"
+        options={["Repo 1", "Repo 2", "Repo 3", "Repo 4", "Repo 5", "Repo 6"]}
+        onSelect={(value) => console.log(value)}
+      />
       <Grid container spacing={2} sx={{ flexGrow: 1 }}>
         <Grid xs={6} md={8}>
           {/* <Grid> */}
@@ -105,6 +117,7 @@ export default function BranchTable() {
               minHeight: 0,
             }}
           > */}
+
           <Card variant="soft">
             <CardContent>
               <Typography color="neutral" noWrap={false} variant="plain">
@@ -196,7 +209,7 @@ export default function BranchTable() {
                 <Typography level="h2"># 432M</Typography>
               </CardContent>
             </CardContent>
-            <LinearProgress determinate value={50} />
+            <LinearProgress size="lg" determinate value={50} />
           </Card>
           {/* <Card variant="soft">
             <CardContent >
