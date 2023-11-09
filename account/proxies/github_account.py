@@ -110,6 +110,7 @@ class GitHubAccount(UserAccount):
                 "name": repo.name,
                 "url": repo.url,
                 "source_branches": branches,
+                "target_branches": branches,
             }
             all_repos_data.append(repo_data)
         return all_repos_data
