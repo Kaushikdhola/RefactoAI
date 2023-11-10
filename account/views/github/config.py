@@ -24,33 +24,33 @@ class GitHubConfigurationView(BaseView):
         user_instance = UserAccount.objects.get(account_id=user_id)
         user_configuration = UserConfiguration.objects.get(user=user_instance)
 
-        branches_in_repositories = self.model.fetch_repositories(user_id=user_id)
-        for branches_in_repository in branches_in_repositories:
+        repositories_data = self.model.fetch_repositories(user_id=user_id)
+        for each_repository in repositories_data:
             repo_instance = Repository.objects.get_or_create(
                 user=user_instance,
-                repo_id=branches_in_repository.get("repo_id"),
-                name=branches_in_repository.get("name"),
-                url=branches_in_repository.get("url"),
+                repo_id=each_repository.get("repo_id"),
+                name=each_repository.get("name"),
+                url=each_repository.get("url"),
             )
             configured_source_branches = SourceConfiguration.fetch_configured_branches(
-                user_id=user_id, repo_id=branches_in_repository.get("repo_id")
+                user_id=user_id, repo_id=each_repository.get("repo_id")
             )
-            for branch in branches_in_repository.get("source_branches"):
-                if branch.get("name") in configured_source_branches:
-                    branch["is_selected"] = True
+            for source_branch in each_repository.get("source_branches"):
+                if source_branch.get("name") in configured_source_branches:
+                    source_branch["is_selected"] = True
 
-            target_branch = TargetConfiguration.fetch_configuration(
-                user_id=user_id, repo_id=branches_in_repository.get("repo_id")
+            configured_target_branch = TargetConfiguration.fetch_configuration(
+                user_id=user_id, repo_id=each_repository.get("repo_id")
             )
             # checking if configuration is set
-            if target_branch is not None:
-                for branch in branches_in_repository.get("target_branches"):
-                    if branch.get("name") is target_branch.name:
-                        branch["is_selected"] = True
+            if configured_target_branch is not None:
+                for source_branch in each_repository.get("target_branches"):
+                    if source_branch.get("name") == configured_target_branch.name:
+                        source_branch["is_selected"] = True
 
         return JsonResponse(
             {
-                "repositories": branches_in_repositories,
+                "repositories": repositories_data,
                 "commit_interval": user_configuration.commit_interval,
                 "max_lines": user_configuration.max_lines,
             }
