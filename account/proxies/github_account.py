@@ -1,3 +1,4 @@
+import copy
 import json
 
 import requests
@@ -105,11 +106,13 @@ class GitHubAccount(UserAccount):
         all_repos_data = []
         for repo in repos:
             branches = Branch.fetch_branches(user_id, repo)
+            branches_copy = copy.deepcopy(branches)
             repo_data = {
                 "repo_id": repo.repo_id,
                 "name": repo.name,
                 "url": repo.url,
                 "source_branches": branches,
+                "target_branches": branches_copy,
             }
             all_repos_data.append(repo_data)
         return all_repos_data

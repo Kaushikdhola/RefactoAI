@@ -31,7 +31,7 @@ class Branch(BaseModel):
         filtered_branches = []
         for branch in branches_data:
             if not branch["name"].startswith("refacto-start"):
-                filtered_branches.append({"name": branch["name"]})
+                filtered_branches.append({"name": branch["name"], "is_selected": False})
 
         return filtered_branches
 
