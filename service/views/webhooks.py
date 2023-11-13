@@ -12,8 +12,6 @@ class PushWebhookView(APIView):
     def post(self, request):
         try:
             payload = json.loads(request.body.decode("utf-8"))
-            # print("Payload:", payload, flush = True)
-            # print("\n")
             event = request.headers.get("X-GitHub-Event")
             if event == "push":
                 try:
@@ -50,9 +48,9 @@ class PushWebhookView(APIView):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         )
                     if len(files_changes) != 0:
-                        refactor.refactor_change_code(files_changes)
+                        refactored_code = refactor.refactor_change_code(files_changes)
                     else:
-                        print("No changes")
+                        print("No changes in the push event", flush=True)
                 return Response({"status": "success"})
 
             return Response(

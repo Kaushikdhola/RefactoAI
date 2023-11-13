@@ -2,7 +2,6 @@ import requests
 import base64
 
 def get_changes(commit_info):
-    # print("Commit Info:", commit_info["files"], flush = True)
     files_changes = []
     if len(commit_info["files"]) > 0:
         for file_info in commit_info["files"]:

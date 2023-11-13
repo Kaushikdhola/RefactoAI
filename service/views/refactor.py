@@ -1,13 +1,11 @@
 import openai
-import json
-
+from django.conf import settings
 import ast
 
 class Refactor:
     def refactor_change_code(self, file_changes):
         try:
-            print("refactoring")
-            openai.api_key = "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"
+            openai.api_key = settings.OPENAI_API_KEY
             refactored_file_changes = []
             sample_dictionary = {
                                     "filename": [
@@ -65,7 +63,8 @@ class Refactor:
                     {refactored_sample_dictionary}
                     ```
                     In the dictionary add the refactored full code and if you havent refactored the any code snippet in the full file code just 
-                    give me the original full file code. And remove all the code snippet and just give the full code as the value of the filename key in the dictionary.
+                    give me the original full file code. And remove all the code snippet and just give the full code as the string value against the filename key in the dictionary.
+                    There should be only string value that conatins full code. Consider this point strictly. As your response has lot of dependency.
 
                     Now here is my Python dictionary for refactoring the snippets of the code in the full code:
                     ```
@@ -73,25 +72,28 @@ class Refactor:
                     ```
                     Give a response according to the instructions I gave you.
                     Please generate a full refactored code donot stop in between. And give me only the dictionary as string so that I can convert directly to python dictionary.
+                    Complete the whole reponse with the dictinoary paranthesis donot leave the string value incomplete as it affects my further processing.
 
                     """,
                 }
                 
                 prompt_messages = [explain_system_message, explain_user_message]
-                print("please wait refactoring the file")
+                print("Please wait for llm repsonse the code is being refactored", flush=True)
                 llm_response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=prompt_messages,
                     temperature=1.0,
                 )
-                print(llm_response['choices'][0]['message']['content'])
                 code = llm_response['choices'][0]['message']['content']
-                refactored_file_change = ast.literal_eval(code)
-
-                refactored_file_changes.append(refactored_file_change)
-
-                # print(type(llm_response['choices'][0]['message']['content']))
-            print(refactored_file_changes)
+                try:
+                    refactored_file_change = ast.literal_eval(code)
+                    refactored_file_changes.append(refactored_file_change)
+                except:
+                    for filename, code in file_change.items():
+                        refactored_file_change = {}
+                        refactored_file_change[filename] = code[0]
+                        refactored_file_changes.append(refactored_file_change)
+                    print("Response incomplete from LLM so no changes made to file", flush=True)
             return refactored_file_changes
         except Exception as e:
             print(f"An error occurred: {str(e)}")
