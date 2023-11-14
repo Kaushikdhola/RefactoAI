@@ -5,9 +5,12 @@ from django.conf import settings
 from django.core.serializers import serialize
 from django.http import JsonResponse
 from django.middleware.csrf import rotate_token
+from github import Github
 
 from account.models.account import UserAccount
+from account.models.branch import Branch
 from account.models.pull_details import Pull_details
+from account.models.repository import Repository
 
 
 class DashBoardFetch(Pull_details):
@@ -59,12 +62,7 @@ class DashBoardFetch(Pull_details):
         return pull_requests_data
 
     @classmethod
-    def PR_fetch(cls, request):
-        access_token = request.session.get("access_token")
-
-        user_account_instance = UserAccount.objects.get(access_token=access_token)
-
-        username = user_account_instance.user_name
+    def PR_fetch(cls, request, username):
         try:
             pull_details_instance = Pull_details.objects.filter(author_id=username)
         except:
@@ -90,8 +88,58 @@ class DashBoardFetch(Pull_details):
         return json_data
 
     @classmethod
-    def fetchPoint(cls, request):
-        """Initial point to fetch the pull details"""
+    def Branch_fetch(cls, request, user_account_instance):
+        user_id = user_account_instance.id
 
-        json_data = cls.PR_fetch(request=request)
-        return json_data
+        branches = Branch.objects.filter(user_id=user_id)
+
+        # appending the data in the list
+        commit_data = []
+
+        for branch in branches:
+            repository = Repository.objects.get(id=branch.repository_id)
+            repo_name = repository.name
+
+            github_api_url = f"https://api.github.com/repos/{user_account_instance.user_name}/{repo_name}/commits/{branch.name}"
+
+            gitinstance = Github(
+                user_account_instance.user_name, user_account_instance.access_token
+            )
+            gitrepo = gitinstance.get_repo(
+                f"{user_account_instance.user_name}/{repo_name}"
+            )
+            current_branch_name = (
+                user_account_instance.user_name + "/" + repo_name + "/" + branch.name
+            )
+
+            # Retrieve commits for the branch
+            commits = gitrepo.get_commits(sha=branch.name)
+
+            for commit in commits:
+                commit_info = {
+                    "Branch": current_branch_name,
+                    "Commit_sha": commit.sha,
+                    "Author": commit.commit.author.name,
+                    "Date": str(commit.commit.author.date),
+                    "Message": commit.commit.message,
+                }
+                commit_data.append(commit_info)
+
+            commit_json = json.dumps(commit_data, indent=4)
+
+            # Data is being
+
+    @classmethod
+    def fetchPoint(cls, request):
+        """Initial point to fetch the details"""
+
+        access_token = request.session.get("access_token")
+
+        user_account_instance = UserAccount.objects.get(access_token=access_token)
+
+        username = user_account_instance.user_name
+
+        cls.Branch_fetch(request=request, user_account_instance=user_account_instance)
+
+        # json_data = cls.PR_fetch(request=request,username=username)
+        # return json_data

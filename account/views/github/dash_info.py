@@ -18,7 +18,7 @@ class GithubDashboardView(BaseView):
             safe=False,
         )
 
-    def get(self, request, *args, **kwargs):
-        """returns session if exists"""
+    # def get(self, request, *args, **kwargs):
+    #     """returns session if exists"""
 
-        return HttpResponse(JSONRenderer().render(data={"data": data}, status=200))
+    #     return HttpResponse(JSONRenderer().render(data={"data": data}, status=200))
