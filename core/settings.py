@@ -39,7 +39,7 @@ DEBUG = env("DEBUG") if APP_ENV != "PRODUCTION" else False
 SECRET_KEY = env("SECRET_KEY")
 
 # TODO(Hatim): Needs to be handled while deploying the code
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [env("ALLOWED_HOST")]
 
 
 # Application definition
@@ -68,7 +68,11 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # custom middlewares
+    "core.middlewares.ErrorReportingMiddleware",
 ]
+
+REST_FRAMEWORK = { 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' }
 
 
 ROOT_URLCONF = "core.urls"
@@ -151,6 +155,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 GITHUB_SECRET = env("GH_SECRET")
 GITHUB_AUTH = env("GH_AUTH")
+GITHUB_CLIENT_ID = env("GITHUB_CLIENT_ID")
+GITHUB_APP_SECRET = env("GITHUB_SECRET")
 
 
 # CORS Settings
@@ -163,4 +169,18 @@ CORS_ALLOW_HEADERS = [
     "access-control-allow-origin",
     "access-control-allow-methods",
     "content-type",
+    "x-csrftoken",
 ]
+
+# SESSION_VARIABLES
+SESSION_CACHE_ALIAS = "default"
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_AGE = 60 * 60 * 7  # keep session valid for 7 hours
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
+SESSION_EXPIRY = 60 * 60 * 7
+
+# PYTHON REQUESTS
+REQUEST_TIMEOUT = 60
+
+OPENAI_API_KEY = env("OPENAI_API_KEY")

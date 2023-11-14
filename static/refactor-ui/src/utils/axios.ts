@@ -4,8 +4,13 @@ import Cookies from "js-cookie";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "x-CSRFToken";
 
+let URL: any = "http://localhost:8000"
+if (process.env.REACT_APP_ENVIRONMENT === "PROD") {
+  URL = process.env.REACT_APP_BACKEND_URL
+} 
+
 const instance = axios.create({
-  baseURL: "http://localhost:8000/", // Replace with your API base URL
+  baseURL: URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

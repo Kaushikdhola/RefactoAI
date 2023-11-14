@@ -1,5 +1,15 @@
-from django.urls import path
+from django.urls import include, path
 
-from account.views.api import TestAPIView
+from account.views.github.auth import GithubAuthorizationView
+from account.views.github.config import GitHubConfigurationView
 
-urlpatterns = [path("", TestAPIView.as_view())]
+github_urlpatterns = [
+    path("authorize/", GithubAuthorizationView.as_view()),
+    path("configurations/", GitHubConfigurationView.as_view()),
+]
+
+urlpatterns = [
+    path("github/", include(github_urlpatterns)),
+    path("session/", GithubAuthorizationView.as_view()),
+    path("logout/", GithubAuthorizationView.as_view()),
+]

@@ -1,32 +1,43 @@
-import { Route, Switch } from "react-router-dom";
-import { createContext, useReducer } from "react";
-import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
+import { Fragment, useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
+import { Box, CssBaseline } from "@mui/joy";
 
 import { HomePage } from "./components/Home";
+import Settings from "./components/Settings";
+import { HomeLayout } from "./layout/HomeLayout";
 import { Dashboard } from "./components/Dashboard";
-import { initialState, reducer } from "./store/reducer";
-
-export const AuthContext = createContext<any>({});
+import { ProtectedLayout } from "./layout/ProtectedLayout";
+import { prepareSessionData } from "./redux/actions/SessionActions";
+import { About } from "./components/AboutUs";
+import { Documentation } from "./components/Documentation";
 
 const App = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect(() => {
+    fetchSession();
+  }, []);
+
+  const fetchSession = async () => {
+    await prepareSessionData();
+  };
 
   return (
-    <CssVarsProvider disableTransitionOnChange>
+    <Fragment>
       <CssBaseline />
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>
-        <AuthContext.Provider value={{ state, dispatch }}>
-          <Switch>
-            <Route path="/">
-              <HomePage />
-            </Route>
-            <Route path="/dashboard">
-              <Dashboard />
-            </Route>
-          </Switch>
-        </AuthContext.Provider>
+        <Routes>
+          <Route path="/" element={<HomeLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="about" element={<About />} />
+            <Route path="documentation" element={<Documentation />} />
+          </Route>
+          <Route path="/dashboard" element={<ProtectedLayout />}>
+            <Route path="home" element={<Dashboard />} />
+            <Route path="refactorings" element={<Dashboard />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
+        </Routes>
       </Box>
-    </CssVarsProvider>
+    </Fragment>
   );
 };
 
