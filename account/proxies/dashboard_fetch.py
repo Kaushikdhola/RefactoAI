@@ -19,6 +19,16 @@ class DashBoardFetch(Pull_details):
 
     @classmethod
     def get_pull_requests_status(cls, pull_requests_data):
+        """
+        Fetch additional details for each pull request from the GitHub API and update the provided data.
+
+        Args:
+            pull_requests_data (list): List of dictionaries representing pull request data.
+
+        Returns:
+            list: Updated list of pull request data with additional details.
+        """
+
         for pr_data in pull_requests_data:
             Repo_name = pr_data["Repo_name"]
             pull_id = pr_data["pull_id"]
@@ -63,6 +73,16 @@ class DashBoardFetch(Pull_details):
 
     @classmethod
     def PR_fetch(cls, request, username):
+        """
+        Fetch and serialize pull details for a specific user from the database.
+
+        Args:
+            request: Django request object.
+            username (str): Username for which to fetch pull details.
+
+        Returns:
+            str: JSON-formatted string containing pull details.
+        """
         try:
             pull_details_instance = Pull_details.objects.filter(author_id=username)
         except:
@@ -89,6 +109,16 @@ class DashBoardFetch(Pull_details):
 
     @classmethod
     def Branch_fetch(cls, request, user_account_instance):
+        """
+        Fetch commit data for branches associated with a user's account.
+
+        Args:
+            request: Django request object.
+            user_account_instance: Instance of UserAccount model.
+
+        Returns:
+            json_commits: json containing branch details including all commits
+        """
         user_id = user_account_instance.id
 
         branches = Branch.objects.filter(user_id=user_id)
@@ -100,7 +130,7 @@ class DashBoardFetch(Pull_details):
             repository = Repository.objects.get(id=branch.repository_id)
             repo_name = repository.name
 
-            github_api_url = f"https://api.github.com/repos/{user_account_instance.user_name}/{repo_name}/commits/{branch.name}"
+            # github_api_url = f"https://api.github.com/repos/{user_account_instance.user_name}/{repo_name}/commits/{branch.name}"
 
             gitinstance = Github(
                 user_account_instance.user_name, user_account_instance.access_token
@@ -127,11 +157,19 @@ class DashBoardFetch(Pull_details):
 
             commit_json = json.dumps(commit_data, indent=4)
 
-            # Data is being
+        return commit_json
 
     @classmethod
     def fetchPoint(cls, request):
-        """Initial point to fetch the details"""
+        """
+        Initial point to fetch the details.
+
+        Args:
+            request: Django request object.
+
+        Returns:
+            json_data: json containing requested data.
+        """
 
         access_token = request.session.get("access_token")
 
@@ -139,7 +177,13 @@ class DashBoardFetch(Pull_details):
 
         username = user_account_instance.user_name
 
-        cls.Branch_fetch(request=request, user_account_instance=user_account_instance)
+        json_branch_data = cls.Branch_fetch(
+            request=request, user_account_instance=user_account_instance
+        )
 
-        # json_data = cls.PR_fetch(request=request,username=username)
-        # return json_data
+        json_pr_data = cls.PR_fetch(request=request, username=username)
+
+        return {
+            "json_branch_data": json_branch_data,
+            "json_pr_data": json_pr_data,
+        }

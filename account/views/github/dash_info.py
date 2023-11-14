@@ -12,10 +12,10 @@ class GithubDashboardView(BaseView):
     @csrf_exempt
     def post(self, request, *args, **kwargs):
         data = self.model.fetchPoint(request=request)
+
         return JsonResponse(
             data={"data": data},
             status=200,
-            safe=False,
         )
 
     # def get(self, request, *args, **kwargs):
