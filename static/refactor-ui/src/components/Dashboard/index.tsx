@@ -39,6 +39,7 @@ export const Dashboard = () => {
         <Box
           component="main"
           className="MainContent"
+          title="Root Content"
           sx={{
             px: {
               xs: 2,
@@ -46,17 +47,6 @@ export const Dashboard = () => {
             },
             pt: 0,
             pb: 0,
-            // pt: {
-            //   xs: "calc(12px + var(--Header-height))",
-            //   sm: "calc(12px + var(--Header-height))",
-            //   md: 3,
-            // },
-            // pb: {
-            //   xs: 2,
-            //   sm: 2,
-            //   md: 3,
-            // },
-
             flex: 1,
             display: "flex",
             flexDirection: "column",
@@ -72,14 +62,14 @@ export const Dashboard = () => {
               separator={<ChevronRightRoundedIcon fontSize="small" />}
               sx={{ pl: 0 }}
             >
-              <Link
+              {/* <Link
                 underline="none"
                 color="neutral"
-                href="/dashboard/home"
+                onClick={() => navigate("/dashboard/home")}
                 aria-label="Home"
-              >
-                <HomeRoundedIcon />
-              </Link>
+              > */}
+              <HomeRoundedIcon />
+              {/* </Link> */}
               <Typography
                 // underline="hover"
                 color="neutral"

@@ -59,6 +59,6 @@ export default function HeaderSection() {
     //     </Box>
     //   </Box>
     // </Box>
-    <Typography>Hello</Typography>
+    <Typography></Typography>
   );
 }

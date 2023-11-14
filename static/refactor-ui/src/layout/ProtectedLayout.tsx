@@ -11,13 +11,13 @@ export const ProtectedLayout = () => {
   const location = useLocation();
 
   if (isEmpty(session)) {
-    return <Navigate to="/" replace state={{ path: location.pathname }}/>;
+    return <Navigate to="/" replace state={{ path: location.pathname }} />;
   }
 
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
-      <Box sx={{ display: "flex", minHeight: "100dvh" }}>
+      <Box sx={{ display: "flex", minHeight: "100dvh", flex: 1 }}>
         <Sidebar />
         <Header />
         <Box
