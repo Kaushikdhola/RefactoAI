@@ -1,7 +1,15 @@
+from typing import List
+
 from django.urls import include, path
 
-from .views.webhooks import PushWebhookView
+from service.views.github.event import GitHubEventListenerService
 
-github_patterns = [path("event/", PushWebhookView.as_view(), name="github_event")]
 
-urlpatterns = [path("github/", include(github_patterns))]
+def get_github_patterns() -> List[path]:
+    """
+    Returns a list of URL patterns for the GitHub API endpoints.
+    """
+    return [path("event/", GitHubEventListenerService.as_view(), name="github_event")]
+
+
+urlpatterns = [path("github/", include(get_github_patterns()))]

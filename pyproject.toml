@@ -19,6 +19,7 @@ mysqlclient = "2.1.1"
 django-cors-headers = "^4.2.0"
 requests = "^2.31.0"
 openai = "^0.28.1"
+pygithub = "^2.1.1"
 
 [tool.poetry.group.dev.dependencies]
 coreapi = "^2.3.3"

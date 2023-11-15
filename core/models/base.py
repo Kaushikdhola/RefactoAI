@@ -4,7 +4,9 @@ from core.utils.exceptions import ValidationError
 
 
 class BaseModel(models.Model):
-    """Base models with all the common utils"""
+    """
+    Base model with common utilities.
+    """
 
     fields_to_ignore = []
 
@@ -12,32 +14,42 @@ class BaseModel(models.Model):
         abstract = True
 
     @classmethod
-    def get(cls, ExceptionToRaise=ValidationError, **filters):
-        """get the class instance throw the error if does not exists"""
+    def get_instance(cls, exception_to_raise=ValidationError, **filters):
+        """
+        Get the class instance and raise an exception if it does not exist.
+        """
         try:
             return cls.objects.get(**filters)
         except (cls.DoesNotExist, cls.MultipleObjectsReturned) as e:
-            raise ExceptionToRaise(
-                "Instance does not exists or multiple instances found", status=400
+            raise exception_to_raise(
+                "Instance does not exist or multiple instances found", status=400
             ) from e
 
     def before_save(self, *args, **kwargs):
-        """before_save method which will be triggered before save"""
+        """
+        Method triggered before save.
+        """
         pass
 
     def after_save(self, *args, **kwargs):
-        """after_save method which will be triggered before save"""
+        """
+        Method triggered after save.
+        """
         pass
 
     def save(self, *args, **kwargs):
-        """common save where we can trigger few events before and after save"""
+        """
+        Save method that triggers events before and after save.
+        """
         self.before_save(*args, **kwargs)
         super().save(*args, **kwargs)
         self.after_save(*args, **kwargs)
         return self
 
     def set_values(self, values):
-        """assign values from dict to object"""
+        """
+        Assign values from a dictionary to the object.
+        """
         if not values or not isinstance(values, dict):
             return self
 

@@ -7,7 +7,7 @@ axios.defaults.xsrfHeaderName = "x-CSRFToken";
 let URL: any = "http://localhost:8000"
 if (process.env.REACT_APP_ENVIRONMENT === "PROD") {
   URL = process.env.REACT_APP_BACKEND_URL
-} 
+}
 
 const instance = axios.create({
   baseURL: URL,
