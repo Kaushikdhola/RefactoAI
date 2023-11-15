@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
+import { Box, CssBaseline } from "@mui/joy";
 
 import { HomePage } from "./components/Home";
 import Settings from "./components/Settings";

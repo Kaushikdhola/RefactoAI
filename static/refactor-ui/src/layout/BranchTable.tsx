@@ -5,7 +5,6 @@ import Box from "@mui/joy/Box";
 import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
 import Typography from "@mui/joy/Typography";
-// import { useCountUp } from "use-count-up";
 
 import {
   Autocomplete,
@@ -15,8 +14,6 @@ import {
   Grid,
   LinearProgress,
 } from "@mui/joy";
-// import { PieChart } from "@mui/x-charts/PieChart";
-// icons
 
 const rows = [
   {

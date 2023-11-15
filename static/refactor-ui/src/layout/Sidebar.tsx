@@ -10,13 +10,11 @@ import IconButton from "@mui/joy/IconButton";
 import logo from "../assets/images/logo.png";
 import { useNavigate } from "react-router-dom";
 import GlobalStyles from "@mui/joy/GlobalStyles";
+import { useColorScheme } from "@mui/joy/styles";
 import ListItemContent from "@mui/joy/ListItemContent";
-import TerminalIcon from "@mui/icons-material/Terminal";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import RepartitionIcon from "@mui/icons-material/Repartition";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
-import { useColorScheme } from "@mui/joy/styles";
 import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
 
 import { closeSidebar } from "./utils";
