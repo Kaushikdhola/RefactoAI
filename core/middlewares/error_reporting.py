@@ -5,14 +5,16 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
 
-exceptions_to_ignore = ["ValidationError"]
-
 
 class ErrorReportingMiddleware(MiddlewareMixin):
-    """Middleware to capture errors and process"""
+    """
+    Middleware to capture errors and process
+    """
 
     def validate_status_code(self, status_code):
-        """check if status code is correct or not"""
+        """
+        Check if status code is correct or not
+        """
         if isinstance(status_code, int):
             return status_code
 
@@ -20,9 +22,11 @@ class ErrorReportingMiddleware(MiddlewareMixin):
             return int(status_code)
         return 500
 
-    def print_traceback(self, err, has_message=False):
-        """format the traceback and print it on the console for easier debugging"""
-        _traceback = traceback.format_exc()
+    def print_traceback(self, error, has_message=False):
+        """
+        Format the traceback and print it on the console for easier debugging
+        """
+        traceback_str = traceback.format_exc()
         to_print = (
             "\033[91m"
             "\n{sep}\n"
@@ -35,14 +39,16 @@ class ErrorReportingMiddleware(MiddlewareMixin):
         print(
             to_print.format(
                 sep="-" * 100,
-                traceback=_traceback,
-                message=err.message if has_message else str(err),
+                traceback=traceback_str,
+                message=error.message if has_message else str(error),
             )
         )
-        return _traceback
+        return traceback_str
 
     def report_exception(self, request, exception):
-        """report exception"""
+        """
+        Report exception
+        """
         has_message = hasattr(exception, "message")
         has_status_code = hasattr(exception, "status_code")
         status_code = exception.status_code if has_status_code else 500
@@ -58,8 +64,10 @@ class ErrorReportingMiddleware(MiddlewareMixin):
 
         return self.validate_status_code(status_code), response
 
-    def process_exception(self, request, err):
-        """catch all the exceptions and return the HttpResponse
-        with appropriate status_code"""
-        status_code, response = self.report_exception(request, err)
+    def process_exception(self, request, error):
+        """
+        Catch all the exceptions and return the HttpResponse
+        with appropriate status_code
+        """
+        status_code, response = self.report_exception(request, error)
         return JsonResponse(response, status=status_code or 500)

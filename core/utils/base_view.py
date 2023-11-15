@@ -11,12 +11,28 @@ class BaseView(APIView):
     """
 
     def parse_payload(self, request):
-        """prepares payload from request"""
+        """
+        Parses the payload from the request object.
+
+        Args:
+            request (Request): The request object.
+
+        Returns:
+            dict: The parsed payload.
+        """
         return (
             request.data.dict() if isinstance(request.data, QueryDict) else request.data
         )
 
     def validate_instance(self, instance):
-        """checks if the instance is valid and if not then raise validation error"""
+        """
+        Validates the instance and raises a ValidationError if it is invalid.
+
+        Args:
+            instance: The instance to validate.
+
+        Raises:
+            ValidationError: If the instance is invalid.
+        """
         if not instance:
-            raise ValidationError("Invalid Instance!!")
+            raise ValidationError("Invalid instance.")
