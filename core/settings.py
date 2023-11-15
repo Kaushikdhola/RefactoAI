@@ -72,6 +72,8 @@ MIDDLEWARE = [
     "core.middlewares.ErrorReportingMiddleware",
 ]
 
+REST_FRAMEWORK = { 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' }
+
 
 ROOT_URLCONF = "core.urls"
 
@@ -180,3 +182,5 @@ SESSION_EXPIRY = 60 * 60 * 7
 
 # PYTHON REQUESTS
 REQUEST_TIMEOUT = 60
+
+OPENAI_API_KEY = env("OPENAI_API_KEY")

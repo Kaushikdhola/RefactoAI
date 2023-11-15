@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Box, CssBaseline } from "@mui/joy";
 
@@ -21,8 +21,7 @@ const App = () => {
   };
 
   return (
-    <>
-      {/* <CssVarsProvider disableTransitionOnChange> */}
+    <Fragment>
       <CssBaseline />
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>
         <Routes>
@@ -39,8 +38,7 @@ const App = () => {
           </Route>
         </Routes>
       </Box>
-      {/* </CssVarsProvider> */}
-    </>
+    </Fragment>
   );
 };
 

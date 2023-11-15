@@ -1,18 +1,17 @@
 import json
-
 import requests
-from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from service.views.refactor import Refactor
+from service.views.utils import get_changes
 
+refactor = Refactor()
 
 class PushWebhookView(APIView):
     def post(self, request):
         try:
             payload = json.loads(request.body.decode("utf-8"))
-            # print("Payload:", payload, flush = True)
-            # print("\n")
             event = request.headers.get("X-GitHub-Event")
             if event == "push":
                 try:
@@ -39,7 +38,7 @@ class PushWebhookView(APIView):
                 if response_commit.status_code == 200:
                     try:
                         commit_info = response_commit.json()
-                        files_changes = self.getChanges(commit_info)
+                        files_changes = get_changes(commit_info)
                     except json.JSONDecodeError as e:
                         return Response(
                             {
@@ -48,16 +47,10 @@ class PushWebhookView(APIView):
                             },
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         )
-
-                    # for file_change in files_changes:
-                    #     # print(file_change)
-                    #     for filename, value in file_change.items():
-                    #         print("\n")
-                    #         print("Filename : " + filename)
-                    #         for i, x in enumerate(value):
-                    #             print("Part " + str(i) + ":")
-                    #             print(x)
-
+                    if len(files_changes) != 0:
+                        refactored_code = refactor.refactor_change_code(files_changes)
+                    else:
+                        print("No changes in the push event", flush=True)
                 return Response({"status": "success"})
 
             return Response(
@@ -69,34 +62,3 @@ class PushWebhookView(APIView):
                 {"status": "error", "message": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-    def getChanges(self, commit_info):
-        # print("\n")
-        # print("Commit Info:", commit_info["files"], flush = True)
-        files_changes = []
-        if len(commit_info["files"]) > 0:
-            for file_info in commit_info["files"]:
-                changed_blocks = []
-                current_block = []
-                file_blocks = []
-                # tmp_dict = {}
-                if file_info["status"] == "modified" and file_info["additions"] > 2:
-                    patch = file_info["patch"]
-                    lines = patch.split("\n")
-                    # print(lines)
-                    for line in lines:
-                        if line.startswith("@@"):
-                            if current_block:
-                                changed_blocks.append(current_block)
-                                current_block = []
-                        if line.startswith("+"):
-                            current_block.append(line[1:])
-                    if current_block:
-                        changed_blocks.append(current_block)
-
-                    for change_block in changed_blocks:
-                        changed_part = "\n".join(change_block)
-                        file_blocks.append(changed_part)
-                    # tmp_dict[file_info["filename"]] = file_blocks
-                    files_changes.append({file_info["filename"]: file_blocks})
-        return files_changes
