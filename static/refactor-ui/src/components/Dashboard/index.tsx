@@ -13,7 +13,6 @@ interface DashboardData {
 export const Dashboard = () => {
   const [data, setData] = useState<DashboardData | null>(null);
 
-  // useEffect hook to perform side effects (e.g., API requests) when the component mounts
   useEffect(() => {
 
     // Making a POST request to the 'api/account/dashboard/home/' endpoint

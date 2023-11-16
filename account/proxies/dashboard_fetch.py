@@ -167,9 +167,9 @@ class DashBoardFetch(Pull_details):
             json_data: json containing requested data.
         """
 
-        access_token = request.session.get("access_token")
+        user_id = request.session.get("user_id")
 
-        user_account_instance = UserAccount.objects.get(access_token=access_token)
+        user_account_instance = UserAccount.objects.get(account_id=user_id)
 
         username = user_account_instance.user_name
 
