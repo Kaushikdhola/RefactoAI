@@ -13,6 +13,8 @@ import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import { styled } from "@mui/joy/styles";
 import { Typography } from "@mui/joy";
 import BranchTable from "../../layout/BranchTable";
+import { useEffect, useState } from "react";
+import { POST, GET } from "../../utils/axios";
 
 const Item = styled(Sheet)(({ theme }) => ({
   backgroundColor:
@@ -24,8 +26,31 @@ const Item = styled(Sheet)(({ theme }) => ({
   color: theme.vars.palette.text.secondary,
 }));
 
+interface DashboardData {
+  json_branch_data: any;
+  json_pr_data: any;
+  data: any;
+}
+
 export const Dashboard = () => {
   const navigate = useNavigate();
+  const [data, setData] = useState<DashboardData | null>(null);
+
+  // useEffect(() => {
+  //   // Making a POST request to the 'api/account/dashboard/home/' endpoint
+  //   POST("api/account/dashboard/home/")
+  //     .then(function (response) {
+  //       // Logging the data received from the API response
+  //       console.log("Data:", response.data.data);
+
+  //       // Updating the state with the received data
+  //       setData(response.data);
+  //     })
+  //     .catch(function (error) {
+  //       // Logging any errors that occur during the API request
+  //       console.error("Error:", error);
+  //     });
+  // }, []);
 
   return (
     <CssVarsProvider disableTransitionOnChange>

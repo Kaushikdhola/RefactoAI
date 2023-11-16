@@ -1,6 +1,6 @@
 import Box from "@mui/joy/Box";
 import List from "@mui/joy/List";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sheet from "@mui/joy/Sheet";
 import Avatar from "@mui/joy/Avatar";
 import Divider from "@mui/joy/Divider";
@@ -18,7 +18,7 @@ import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
 
 import { closeSidebar } from "./utils";
-import { DELETE } from "../utils/axios";
+import { DELETE, GET } from "../utils/axios";
 import { useAuth } from "../hooks/useAuth";
 import ColorSchemeToggle from "../components/ColorSchemeToggle";
 // import Topbar from "./DTopBar";
@@ -27,6 +27,21 @@ export const Sidebar = () => {
   const { logout }: any = useAuth();
   const navigate = useNavigate();
   const { mode } = useColorScheme();
+  const [userName, setUserName] = useState<string>("");
+
+  const fetchAPI = async () => {
+    const response = await GET("api/account/github/configurations/");
+    console.log("Sidebar ------>", response.data.repositories[0].url);
+    console.log(
+      "Sidebar ------>",
+      response.data.repositories[0].url.split("/")[4]
+    );
+    setUserName(response.data.repositories[0].url.split("/")[4]);
+  };
+
+  useEffect(() => {
+    fetchAPI();
+  }, []);
 
   const [activeTab, setActiveTab] = useState<string>(
     window.location.pathname?.split("/")?.[2]
@@ -183,8 +198,8 @@ export const Sidebar = () => {
             src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
           />
           <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Typography level="title-sm">Hatim Patrawala</Typography>
-            <Typography level="body-xs">ht760280@dal.ca</Typography>
+            <Typography level="title-sm">{userName}</Typography>
+            {/* <Typography level="body-xs">ht760280@dal.ca</Typography> */}
           </Box>
           <IconButton
             size="sm"

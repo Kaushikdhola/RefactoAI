@@ -11,13 +11,16 @@ import {
   Table,
 } from "@mui/joy";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/joy/Button";
 import Divider from "@mui/joy/Divider";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
+
+import axios from "axios";
+import { POST, GET } from "../../utils/axios";
 
 import CardActions from "@mui/joy/CardActions";
 import CardOverflow from "@mui/joy/CardOverflow";
@@ -27,6 +30,7 @@ import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import { indexOf } from "lodash";
 
 type Props = {};
 
@@ -52,20 +56,11 @@ const rows = [
     lines: "100",
   },
 ];
-const branches = [
-  "Branch 1",
-  "Branch 2",
-  "Branch 3",
-  "Branch 4",
-  "Branch 5",
-  "Branch 6",
-];
 
-const repos = ["Repo 1", "Repo 2", "Repo 3", "Repo 4", "Repo 5", "Repo 6"];
-const configs = [
+let configs = [
   {
-    interval: "null",
-    maxLines: "null",
+    interval: "5",
+    maxLines: "30",
     repo: "null",
     targetBranch: "null",
   },
@@ -115,22 +110,33 @@ const Settings = (props: Props) => {
   const [order] = React.useState<Order>("desc");
   const [value, setValue] = React.useState<string | null>(null);
   const [selectedRepo, setSelectedRepo] = React.useState<string | null>(null);
+  const [repoData, setRepoData] = React.useState<any>([]);
+  let [targetBranch, setTargetBranch] = React.useState<any>([]);
 
-  const [activeTab, setActiveTab] = useState<string>(
-    window.location.pathname?.split("/")?.[2]
-  );
-  // const tabs = [
-  //   {
-  //     name: "Dashboard",
-  //     key: "home",
-  //     path: "/dashboard/home",
-  //   },
-  //   {
-  //     name: "Configurations",
-  //     key: "settings",
-  //     path: "/dashboard/settings",
-  //   },
-  // ];
+  const fetchAPI = async () => {
+    const response = await GET("api/account/github/configurations/");
+    console.log("------>", response.data.repositories);
+    console.log("------>Commit: ", response.data.commit_interval);
+    console.log("------>Max Lines: ", response.data.max_lines);
+    configs[0].interval = response.data.commit_interval;
+    configs[0].maxLines = response.data.max_lines;
+    console.log("------>Configs: ", configs);
+    await setRepoData(
+      response.data.repositories.map((repo: any) => ({
+        reponame: repo.name,
+        id: repo.repo_id,
+        branches: repo.target_branches,
+      }))
+    );
+    console.log("------>Repo Data: ", repoData);
+  };
+
+  useEffect(() => {
+    fetchAPI();
+  }, []);
+
+  let repoOptions: any =
+    repoData.length > 0 ? repoData?.map((option: any) => option.reponame) : [];
   return (
     <Box
       sx={{
@@ -203,6 +209,7 @@ const Settings = (props: Props) => {
             </Typography>
           </Box>
           <Divider />
+          {/*---------- Desktop UI Render ----------*/}
           <Stack
             direction="row"
             spacing={3}
@@ -215,7 +222,7 @@ const Settings = (props: Props) => {
                   <Input
                     size="md"
                     type="number"
-                    defaultValue={2}
+                    defaultValue={configs[0].interval}
                     onChange={(e) => {
                       configs[0].interval = e.target.value;
                       console.log("Commit Interval: " + configs[0].interval);
@@ -224,7 +231,6 @@ const Settings = (props: Props) => {
                       input: {
                         ref: inputRef,
                         min: 1,
-                        max: 5,
                         step: 1,
                       },
                     }}
@@ -238,7 +244,7 @@ const Settings = (props: Props) => {
                   <Input
                     type="number"
                     size="md"
-                    defaultValue={2}
+                    defaultValue={configs[0].maxLines}
                     onChange={(e) => {
                       configs[0].maxLines = e.target.value;
                       console.log("Max Lines: " + configs[0].maxLines);
@@ -247,7 +253,6 @@ const Settings = (props: Props) => {
                       input: {
                         ref: inputRef,
                         min: 1,
-                        max: 5,
                         step: 1,
                       },
                     }}
@@ -261,12 +266,22 @@ const Settings = (props: Props) => {
                   size="md"
                   placeholder="Select Repo"
                   openOnFocus={true}
-                  options={repos}
+                  options={repoOptions}
                   value={selectedRepo}
                   onChange={(event, newValue) => {
                     setSelectedRepo(newValue);
                     configs[0].repo = newValue as string;
                     console.log("Selected Repo: " + configs[0].repo);
+                    console.log(
+                      "Index Repo: " + indexOf(repoOptions, newValue)
+                    );
+                    setTargetBranch(
+                      repoData[indexOf(repoOptions, newValue)].branches
+                    );
+                    console.log(
+                      repoData[indexOf(repoOptions, newValue)].branches
+                    );
+                    setValue(null);
                   }}
                   startDecorator={<KeyboardDoubleArrowRightIcon />}
                 />
@@ -278,12 +293,13 @@ const Settings = (props: Props) => {
                     size="md"
                     placeholder="Target Branch"
                     openOnFocus={true}
-                    options={branches}
+                    options={targetBranch.map((e: any) => e.name)}
                     value={value}
                     onChange={(event, newValue) => {
                       setValue(newValue);
                       configs[0].targetBranch = newValue as string;
                       console.log("Target Branch: " + configs[0].targetBranch);
+                      console.log("Updated Branch Config: ", configs);
                     }}
                     startDecorator={<KeyboardArrowRightIcon />}
                   />
@@ -291,6 +307,7 @@ const Settings = (props: Props) => {
               </Stack>
             </Stack>
           </Stack>
+          {/*---------- Responsive UI Render ----------*/}
           <Stack
             direction="column"
             spacing={2}
@@ -303,7 +320,7 @@ const Settings = (props: Props) => {
                   <Input
                     size="md"
                     type="number"
-                    defaultValue={2}
+                    defaultValue={configs[0].interval}
                     onChange={(e) => {
                       configs[0].interval = e.target.value;
                       console.log("Commit Interval: " + configs[0].interval);
@@ -312,7 +329,6 @@ const Settings = (props: Props) => {
                       input: {
                         ref: inputRef,
                         min: 1,
-                        max: 5,
                         step: 1,
                       },
                     }}
@@ -326,7 +342,7 @@ const Settings = (props: Props) => {
                   <Input
                     type="number"
                     size="md"
-                    defaultValue={2}
+                    defaultValue={configs[0].maxLines}
                     onChange={(e) => {
                       configs[0].maxLines = e.target.value;
                       console.log("Max Lines: " + configs[0].maxLines);
@@ -335,7 +351,6 @@ const Settings = (props: Props) => {
                       input: {
                         ref: inputRef,
                         min: 1,
-                        max: 5,
                         step: 1,
                       },
                     }}
@@ -349,12 +364,22 @@ const Settings = (props: Props) => {
                   size="md"
                   placeholder="Select Repo"
                   openOnFocus={true}
-                  options={repos}
+                  options={repoOptions}
                   value={selectedRepo}
                   onChange={(event, newValue) => {
                     setSelectedRepo(newValue);
                     configs[0].repo = newValue as string;
                     console.log("Selected Repo: " + configs[0].repo);
+                    console.log(
+                      "Index Repo: " + indexOf(repoOptions, newValue)
+                    );
+                    setTargetBranch(
+                      repoData[indexOf(repoOptions, newValue)].branches
+                    );
+                    console.log(
+                      repoData[indexOf(repoOptions, newValue)].branches
+                    );
+                    setValue(null);
                   }}
                   startDecorator={<KeyboardDoubleArrowRightIcon />}
                 />
@@ -366,12 +391,13 @@ const Settings = (props: Props) => {
                     size="md"
                     placeholder="Target Branch"
                     openOnFocus={true}
-                    options={branches}
+                    options={targetBranch.map((e: any) => e.name)}
                     value={value}
                     onChange={(event, newValue) => {
                       setValue(newValue);
                       configs[0].targetBranch = newValue as string;
                       console.log("Target Branch: " + configs[0].targetBranch);
+                      console.log("Updated Branch Config: ", configs);
                     }}
                     startDecorator={<KeyboardArrowRightIcon />}
                   />
@@ -379,6 +405,9 @@ const Settings = (props: Props) => {
               </Stack>
             </Stack>
           </Stack>
+
+          {/*---------- Common UI Render ----------*/}
+
           <Card variant="soft">
             <CardContent>
               <Typography color="neutral" noWrap={false} variant="plain">
