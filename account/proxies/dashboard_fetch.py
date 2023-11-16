@@ -3,8 +3,6 @@ import json
 import requests
 from django.conf import settings
 from django.core.serializers import serialize
-from django.http import JsonResponse
-from django.middleware.csrf import rotate_token
 from github import Github
 
 from account.models.account import UserAccount
@@ -129,8 +127,6 @@ class DashBoardFetch(Pull_details):
         for branch in branches:
             repository = Repository.objects.get(id=branch.repository_id)
             repo_name = repository.name
-
-            # github_api_url = f"https://api.github.com/repos/{user_account_instance.user_name}/{repo_name}/commits/{branch.name}"
 
             gitinstance = Github(
                 user_account_instance.user_name, user_account_instance.access_token
