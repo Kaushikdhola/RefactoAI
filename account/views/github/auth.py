@@ -15,7 +15,7 @@ class GithubAuthorizationView(BaseView):
         """authorizes user and creates account if not exists"""
         payload = self.parse_payload(request=request)
         code = payload.get("code")
-        self.model.authorize(code=code, request=request)
+        self.model.authorize(oauth_code=code, request=request)
         return JsonResponse(
             data={"message": "Authorization Successful!!"},
             status=200,
