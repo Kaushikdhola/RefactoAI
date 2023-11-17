@@ -1,8 +1,12 @@
+import copy
 from django.conf import settings
 from django.middleware.csrf import rotate_token
 
 from account.models.account import UserAccount
+from account.models.branch import Branch
 from account.models.configuration import UserConfiguration
+from account.models.repository import Repository
+from account.models.target_configuration import TargetConfiguration
 from core.utils.exceptions import ValidationError
 from core.utils.requests import fetch
 
@@ -118,6 +122,68 @@ class GitHubAccount(UserAccount):
         request.session["user_id"] = user_id
         request.session.save()
         request.session.set_expiry(settings.SESSION_EXPIRY)
+
+    @classmethod
+    def fetch_repositories(cls, user_id):
+        """fetching repository details related to the user"""
+        user_instance = UserAccount.objects.get(account_id=user_id)
+        repos = Repository.objects.filter(user=user_instance)
+        all_repos_data = []
+        for repo in repos:
+            branches = Branch.fetch_branches(user_id, repo)
+            branches_copy = copy.deepcopy(branches)
+            repo_data = {
+                "repo_id": repo.repo_id,
+                "name": repo.name,
+                "url": repo.url,
+                "source_branches": branches,
+                "target_branches": branches_copy,
+            }
+            all_repos_data.append(repo_data)
+        return all_repos_data
+
+    # todo:Kenil - use this function to get refactor configurations
+    @classmethod
+    def fetch_configurations(cls, user_id):
+        """fetching configuration details related to the user"""
+        user_instance = UserAccount.objects.get(account_id=user_id)
+        configuration_instance = UserConfiguration.getConfiguration(user_id)
+
+        repositories = Repository.objects.filter(user=user_instance)
+        repository_details = []
+        for repository in repositories:
+            repo_id = repository.repo_id
+            commit_configurations = UserAccount.objects.filter(
+                repository=repository, user=user_instance
+            )
+            branch_details = []
+            for commit_configuration in commit_configurations:
+                source_branch = commit_configuration.source_branch
+                branch_name = source_branch.name
+                commit_number = commit_configuration.current_commit
+                branch_details.append(
+                    {"name": branch_name, "commit_number": commit_number}
+                )
+            target_configuration = TargetConfiguration.objects.get(
+                user=user_instance, repository=repository
+            )
+            target_branch = target_configuration.target_branch
+            repository_details.append(
+                {
+                    "repo_id": repo_id,
+                    "name": repository.name,
+                    "url": repository.url,
+                    "source_branches": branch_details,
+                    "target_branch": target_branch.name,
+                }
+            )
+        return {
+            "user_id": user_id,
+            "commit_interval": configuration_instance.commit_interval,
+            "max_lines": configuration_instance.max_lines,
+            "repositories": repository_details,
+        }
+
 
     @classmethod
     def authorize(cls, oauth_code, request):
