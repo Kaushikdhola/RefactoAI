@@ -1,7 +1,4 @@
 import copy
-import json
-
-import requests
 from django.conf import settings
 from django.middleware.csrf import rotate_token
 
@@ -11,6 +8,7 @@ from account.models.configuration import UserConfiguration
 from account.models.repository import Repository
 from account.models.target_configuration import TargetConfiguration
 from core.utils.exceptions import ValidationError
+from core.utils.requests import fetch
 
 
 class GitHubAccount(UserAccount):
@@ -25,50 +23,80 @@ class GitHubAccount(UserAccount):
         proxy = True
 
     @classmethod
-    def fetch_access_token(cls, code):
-        """fetches and returns access token from github"""
-        if not code:
+    def fetch_access_token(cls, oauth_code):
+        """
+        Fetches and returns access token from GitHub.
+
+        Args:
+        - oauth_code: str, the OAuth code provided by GitHub.
+
+        Returns:
+        - str, the access token.
+        """
+        if not oauth_code:
             raise ValidationError("OAuth code not provided")
 
         token_payload = {
             "client_id": settings.GITHUB_CLIENT_ID,
             "client_secret": settings.GITHUB_APP_SECRET,
-            "code": code,
+            "code": oauth_code,
         }
-        response = requests.post(
-            cls.ACCESS_TOKEN_URL,
+        status, response = fetch(
+            method="POST",
+            url=cls.ACCESS_TOKEN_URL,
             headers={"Accept": "application/json", "scope": "repo"},
-            data=token_payload,
+            payload=token_payload,
         )
-        response_payload = response.json()
-        return response_payload.get("access_token")
+        return response.get("access_token")
 
     @classmethod
-    def fetch_user_data(cls, token):
-        """fetches user data from access token provided"""
+    def fetch_user_data(cls, access_token):
+        """
+        Fetches user data from the access token provided.
+
+        Args:
+        - access_token: str, the access token provided by GitHub.
+
+        Returns:
+        - dict, the user data.
+        """
         user_url = "https://api.github.com/user"
-        headers = {"Accept": "application/json", "Authorization": f"Bearer {token}"}
-        response = requests.get(user_url, headers=headers)
-        return response.json()
+        headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {access_token}",
+        }
+        status, response = fetch(method="GET", url=user_url, headers=headers)
+        return response
 
     @classmethod
     def prepare_configurations(cls, user_id):
-        """creates default configuration when new account is created"""
+        """
+        Creates default configuration when new account is created.
+
+        Args:
+        - user_id: int, the ID of the user.
+        """
         UserConfiguration.objects.create(
             user_id=user_id, commit_interval=5, max_lines=30
         )
 
     @classmethod
-    def create_account(cls, user, token):
-        """creates account and configurations along with it"""
-        account_id = user.get("id")
+    def create_account(cls, user_data, access_token):
+        """
+        Creates account and configurations along with it.
+
+        Args:
+        - user_data: dict, the user data.
+        - access_token: str, the access token provided by GitHub.
+        """
+        account_id = user_data.get("id")
         update_values = {
             "account_id": account_id,
-            "access_token": token,
-            "email": user.get("email"),
-            "user_name": user.get("login"),
-            "name": user.get("name"),
-            "company": user.get("company"),
+            "access_token": access_token,
+            "email": user_data.get("email"),
+            "user_name": user_data.get("login"),
+            "name": user_data.get("name"),
+            "company": user_data.get("company"),
             "account_type": "GitHub",
         }
         if instance := UserAccount.objects.filter(account_id=account_id).first():
@@ -79,24 +107,21 @@ class GitHubAccount(UserAccount):
             cls.prepare_configurations(instance.id)
 
     @classmethod
-    def prepare_session(cls, request, user):
-        """prepares session for the current user login"""
-        user_id = user.get("id")
+    def prepare_session(cls, request, user_data):
+        """
+        Prepares session for the current user login.
+
+        Args:
+        - request: HttpRequest, the HTTP request object.
+        - user_data: dict, the user data.
+        """
+        user_id = user_data.get("id")
         user_instance = UserAccount.objects.get(account_id=user_id)
         rotate_token(request=request)
         request.session["isLoggedIn"] = True
         request.session["user_id"] = user_id
         request.session.save()
         request.session.set_expiry(settings.SESSION_EXPIRY)
-
-    @classmethod
-    def authorize(cls, code, request):
-        """authorizes and user creation"""
-        token = cls.fetch_access_token(code=code)
-        user = cls.fetch_user_data(token=token)
-        cls.create_account(user=user, token=token)
-        Repository.prepare_repositories(user=user, token=token)
-        cls.prepare_session(request=request, user=user)
 
     @classmethod
     def fetch_repositories(cls, user_id):
@@ -158,3 +183,19 @@ class GitHubAccount(UserAccount):
             "max_lines": configuration_instance.max_lines,
             "repositories": repository_details,
         }
+
+
+    @classmethod
+    def authorize(cls, oauth_code, request):
+        """
+        Authorizes and creates user.
+
+        Args:
+        - oauth_code: str, the OAuth code provided by GitHub.
+        - request: HttpRequest, the HTTP request object.
+        """
+        access_token = cls.fetch_access_token(oauth_code=oauth_code)
+        user_data = cls.fetch_user_data(access_token=access_token)
+        cls.create_account(user_data=user_data, access_token=access_token)
+        # Repository.prepare_repositores(user=user_data, access_token=access_token)
+        cls.prepare_session(request=request, user_data=user_data)
