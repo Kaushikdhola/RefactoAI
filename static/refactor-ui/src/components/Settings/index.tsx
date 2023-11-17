@@ -408,7 +408,7 @@ const Settings = (props: Props) => {
 
           {/*---------- Common UI Render ----------*/}
 
-          <Card variant="soft">
+          {/* <Card variant="soft">
             <CardContent>
               <Typography color="neutral" noWrap={false} variant="plain">
                 Repositories and their target branches.
@@ -458,7 +458,7 @@ const Settings = (props: Props) => {
                 </tbody>
               </Table>
             </CardContent>
-          </Card>
+          </Card> */}
           <CardOverflow sx={{ borderTop: "1px solid", borderColor: "divider" }}>
             <CardActions sx={{ alignSelf: "flex-end", pt: 2 }}>
               <Button size="sm" variant="outlined" color="neutral">
@@ -467,7 +467,7 @@ const Settings = (props: Props) => {
               <Button
                 size="sm"
                 variant="solid"
-                onClick={() => console.log(configs)}
+                onClick={() => console.log("POST: ", configs)}
               >
                 Save
               </Button>

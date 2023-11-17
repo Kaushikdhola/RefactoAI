@@ -1,16 +1,16 @@
 import Box from "@mui/joy/Box";
 import List from "@mui/joy/List";
-import { useEffect, useState } from "react";
 import Sheet from "@mui/joy/Sheet";
-import Avatar from "@mui/joy/Avatar";
 import Divider from "@mui/joy/Divider";
 import ListItem from "@mui/joy/ListItem";
+import { useEffect, useState } from "react";
 import Typography from "@mui/joy/Typography";
 import IconButton from "@mui/joy/IconButton";
 import logo from "../assets/images/logo.png";
 import { useNavigate } from "react-router-dom";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import { useColorScheme } from "@mui/joy/styles";
+import PersonIcon from "@mui/icons-material/Person";
 import ListItemContent from "@mui/joy/ListItemContent";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
@@ -191,20 +191,23 @@ export const Sidebar = () => {
           </List>
         </Box>
         <Divider />
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          <Avatar
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center", pl: 1 }}>
+          {/* <Avatar
             variant="outlined"
             size="sm"
             src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
-          />
+          /> */}
+          <PersonIcon />
           <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Typography level="title-sm">{userName}</Typography>
+            <Typography level="title-sm" pl={1}>
+              {userName}
+            </Typography>
             {/* <Typography level="body-xs">ht760280@dal.ca</Typography> */}
           </Box>
           <IconButton
             size="sm"
-            variant="plain"
-            color="neutral"
+            variant="soft"
+            color="danger"
             onClick={handleLogout}
           >
             <LogoutRoundedIcon />
