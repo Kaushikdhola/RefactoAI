@@ -1,3 +1,4 @@
+
 import Box from "@mui/joy/Box";
 import List from "@mui/joy/List";
 import { useState } from "react";
@@ -21,13 +22,37 @@ import { closeSidebar } from "./utils";
 import { DELETE } from "../utils/axios";
 import { useAuth } from "../hooks/useAuth";
 import ColorSchemeToggle from "../components/ColorSchemeToggle";
+import { useEffect } from "react";
+import { POST,GET } from "../utils/axios";
+
+
+
 
 export const Sidebar = () => {
   const { logout }: any = useAuth();
   const navigate = useNavigate();
+  const [data, setData] = useState()
   const [activeTab, setActiveTab] = useState<string>(
     window.location.pathname?.split("/")?.[2]
   );
+
+  useEffect(() => {
+
+    POST('api/account/dashboard/home/')
+
+    .then(function (response) {
+
+        console.log('Data:', response.data.data);
+        setData(response.data);
+      })
+
+      .catch(function (error) {
+
+        console.error('Error:', error);
+      });
+
+  }, []);
+
   const tabs = [
     {
       IconComponent: DashboardRoundedIcon,
