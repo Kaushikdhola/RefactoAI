@@ -1,4 +1,6 @@
 import json
+import logging
+from datetime import datetime
 
 import requests
 from django.conf import settings
@@ -9,6 +11,8 @@ from account.models.account import UserAccount
 from account.models.branch import Branch
 from account.models.pull_details import Pull_details
 from account.models.repository import Repository
+
+logger = logging.getLogger("dashboard_fetch")
 
 
 class DashBoardFetch(Pull_details):
@@ -30,6 +34,7 @@ class DashBoardFetch(Pull_details):
         for pr_data in pull_requests_data:
             Repo_name = pr_data["Repo_name"]
             pull_id = pr_data["pull_id"]
+
             status_url = f"{Repo_name}/pulls/{pull_id}"
 
             response = requests.get(status_url)
@@ -103,10 +108,11 @@ class DashBoardFetch(Pull_details):
         data = cls.get_pull_requests_status(extracted_data)
 
         json_data = json.dumps(data, indent=4)
+
         return json_data
 
     @classmethod
-    def Branch_fetch(cls, request, user_account_instance):
+    def Branch_fetch(cls, user_account_instance):
         """
         Fetch commit data for branches associated with a user's account.
 
@@ -123,6 +129,10 @@ class DashBoardFetch(Pull_details):
 
         # appending the data in the list
         commit_data = []
+
+        current_branch_name = ""
+
+        commit_json = json.dumps([])
 
         for branch in branches:
             repository = Repository.objects.get(id=branch.repository_id)
@@ -141,17 +151,31 @@ class DashBoardFetch(Pull_details):
             # Retrieve commits for the branch
             commits = gitrepo.get_commits(sha=branch.name)
 
+            commit_info = {}
+
+            filter_timestamp = datetime.strptime(
+                str(branch.updated_at), "%Y-%m-%d %H:%M:%S.%f%z"
+            )
+
             for commit in commits:
-                commit_info = {
-                    "Branch": current_branch_name,
-                    "Commit_sha": commit.sha,
-                    "Author": commit.commit.author.name,
-                    "Date": str(commit.commit.author.date),
-                    "Message": commit.commit.message,
-                }
-                commit_data.append(commit_info)
+                commit_date = datetime.strptime(
+                    str(commit.commit.author.date), "%Y-%m-%d %H:%M:%S%z"
+                )
+
+                if commit_date > filter_timestamp:
+                    commit_info = {
+                        "Branch": current_branch_name,
+                        "Commit_sha": commit.sha,
+                        "Author": commit.commit.author.name,
+                        "Date": str(commit.commit.author.date),
+                        "Message": commit.commit.message,
+                    }
+                if commit.commit.author.date > filter_timestamp:
+                    commit_data.append(commit_info)
 
             commit_json = json.dumps(commit_data, indent=4)
+
+            logger.info(f"Commit data for {current_branch_name}: {commit_json}")
 
         return commit_json
 
@@ -173,9 +197,7 @@ class DashBoardFetch(Pull_details):
 
         username = user_account_instance.user_name
 
-        json_branch_data = cls.Branch_fetch(
-            request=request, user_account_instance=user_account_instance
-        )
+        json_branch_data = cls.Branch_fetch(user_account_instance=user_account_instance)
 
         json_pr_data = cls.PR_fetch(request=request, username=username)
 
