@@ -31,6 +31,7 @@ import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import { indexOf } from "lodash";
+import { HashLoader } from "react-spinners";
 
 type Props = {};
 
@@ -107,28 +108,66 @@ function stableSort<T>(
 const Settings = (props: Props) => {
   const navigate = useNavigate();
   const inputRef = React.useRef<HTMLInputElement | null>(null);
-  const [order] = React.useState<Order>("desc");
+  // const [order] = React.useState<Order>("desc");
+  const [responseData, setAPIResponse] = React.useState<any>(null);
   const [value, setValue] = React.useState<string | null>(null);
   const [selectedRepo, setSelectedRepo] = React.useState<string | null>(null);
   const [repoData, setRepoData] = React.useState<any>([]);
   let [targetBranch, setTargetBranch] = React.useState<any>([]);
+  let [loading, setLoading] = useState(true);
+  // let response: any = {};
 
   const fetchAPI = async () => {
-    const response = await GET("api/account/github/configurations/");
-    console.log("------>", response.data.repositories);
-    console.log("------>Commit: ", response.data.commit_interval);
-    console.log("------>Max Lines: ", response.data.max_lines);
-    configs[0].interval = response.data.commit_interval;
-    configs[0].maxLines = response.data.max_lines;
+    const apiResponse = await GET("api/account/github/configurations/");
+    console.log("------>API Response: ", apiResponse.data);
+    // setAPIResponse({ ...apiResponse.data });
+
+    console.log("------>Post Data: ", apiResponse.data);
+    console.log("------>", apiResponse.data.repositories);
+    console.log("------>Commit: ", apiResponse.data.commit_interval);
+    console.log("------>Max Lines: ", apiResponse.data.max_lines);
+    configs[0].interval = apiResponse.data.commit_interval;
+    configs[0].maxLines = apiResponse.data.max_lines;
     console.log("------>Configs: ", configs);
+    setLoading(false);
     await setRepoData(
-      response.data.repositories.map((repo: any) => ({
+      apiResponse.data.repositories.map((repo: any) => ({
         reponame: repo.name,
         id: repo.repo_id,
         branches: repo.target_branches,
       }))
     );
     console.log("------>Repo Data: ", repoData);
+  };
+
+  const postAPI = async () => {
+    setLoading(true);
+    const apiPostResponse = await GET("api/account/github/configurations/");
+    let tempResponse = apiPostResponse.data;
+    console.log("------>Post Data: ", tempResponse);
+    let repoJson = tempResponse.repositories;
+    tempResponse.commit_interval = Number(configs[0].interval);
+    tempResponse.max_lines = Number(configs[0].maxLines);
+    repoJson.map((repo: any) => {
+      if (repo.name === configs[0].repo) {
+        repo.target_branches.map((branch: any) => {
+          if (branch.name === configs[0].targetBranch) {
+            branch.is_selected = true;
+          } else {
+            branch.is_selected = false;
+          }
+        });
+      }
+    });
+    tempResponse.repositories = repoJson;
+    console.log("------>Temp Post Data: ", tempResponse);
+    let postResponse = await POST(
+      "api/account/github/configurations/",
+      tempResponse
+    );
+    setLoading(false);
+
+    console.log("------>Post Response: ", postResponse);
   };
 
   useEffect(() => {
@@ -177,7 +216,21 @@ const Settings = (props: Props) => {
           </Breadcrumbs>
         </Box>
       </Box>
+      <Box
+        sx={{
+          display: "contents",
+          flexDirection: "column",
+          alignItems: "center",
+          // flexGrow: 1,
+          height: 1,
+          position: "absolute",
+          width: 1,
+        }}
+      >
+        <HashLoader loading={loading} color="#0D6EFD" />
+      </Box>
       <Stack
+        visibility={loading ? "hidden" : "visible"}
         spacing={4}
         sx={{
           display: "flex",
@@ -240,7 +293,7 @@ const Settings = (props: Props) => {
                   </FormHelperText>
                 </Stack>
                 <Stack direction="column" flex="1">
-                  <FormLabel>Max Lines</FormLabel>
+                  <FormLabel>Minimum Lines</FormLabel>
                   <Input
                     type="number"
                     size="md"
@@ -257,7 +310,9 @@ const Settings = (props: Props) => {
                       },
                     }}
                   />
-                  <FormHelperText>Maximum Lines.</FormHelperText>
+                  <FormHelperText>
+                    Minimum Lines to trigger the Bot.
+                  </FormHelperText>
                 </Stack>
               </Stack>
               <Stack direction="column" flex="1" spacing={1}>
@@ -338,7 +393,7 @@ const Settings = (props: Props) => {
                   </FormHelperText>
                 </Stack>
                 <Stack direction="column" flex="1">
-                  <FormLabel>Max Lines</FormLabel>
+                  <FormLabel>Minimum Lines</FormLabel>
                   <Input
                     type="number"
                     size="md"
@@ -355,7 +410,9 @@ const Settings = (props: Props) => {
                       },
                     }}
                   />
-                  <FormHelperText>Maximum Lines.</FormHelperText>
+                  <FormHelperText>
+                    Minimum Lines to trigger the Bot
+                  </FormHelperText>
                 </Stack>
               </Stack>
               <Stack direction="column" flex="1" spacing={1}>
@@ -467,7 +524,10 @@ const Settings = (props: Props) => {
               <Button
                 size="sm"
                 variant="solid"
-                onClick={() => console.log("POST: ", configs)}
+                onClick={() => {
+                  console.log("POST: ", configs);
+                  postAPI();
+                }}
               >
                 Save
               </Button>
