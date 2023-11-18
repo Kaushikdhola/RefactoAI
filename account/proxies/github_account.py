@@ -1,4 +1,5 @@
 import copy
+
 from django.conf import settings
 from django.middleware.csrf import rotate_token
 
@@ -6,6 +7,7 @@ from account.models.account import UserAccount
 from account.models.branch import Branch
 from account.models.configuration import UserConfiguration
 from account.models.repository import Repository
+from account.models.source_configuration import SourceConfiguration
 from account.models.target_configuration import TargetConfiguration
 from core.utils.exceptions import ValidationError
 from core.utils.requests import fetch
@@ -153,21 +155,24 @@ class GitHubAccount(UserAccount):
         repository_details = []
         for repository in repositories:
             repo_id = repository.repo_id
-            commit_configurations = UserAccount.objects.filter(
+            # fetching source configurations
+            source_configurations = SourceConfiguration.objects.filter(
                 repository=repository, user=user_instance
             )
             branch_details = []
-            for commit_configuration in commit_configurations:
-                source_branch = commit_configuration.source_branch
+            for source_configuration in source_configurations:
+                source_branch = source_configuration.source_branch
                 branch_name = source_branch.name
-                commit_number = commit_configuration.current_commit
+                commit_number = source_configuration.current_commit
                 branch_details.append(
                     {"name": branch_name, "commit_number": commit_number}
                 )
+            # fetching target configurations
             target_configuration = TargetConfiguration.objects.get(
                 user=user_instance, repository=repository
             )
             target_branch = target_configuration.target_branch
+            # appending repo configs inside repository_details
             repository_details.append(
                 {
                     "repo_id": repo_id,
@@ -177,13 +182,13 @@ class GitHubAccount(UserAccount):
                     "target_branch": target_branch.name,
                 }
             )
+
         return {
             "user_id": user_id,
             "commit_interval": configuration_instance.commit_interval,
             "max_lines": configuration_instance.max_lines,
             "repositories": repository_details,
         }
-
 
     @classmethod
     def authorize(cls, oauth_code, request):
@@ -197,5 +202,5 @@ class GitHubAccount(UserAccount):
         access_token = cls.fetch_access_token(oauth_code=oauth_code)
         user_data = cls.fetch_user_data(access_token=access_token)
         cls.create_account(user_data=user_data, access_token=access_token)
-        # Repository.prepare_repositores(user=user_data, access_token=access_token)
+        Repository.prepare_repositories(user=user_data, token=access_token)
         cls.prepare_session(request=request, user_data=user_data)
