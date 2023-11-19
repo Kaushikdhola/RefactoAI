@@ -65,7 +65,7 @@ export const NavBar = () => {
                 textDecoration: "none",
               }}
             >
-              Re-Factor
+              Re-Facto
             </Typography>
 
             <Box

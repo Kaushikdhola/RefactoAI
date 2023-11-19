@@ -1,3 +1,4 @@
+
 import Box from "@mui/joy/Box";
 import List from "@mui/joy/List";
 import { useState } from "react";
@@ -21,13 +22,40 @@ import { closeSidebar } from "./utils";
 import { DELETE } from "../utils/axios";
 import { useAuth } from "../hooks/useAuth";
 import ColorSchemeToggle from "../components/ColorSchemeToggle";
+import { useEffect } from "react";
+import { POST } from "../utils/axios";
+import { useSelector } from "react-redux";
+import { AppState } from "../redux";
+
+
+
 
 export const Sidebar = () => {
   const { logout }: any = useAuth();
   const navigate = useNavigate();
+  const [data, setData] = useState()
+  const { user = {}, avatar_url = "" }: any = useSelector((state: AppState) => state.session);
   const [activeTab, setActiveTab] = useState<string>(
     window.location.pathname?.split("/")?.[2]
   );
+
+  useEffect(() => {
+
+    POST('api/account/dashboard/home/')
+
+    .then(function (response) {
+
+        console.log('Data:', response.data.data);
+        setData(response.data);
+      })
+
+      .catch(function (error) {
+
+        console.error('Error:', error);
+      });
+
+  }, []);
+
   const tabs = [
     {
       IconComponent: DashboardRoundedIcon,
@@ -116,7 +144,7 @@ export const Sidebar = () => {
         <IconButton variant="soft" color="primary" size="sm">
           <TerminalIcon />
         </IconButton>
-        <Typography level="title-lg">Re-Factor</Typography>
+        <Typography level="title-lg">Re-Facto</Typography>
         <ColorSchemeToggle sx={{ ml: "auto" }} />
       </Box>
       <Box
@@ -165,11 +193,11 @@ export const Sidebar = () => {
         <Avatar
           variant="outlined"
           size="sm"
-          src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
+          src={avatar_url || ""}
         />
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography level="title-sm">Hatim Patrawala</Typography>
-          <Typography level="body-xs">ht760280@dal.ca</Typography>
+          <Typography level="title-sm">{user?.user_name || ""}</Typography>
+          <Typography level="body-xs">{user?.email || ""}</Typography>
         </Box>
         <IconButton
           size="sm"

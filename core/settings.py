@@ -152,7 +152,10 @@ GITHUB_APP_SECRET = env("GITHUB_SECRET")
 # CORS settings
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = ("http://localhost:3000",)
+CORS_ORIGIN_WHITELIST = (
+    "http://localhost:3000",
+    "https://re-facto.netlify.app",
+)
 
 CORS_ALLOW_HEADERS = [
     "access-control-allow-headers",
