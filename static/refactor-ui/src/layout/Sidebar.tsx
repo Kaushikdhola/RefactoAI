@@ -48,17 +48,17 @@ export const Sidebar = () => {
     window.location.pathname?.split("/")?.[2]
   );
 
-  useEffect(() => {
-    POST("api/account/dashboard/home/")
-      .then(function (response) {
-        console.log("Data:", response.data.data);
-        setData(response.data);
-      })
+  // useEffect(() => {
+  //   POST("api/account/dashboard/home/")
+  //     .then(function (response) {
+  //       console.log("Data:", response.data.data);
+  //       setData(response.data);
+  //     })
 
-      .catch(function (error) {
-        console.error("Error:", error);
-      });
-  }, []);
+  //     .catch(function (error) {
+  //       console.error("Error:", error);
+  //     });
+  // }, []);
 
   const tabs = [
     {

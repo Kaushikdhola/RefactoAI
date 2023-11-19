@@ -52,9 +52,9 @@ export const Dashboard = () => {
       });
   };
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <CssVarsProvider disableTransitionOnChange>
@@ -86,30 +86,13 @@ export const Dashboard = () => {
               separator={<ChevronRightRoundedIcon fontSize="small" />}
               sx={{ pl: 0 }}
             >
-              {/* <Link
-                underline="none"
-                color="neutral"
-                onClick={() => navigate("/dashboard/home")}
-                aria-label="Home"
-              > */}
               <HomeRoundedIcon />
-              {/* </Link> */}
-              <Typography
-                // underline="hover"
-                color="neutral"
-                // href="/dashboard/home"
-                fontSize={12}
-                fontWeight={500}
-              >
+              <Typography color="neutral" fontSize={12} fontWeight={500}>
                 Dashboard
               </Typography>
-              {/* <Typography color="primary" fontWeight={500} fontSize={12}>
-                Branches
-              </Typography> */}
             </Breadcrumbs>
           </Box>
           <BranchTable />
-          {/* <BranchList /> */}
         </Box>
       </Box>
     </CssVarsProvider>

@@ -9,6 +9,7 @@ import {
   Grid,
   CardContent,
   Table,
+  colors,
 } from "@mui/joy";
 
 import React, { useEffect, useState } from "react";
@@ -18,7 +19,7 @@ import Divider from "@mui/joy/Divider";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
-
+import RadarIcon from "@mui/icons-material/Radar";
 import axios from "axios";
 import { POST, GET } from "../../utils/axios";
 
@@ -30,8 +31,9 @@ import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import { indexOf } from "lodash";
+import { indexOf, set } from "lodash";
 import { HashLoader } from "react-spinners";
+import { log } from "console";
 
 type Props = {};
 
@@ -63,6 +65,7 @@ let configs = [
     interval: "5",
     maxLines: "30",
     repo: "null",
+    config_trackedBranch: ["null"],
     targetBranch: "null",
   },
 ];
@@ -110,13 +113,18 @@ const Settings = (props: Props) => {
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   // const [order] = React.useState<Order>("desc");
   const [responseData, setAPIResponse] = React.useState<any>(null);
-  const [value, setValue] = React.useState<string | null>(null);
+  let [trgBranchValue, setTrgBranchValue] = React.useState<string | null>(null);
+  let [trkedBranchValue, setTrkedBranchValue] = React.useState<any>([]);
   const [selectedRepo, setSelectedRepo] = React.useState<string | null>(null);
   const [repoData, setRepoData] = React.useState<any>([]);
   let [targetBranch, setTargetBranch] = React.useState<any>([]);
+  let [trackedBranch, setTrackedBranch] = React.useState<any>([]);
   let [loading, setLoading] = useState(true);
-  // let response: any = {};
+  let [repoSelected, setRepoSelected] = useState(false);
 
+  /**
+   * Fetches data from the API and updates the component state.
+   */
   const fetchAPI = async () => {
     const apiResponse = await GET("api/account/github/configurations/");
     console.log("------>API Response: ", apiResponse.data);
@@ -134,12 +142,52 @@ const Settings = (props: Props) => {
       apiResponse.data.repositories.map((repo: any) => ({
         reponame: repo.name,
         id: repo.repo_id,
-        branches: repo.target_branches,
+        targetBranches: repo.target_branches,
+        trackedBranches: repo.source_branches,
       }))
     );
     console.log("------>Repo Data: ", repoData);
   };
 
+  const targetBranchOnchange = (newValue: any) => {
+    setTrgBranchValue(newValue);
+    configs[0].targetBranch = newValue as string;
+    console.log("Target Branch: " + configs[0].targetBranch);
+    console.log("Updated Branch Config: ", configs);
+  };
+  const trackedBranchOnchange = (newValue: any) => {
+    setTrkedBranchValue(newValue);
+    configs[0].config_trackedBranch = newValue as string[];
+    console.log("Updated Tracked Branch Config: ", configs);
+    console.log("Tracked Branch: " + newValue);
+  };
+  const repoOnchange = (newValue: any) => {
+    setSelectedRepo(newValue);
+    configs[0].repo = newValue as string;
+    console.log("Selected Repo: " + configs[0].repo);
+    console.log("Index Repo: " + indexOf(repoOptions, newValue));
+
+    if (indexOf(repoOptions, newValue) !== -1) {
+      setRepoSelected(true);
+      setTargetBranch(repoData[indexOf(repoOptions, newValue)].targetBranches);
+      setTrackedBranch(
+        repoData[indexOf(repoOptions, newValue)].trackedBranches
+      );
+      console.log(repoData[indexOf(repoOptions, newValue)].targetBranches);
+    } else {
+      setRepoSelected(false);
+      setTrackedBranch([]);
+      setTargetBranch([]);
+    }
+
+    setTrkedBranchValue([]); // Clear the value of trkedBranchAutocomplete
+    setTrgBranchValue(null); // Clear the value of trgBranchAutocomplete
+  };
+
+  /**
+   * Sends a POST request to the API to update the GitHub configurations.
+   * @returns {Promise<void>} A promise that resolves when the request is complete.
+   */
   const postAPI = async () => {
     setLoading(true);
     const apiPostResponse = await GET("api/account/github/configurations/");
@@ -159,6 +207,18 @@ const Settings = (props: Props) => {
         });
       }
     });
+    repoJson.map((repo: any) => {
+      if (repo.name === configs[0].repo) {
+        repo.source_branches.map((branch: any) => {
+          if (configs[0].config_trackedBranch.includes(branch.name)) {
+            branch.is_selected = true;
+          } else {
+            branch.is_selected = false;
+          }
+        });
+      }
+    });
+
     tempResponse.repositories = repoJson;
     console.log("------>Temp Post Data: ", tempResponse);
     let postResponse = await POST(
@@ -174,6 +234,10 @@ const Settings = (props: Props) => {
     fetchAPI();
   }, []);
 
+  /**
+   * Array of repository options.
+   * @type {any[]}
+   */
   let repoOptions: any =
     repoData.length > 0 ? repoData?.map((option: any) => option.reponame) : [];
   return (
@@ -311,50 +375,56 @@ const Settings = (props: Props) => {
                     }}
                   />
                   <FormHelperText>
-                    Minimum Lines to trigger the Bot.
+                    Minimum Changed Lines to trigger the Bot.
                   </FormHelperText>
                 </Stack>
               </Stack>
               <Stack direction="column" flex="1" spacing={1}>
                 <FormLabel>Select Repository</FormLabel>
                 <Autocomplete
+                  id="repoAutocomplete"
+                  // color="danger"
                   size="md"
                   placeholder="Select Repo"
                   openOnFocus={true}
                   options={repoOptions}
                   value={selectedRepo}
                   onChange={(event, newValue) => {
-                    setSelectedRepo(newValue);
-                    configs[0].repo = newValue as string;
-                    console.log("Selected Repo: " + configs[0].repo);
-                    console.log(
-                      "Index Repo: " + indexOf(repoOptions, newValue)
-                    );
-                    setTargetBranch(
-                      repoData[indexOf(repoOptions, newValue)].branches
-                    );
-                    console.log(
-                      repoData[indexOf(repoOptions, newValue)].branches
-                    );
-                    setValue(null);
+                    repoOnchange(newValue);
                   }}
                   startDecorator={<KeyboardDoubleArrowRightIcon />}
                 />
               </Stack>
               <Stack direction="row" spacing={2}>
                 <FormControl sx={{ flexGrow: 1 }}>
-                  <FormLabel>Target Branch</FormLabel>
+                  <FormLabel>Select Branch to Track</FormLabel>
                   <Autocomplete
+                    id="trkedBranchAutocomplete"
+                    multiple
                     size="md"
-                    placeholder="Target Branch"
+                    placeholder="Select the branches to track for refactoring."
+                    openOnFocus={true}
+                    options={trackedBranch.map((e: any) => e.name)}
+                    value={repoSelected ? trkedBranchValue : []}
+                    onChange={(event, newValue) => {
+                      trackedBranchOnchange(newValue);
+                    }}
+                    startDecorator={<RadarIcon />}
+                  />
+                </FormControl>
+              </Stack>
+              <Stack direction="row" spacing={2}>
+                <FormControl sx={{ flexGrow: 1 }}>
+                  <FormLabel>Select your Target Branch</FormLabel>
+                  <Autocomplete
+                    id="trgBranchAutocomplete"
+                    size="md"
+                    placeholder="Select Target Branch to merge to."
                     openOnFocus={true}
                     options={targetBranch.map((e: any) => e.name)}
-                    value={value}
+                    value={repoSelected ? trgBranchValue : null}
                     onChange={(event, newValue) => {
-                      setValue(newValue);
-                      configs[0].targetBranch = newValue as string;
-                      console.log("Target Branch: " + configs[0].targetBranch);
-                      console.log("Updated Branch Config: ", configs);
+                      targetBranchOnchange(newValue);
                     }}
                     startDecorator={<KeyboardArrowRightIcon />}
                   />
@@ -411,50 +481,54 @@ const Settings = (props: Props) => {
                     }}
                   />
                   <FormHelperText>
-                    Minimum Lines to trigger the Bot
+                    Minimum Changed Lines to trigger the Bot.
                   </FormHelperText>
                 </Stack>
               </Stack>
               <Stack direction="column" flex="1" spacing={1}>
                 <FormLabel>Select Repository</FormLabel>
                 <Autocomplete
+                  id="repoAutocomplete"
                   size="md"
                   placeholder="Select Repo"
                   openOnFocus={true}
                   options={repoOptions}
                   value={selectedRepo}
                   onChange={(event, newValue) => {
-                    setSelectedRepo(newValue);
-                    configs[0].repo = newValue as string;
-                    console.log("Selected Repo: " + configs[0].repo);
-                    console.log(
-                      "Index Repo: " + indexOf(repoOptions, newValue)
-                    );
-                    setTargetBranch(
-                      repoData[indexOf(repoOptions, newValue)].branches
-                    );
-                    console.log(
-                      repoData[indexOf(repoOptions, newValue)].branches
-                    );
-                    setValue(null);
+                    repoOnchange(newValue);
                   }}
                   startDecorator={<KeyboardDoubleArrowRightIcon />}
                 />
               </Stack>
               <Stack direction="row" spacing={2}>
                 <FormControl sx={{ flexGrow: 1 }}>
-                  <FormLabel>Target Branch</FormLabel>
+                  <FormLabel>Select Branch to Track</FormLabel>
                   <Autocomplete
+                    multiple
                     size="md"
-                    placeholder="Target Branch"
+                    placeholder="Select the branches to track for refactoring."
+                    openOnFocus={true}
+                    options={trackedBranch.map((e: any) => e.name)}
+                    value={repoSelected ? trkedBranchValue : []}
+                    onChange={(event, newValue) => {
+                      trackedBranchOnchange(newValue);
+                    }}
+                    startDecorator={<RadarIcon />}
+                  />
+                </FormControl>
+              </Stack>
+              <Stack direction="row" spacing={2}>
+                <FormControl sx={{ flexGrow: 1 }}>
+                  <FormLabel>Select your Target Branch</FormLabel>
+                  <Autocomplete
+                    id="trgBranchAutocomplete"
+                    size="md"
+                    placeholder="Select Target Branch to merge to."
                     openOnFocus={true}
                     options={targetBranch.map((e: any) => e.name)}
-                    value={value}
+                    value={repoSelected ? trgBranchValue : null}
                     onChange={(event, newValue) => {
-                      setValue(newValue);
-                      configs[0].targetBranch = newValue as string;
-                      console.log("Target Branch: " + configs[0].targetBranch);
-                      console.log("Updated Branch Config: ", configs);
+                      targetBranchOnchange(newValue);
                     }}
                     startDecorator={<KeyboardArrowRightIcon />}
                   />
@@ -518,13 +592,48 @@ const Settings = (props: Props) => {
           </Card> */}
           <CardOverflow sx={{ borderTop: "1px solid", borderColor: "divider" }}>
             <CardActions sx={{ alignSelf: "flex-end", pt: 2 }}>
-              <Button size="sm" variant="outlined" color="neutral">
+              <Button
+                size="sm"
+                variant="outlined"
+                color="neutral"
+                onClick={() => {
+                  setRepoSelected(false);
+                  setSelectedRepo(null);
+                  setTrgBranchValue(null);
+                  setTrkedBranchValue([]);
+                  configs[0].repo = "null";
+                  configs[0].config_trackedBranch = ["null"];
+                  configs[0].targetBranch = "null";
+                }}
+              >
                 Discard
               </Button>
               <Button
                 size="sm"
                 variant="solid"
                 onClick={() => {
+                  console.log(
+                    "Is Tracking Branch Empty: ",
+                    configs[0].config_trackedBranch
+                  );
+
+                  if (
+                    configs[0].repo === "null" ||
+                    configs[0].config_trackedBranch[0] === undefined ||
+                    configs[0].targetBranch === null ||
+                    configs[0].targetBranch === "null"
+                  ) {
+                    // Change the color of the repoAutocomplete element to danger
+                    // const repoAutocomplete =
+                    //   document.getElementById("repoAutocomplete");
+                    // if (repoAutocomplete) {
+                    //   repoAutocomplete.style.color = "red";
+                    //   repoAutocomplete.foc
+                    // }
+                    alert("Please select a repository");
+
+                    return;
+                  }
                   console.log("POST: ", configs);
                   postAPI();
                 }}
