@@ -14,5 +14,5 @@ def get_app_patterns():
 
 urlpatterns = [
     path("api/", include(get_app_patterns())),
-    path("api-docs/", include_docs_urls(title="Re-Factor APIs")),
+    path("api-docs/", include_docs_urls(title="Re-Facto APIs")),
 ]

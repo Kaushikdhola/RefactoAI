@@ -1,23 +1,29 @@
 import { createContext, useContext } from "react";
 
 import { useLocalStorage } from "./useLocalStorage";
+import { setSessionState } from "../redux/actions/SessionActions";
+import { useDispatch } from "react-redux";
+import { Dispatch } from "@reduxjs/toolkit";
 
 const AuthContext = createContext<any>(null);
 
 export const useAuth = () => {
   const [session, setSession] = useLocalStorage("session", null);
+  const dispatch: Dispatch<any> = useDispatch();
 
   return {
     session: session,
     login(data: any) {
       return new Promise((res: any) => {
         setSession(data);
+        dispatch(setSessionState(data))
         res(data);
       });
     },
     logout() {
       return new Promise((res: any) => {
         setSession(null);
+        dispatch(setSessionState(null))
         res();
       });
     },

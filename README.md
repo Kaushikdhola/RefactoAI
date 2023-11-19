@@ -1,6 +1,6 @@
-# Re-Factor: Code More, Worry Less
+# Re-Facto: Code More, Worry Less
 
-Re-Factor is a comprehensive Django and React application designed to streamline your coding process. With a Django backend and a React frontend, Re-Factor provides a seamless user experience, allowing you to focus on what matters most: your code.
+Re-Facto is a comprehensive Django and React application designed to streamline your coding process. With a Django backend and a React frontend, Re-Facto provides a seamless user experience, allowing you to focus on what matters most: your code.
 
 ## Features
 
