@@ -13,9 +13,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { prepareQueryParamsFromObject } from "../../utils/helpers";
 import { POST } from "../../utils/axios";
 import { useAuth } from "../../hooks/useAuth";
-import "./../../global.css";
 import HeroImage from "../../layout/Hero Image";
-import { NavBar } from "../../layout/HomeNavBar";
+import HeaderSection from "../../layout/HNavBar";
+// import { NavBar } from "../../layout/HomeNavBar";
 
 const HERO_STYLES = {
   BG_WRAPPER: "hero-fixer",
@@ -33,7 +33,7 @@ export const HomePage = () => {
   const { state } = useLocation();
   const params = {
     client_id: process.env.REACT_APP_GITHUB_CLIENT_ID,
-    scope: "user"
+    scope: "repo",
   };
 
   useEffect(() => {
@@ -67,7 +67,8 @@ export const HomePage = () => {
 
   return (
     <>
-      <NavBar />
+      {/* <NavBar /> */}
+      <HeaderSection />
       <Container
         sx={(theme) => ({
           position: "relative",
