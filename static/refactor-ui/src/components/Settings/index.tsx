@@ -62,8 +62,8 @@ const rows = [
 
 let configs = [
   {
-    interval: "5",
-    maxLines: "30",
+    interval: "null",
+    maxLines: "null",
     repo: "null",
     config_trackedBranch: ["null"],
     targetBranch: "null",
@@ -121,6 +121,9 @@ const Settings = (props: Props) => {
   let [trackedBranch, setTrackedBranch] = React.useState<any>([]);
   let [loading, setLoading] = useState(true);
   let [repoSelected, setRepoSelected] = useState(false);
+  let [commit_interval, setCommitInterval] = useState("null");
+  let [minLines, setMinLines] = useState("null");
+  let [isFetched, setIsFetched] = useState(false);
 
   /**
    * Fetches data from the API and updates the component state.
@@ -136,6 +139,8 @@ const Settings = (props: Props) => {
     console.log("------>Max Lines: ", apiResponse.data.max_lines);
     configs[0].interval = apiResponse.data.commit_interval;
     configs[0].maxLines = apiResponse.data.max_lines;
+    setCommitInterval(apiResponse.data.commit_interval);
+    setMinLines(apiResponse.data.max_lines);
     console.log("------>Configs: ", configs);
     setLoading(false);
     await setRepoData(
@@ -146,6 +151,7 @@ const Settings = (props: Props) => {
         trackedBranches: repo.source_branches,
       }))
     );
+    setIsFetched(true);
     console.log("------>Repo Data: ", repoData);
   };
 
@@ -194,8 +200,8 @@ const Settings = (props: Props) => {
     let tempResponse = apiPostResponse.data;
     console.log("------>Post Data: ", tempResponse);
     let repoJson = tempResponse.repositories;
-    tempResponse.commit_interval = Number(configs[0].interval);
-    tempResponse.max_lines = Number(configs[0].maxLines);
+    tempResponse.commit_interval = Number(commit_interval);
+    tempResponse.max_lines = Number(minLines);
     repoJson.map((repo: any) => {
       if (repo.name === configs[0].repo) {
         repo.target_branches.map((branch: any) => {
@@ -339,10 +345,10 @@ const Settings = (props: Props) => {
                   <Input
                     size="md"
                     type="number"
-                    defaultValue={configs[0].interval}
+                    value={commit_interval}
                     onChange={(e) => {
-                      configs[0].interval = e.target.value;
-                      console.log("Commit Interval: " + configs[0].interval);
+                      setCommitInterval(e.target.value);
+                      console.log("Commit Interval: " + commit_interval);
                     }}
                     slotProps={{
                       input: {
@@ -361,10 +367,12 @@ const Settings = (props: Props) => {
                   <Input
                     type="number"
                     size="md"
-                    defaultValue={configs[0].maxLines}
+                    value={minLines}
                     onChange={(e) => {
-                      configs[0].maxLines = e.target.value;
-                      console.log("Max Lines: " + configs[0].maxLines);
+                      console.log("Before Min Lines: " + e.target.value);
+                      // minLines = e.target.value;
+                      setMinLines(e.target.value);
+                      console.log("Min Lines: " + minLines);
                     }}
                     slotProps={{
                       input: {
@@ -445,10 +453,10 @@ const Settings = (props: Props) => {
                   <Input
                     size="md"
                     type="number"
-                    defaultValue={configs[0].interval}
+                    value={commit_interval}
                     onChange={(e) => {
-                      configs[0].interval = e.target.value;
-                      console.log("Commit Interval: " + configs[0].interval);
+                      setCommitInterval(e.target.value);
+                      console.log("Commit Interval: " + commit_interval);
                     }}
                     slotProps={{
                       input: {
@@ -467,10 +475,10 @@ const Settings = (props: Props) => {
                   <Input
                     type="number"
                     size="md"
-                    defaultValue={configs[0].maxLines}
+                    value={minLines}
                     onChange={(e) => {
-                      configs[0].maxLines = e.target.value;
-                      console.log("Max Lines: " + configs[0].maxLines);
+                      setMinLines(e.target.value);
+                      console.log("Min Lines: " + minLines);
                     }}
                     slotProps={{
                       input: {

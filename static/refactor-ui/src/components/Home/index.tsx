@@ -114,7 +114,7 @@ export const HomePage = () => {
             fontWeight="xl"
             fontSize="clamp(1.875rem, 1.3636rem + 2.1818vw, 3rem)"
           >
-            Re-Factor
+            Re-Facto
           </Typography>
           <Typography fontSize="lg" textColor="text.secondary" lineHeight="lg">
             A refactoring bot made using the power of Artificial Intelligence.

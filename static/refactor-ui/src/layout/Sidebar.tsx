@@ -5,6 +5,7 @@ import Divider from "@mui/joy/Divider";
 import ListItem from "@mui/joy/ListItem";
 import { useEffect, useState } from "react";
 import Typography from "@mui/joy/Typography";
+import Avatar from "@mui/joy/Avatar";
 import IconButton from "@mui/joy/IconButton";
 import logo from "../assets/images/logo.png";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,8 @@ import { closeSidebar } from "./utils";
 import { DELETE } from "../utils/axios";
 import { useAuth } from "../hooks/useAuth";
 import ColorSchemeToggle from "../components/ColorSchemeToggle";
+import { useSelector } from "react-redux";
+import { AppState } from "../redux";
 import { POST, GET } from "../utils/axios";
 
 export const Sidebar = () => {
@@ -29,6 +32,9 @@ export const Sidebar = () => {
   const [data, setData] = useState();
   const { mode } = useColorScheme();
   const [userName, setUserName] = useState<string>("");
+  const { user = {}, avatar_url = "" }: any = useSelector(
+    (state: AppState) => state.session
+  );
 
   const fetchAPI = async () => {
     const response = await GET("api/account/github/configurations/");
@@ -142,7 +148,6 @@ export const Sidebar = () => {
         />
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           <IconButton variant="soft" color="primary" size="sm">
-            {/* <TerminalIcon /> */}
             <img
               onClick={() => navigate("/")}
               style={{
@@ -206,17 +211,15 @@ export const Sidebar = () => {
         </Box>
         <Divider />
         <Box sx={{ display: "flex", gap: 1, alignItems: "center", pl: 1 }}>
-          {/* <Avatar
-            variant="outlined"
-            size="sm"
-            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
-          /> */}
-          <PersonIcon />
+          <Avatar variant="outlined" size="sm" src={avatar_url || ""} />
+          {/* <PersonIcon /> */}
           <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Typography level="title-sm" pl={1}>
+            {/* <Typography level="title-sm" pl={1}>
               {userName}
             </Typography>
-            {/* <Typography level="body-xs">ht760280@dal.ca</Typography> */}
+            <Typography level="body-xs">ht760280@dal.ca</Typography> */}
+            <Typography level="title-sm">{user?.user_name || ""}</Typography>
+            <Typography level="body-xs">{user?.email || ""}</Typography>
           </Box>
           <IconButton
             size="sm"

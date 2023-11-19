@@ -12,7 +12,7 @@ from service.models.base.event import BaseEvent
 class GithubEvent(BaseEvent):
     """Manages GitHub's events"""
 
-    ACCEPTED_EVENTS = ["push"]
+    ACCEPTED_EVENTS = ["push", "ping"]
 
     def __init__(self, request: HttpRequest) -> None:
         super().__init__(request)
@@ -51,7 +51,8 @@ class GithubEvent(BaseEvent):
 
         self.validate_token()
 
-    def listen(self) -> None:
+    def listen(self):
         """Listener for GitHub's events"""
         self.validate_event()
         self.validate_account()
+        return self

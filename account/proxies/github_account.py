@@ -9,6 +9,7 @@ from account.models.configuration import UserConfiguration
 from account.models.repository import Repository
 from account.models.source_configuration import SourceConfiguration
 from account.models.target_configuration import TargetConfiguration
+from account.serializers.serializer import UserAccountSerializer
 from core.utils.exceptions import ValidationError
 from core.utils.requests import fetch
 
@@ -120,8 +121,11 @@ class GitHubAccount(UserAccount):
         user_id = user_data.get("id")
         user_instance = UserAccount.objects.get(account_id=user_id)
         rotate_token(request=request)
+
         request.session["isLoggedIn"] = True
         request.session["user_id"] = user_id
+        request.session["user"] = UserAccountSerializer(user_instance).data
+        request.session["avatar_url"] = user_data.get("avatar_url")
         request.session.save()
         request.session.set_expiry(settings.SESSION_EXPIRY)
 

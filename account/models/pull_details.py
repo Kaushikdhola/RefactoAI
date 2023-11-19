@@ -18,3 +18,24 @@ class Pull_details(BaseModel):
 
     class Meta:
         db_table = "Pull_details"
+
+    @classmethod
+    def save_pull_details(cls, data_dict):
+        try:
+            author_user_name = data_dict.get("author")
+            author = UserAccount.objects.get(user_name=author_user_name)
+
+        except UserAccount.DoesNotExist:
+            raise ValueError(
+                f"UserAccount with user_name {author_user_name} does not exist."
+            )
+
+        instance = cls(
+            pull_id=data_dict.get("pull_id"),
+            Repo_name=data_dict.get("Repo_name"),
+            author=author,
+            title=data_dict.get("title"),
+        )
+        instance.save()
+
+        return instance
