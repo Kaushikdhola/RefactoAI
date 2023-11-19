@@ -53,6 +53,7 @@ app-build:
     - cat ${FRONTEND_ENVIRONMENT} >> .env
     - yarn install
   script:
+    - unset CI
     - yarn build
   tags:
     - code-build
