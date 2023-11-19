@@ -65,6 +65,7 @@ class GithubBot:
             Boolean indicating if configurations are valid.
         """
         branch_name: str = self.event.payload.get("ref").split("/")[-1]
+        print("branch name: ", branch_name, flush=True)
         return not branch_name.__contains__("refactored-by-re-facto")
 
     def create_new_branch(self) -> None:
