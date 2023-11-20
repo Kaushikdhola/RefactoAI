@@ -10,7 +10,7 @@ from service.models.github.event import GithubEvent
 from service.models.github.refactor import GithubRefactorService
 from account.models.pull_details import Pull_details
 from account.proxies.github_account import GitHubAccount
-
+from account.models.source_configuration import SourceConfiguration
 
 class GithubBot:
     """Class for managing operations on GitHub repos"""
@@ -29,15 +29,6 @@ class GithubBot:
         self.event: Optional[GithubEvent] = None
         self.request: Optional[HttpRequest] = request
         self.is_event: bool = is_event
-        self.prepare_bot_instance()
-
-    def prepare_bot_instance(self) -> None:
-        """Prepares account and repositories."""
-        if self.request and self.is_event:
-            self.process_event()
-
-        if self.event and self.event.account:
-            self.prepare_github_account()
 
     def prepare_github_account(self) -> None:
         """Prepares Github account."""
@@ -69,16 +60,19 @@ class GithubBot:
         branch_name: str = self.event.payload.get("ref").split("/")[-1]
         if not branch_name.__contains__("refactored-by-re-facto"):
             user_config = GitHubAccount.fetch_configurations(self.event.account.account_id)
-            repo_details = self.find_repo_details(user_config['repositories'], self.repo.full_name.split("/")[1])
+            repo_details = self.get_repo_details(user_config['repositories'], self.repo.full_name.split("/")[1])
 
             if repo_details:
                 self.target_branch = repo_details.get("target_branch")
                 branch_details = self.get_branch_details(repo_details.get("source_branches"), branch_name)
                 
                 if branch_details:
-                    self.max_lines = user_config["max_lines"]
                     commit_number = branch_details["commit_number"]
-                    return True
+                    SourceConfiguration.update_current_commit(self.event.account.account_id, repo_details["repo_id"], branch_details["name"])
+                    
+                    if commit_number == 1:
+                        self.max_lines = user_config["max_lines"]
+                        return True
         return False
 
     def get_repo_details(self, repo_list, name) -> dict:

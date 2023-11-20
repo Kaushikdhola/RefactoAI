@@ -201,7 +201,6 @@ class GithubRefactorService:
 
                     """,
                 }
-
                 prompt_messages = [explain_system_message, explain_user_message]
                 llm_response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
