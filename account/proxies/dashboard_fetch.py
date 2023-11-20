@@ -1,16 +1,12 @@
 import json
 import logging
-from datetime import datetime
 
 import requests
 from django.conf import settings
 from django.core.serializers import serialize
-from github import Github
 
 from account.models.account import UserAccount
-from account.models.branch import Branch
 from account.models.pull_details import Pull_details
-from account.models.repository import Repository
 
 logger = logging.getLogger("dashboard_fetch")
 
@@ -67,15 +63,10 @@ class DashBoardFetch(Pull_details):
         Returns:
             str: JSON-formatted string containing pull details.
         """
-        try:
-            pull_details_instance = Pull_details.objects.filter(author_id=username)
-        except:
-            pass
 
+        pull_details_instance = Pull_details.objects.filter(author_id=username)
         serialized_data = serialize("json", pull_details_instance)
-
         deserialized_data = json.loads(serialized_data)
-
         extracted_data = []
         for data in deserialized_data:
             fields = {
@@ -85,12 +76,8 @@ class DashBoardFetch(Pull_details):
                 "title": data["fields"]["title"],
             }
             extracted_data.append(fields)
-
         data = cls.get_pull_requests_status(extracted_data)
-
-        json_data = json.dumps(data, indent=4)
-
-        return json_data
+        return data
 
     @classmethod
     def get_pull_request_commits(cls, repo, pull_request_number, access_token):
@@ -166,7 +153,7 @@ class DashBoardFetch(Pull_details):
                 pull_request.Repo_name, pull_request.pull_id, account.access_token
             )
         ]
-        return json.dumps(all_commits)
+        return all_commits
 
     @classmethod
     def fetch_dashboard_data(cls, request):

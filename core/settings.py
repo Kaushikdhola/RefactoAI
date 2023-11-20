@@ -169,7 +169,10 @@ CORS_ALLOW_HEADERS = [
 SESSION_CACHE_ALIAS = "default"
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_AGE = 60 * 60 * 7  # keep session valid for 7 hours
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+if APP_ENV == "PRODUCTION":
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
 SESSION_EXPIRY = 60 * 60 * 7
 
