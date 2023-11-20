@@ -12,7 +12,7 @@ from service.models.base.event import BaseEvent
 class GithubEvent(BaseEvent):
     """Manages GitHub's events"""
 
-    ACCEPTED_EVENTS = ["push", "ping"]
+    ACCEPTED_EVENTS = ["push", "ping", "installation", "github_app_authorization"]
 
     def __init__(self, request: HttpRequest) -> None:
         super().__init__(request)
@@ -21,6 +21,7 @@ class GithubEvent(BaseEvent):
 
     def validate_event(self) -> None:
         """Validates if event is of push type"""
+        print(self.type)
         if self.type not in self.ACCEPTED_EVENTS:
             raise ValidationError("Event type not supported!!")
 
