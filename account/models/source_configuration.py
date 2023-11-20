@@ -11,7 +11,7 @@ class SourceConfiguration(BaseModel):
     """Model/Manager for Source_Branch Configurations"""
 
     source_branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    current_commit = models.IntegerField(default=0)
+    current_commit = models.IntegerField(default=1)
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
 
