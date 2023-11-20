@@ -168,6 +168,61 @@ class DashBoardFetch(Pull_details):
         }
 
     @classmethod
+    def get_pull_request_commits(cls, repo, pull_request_number, access_token):
+        """
+        Get the commits for a specific pull request.
+
+        Args:
+            repo (str): The repository URL.
+            pull_request_number (str): The number of the pull request.
+            access_token (str): The GitHub API access token.
+
+        Returns:
+            list or None: List of commits if successful, None otherwise.
+        """
+
+        base_url = f"{repo}/pulls/{pull_request_number}/commits"
+        headers = {"Authorization": f"token {access_token}"}
+
+        response = requests.get(base_url, headers=headers)
+
+        if response.status_code == 200:
+            commits = response.json()
+            return commits
+        else:
+            return None
+
+    @classmethod
+    def extract_commit_details(cls, commit, user_account_instance):
+        """
+        Extract relevant details from a commit.
+
+        Args:
+            commit (dict): Commit information from the GitHub API.
+            user_account_instance: Instance of UserAccount model.
+
+        Returns:
+            dict: Extracted commit details.
+        """
+
+        username = user_account_instance.user_name
+        sha = commit.get("sha")
+        message = commit.get("commit").get("message")
+        author_name = commit.get("commit").get("author").get("name")
+        date = commit.get("commit").get("author").get("date")
+
+        branch_url = commit.get("url")
+        branch_name = username + "/" + branch_url.split("/")[5]
+
+        return {
+            "sha": sha,
+            "message": message,
+            "author_name": author_name,
+            "date": date,
+            "Repo_name": branch_name,
+        }
+
+    @classmethod
     def Branch_fetch(cls, user_account_instance):
         """
         Fetch commit data for branches associated with a user's account.
