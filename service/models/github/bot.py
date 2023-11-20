@@ -4,10 +4,10 @@ from typing import Dict, Optional
 from django.http import HttpRequest
 from github import Branch, Github, InputGitTreeElement
 
+from account.models.pull_details import Pull_details
 from core.utils.requests import fetch
 from service.models.github.event import GithubEvent
 from service.models.github.refactor import GithubRefactorService
-from account.models.pull_details import Pull_details
 
 
 class GithubBot:
@@ -65,6 +65,7 @@ class GithubBot:
             Boolean indicating if configurations are valid.
         """
         branch_name: str = self.event.payload.get("ref").split("/")[-1]
+        print("branch name: ", branch_name, flush=True)
         return not branch_name.__contains__("refactored-by-re-facto")
 
     def create_new_branch(self) -> None:
@@ -123,10 +124,12 @@ class GithubBot:
         pull_id = pull_data.number
         author_id = self.repo.full_name.split("/")[0]
         repo_name = f"https://api.github.com/repos/{self.repo.full_name}"
-        pull_details = {'pull_id': pull_id,
-                        'Repo_name': repo_name,
-                        'author': author_id,
-                        'title': title}
+        pull_details = {
+            "pull_id": pull_id,
+            "Repo_name": repo_name,
+            "author": author_id,
+            "title": title,
+        }
         Pull_details.save_pull_details(data_dict=pull_details)
 
     def refactor(self) -> None:
