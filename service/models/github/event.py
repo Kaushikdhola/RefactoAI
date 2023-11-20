@@ -21,7 +21,6 @@ class GithubEvent(BaseEvent):
 
     def validate_event(self) -> None:
         """Validates if event is of push type"""
-        print(self.type)
         if self.type not in self.ACCEPTED_EVENTS:
             raise ValidationError("Event type not supported!!")
 
