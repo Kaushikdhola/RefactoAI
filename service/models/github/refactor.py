@@ -63,7 +63,7 @@ class GithubRefactorService:
         """
         return (file_info["status"] in ["modified", "added"]) and file_info[
             "additions"
-        ] > 2
+        ] > self.max_lines
 
     def get_file_blocks(self, file_info):
         """
@@ -203,10 +203,6 @@ class GithubRefactorService:
                 }
 
                 prompt_messages = [explain_system_message, explain_user_message]
-                print(
-                    "Please wait for llm repsonse the code is being refactored",
-                    flush=True,
-                )
                 llm_response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=prompt_messages,
@@ -220,15 +216,12 @@ class GithubRefactorService:
                     for filename, code in file_change.items():
                         refactored_file_change = {filename: code[0]}
                         refactored_file_changes.append(refactored_file_change)
-                    print(
-                        "Response incomplete from LLM so no changes made to file",
-                        flush=True,
-                    )
             return refactored_file_changes
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             return []
 
-    def refactor(self):
+    def refactor(self, max_lines):
+        self.max_lines = max_lines
         self.file_changes = self.get_file_changes()
         return self.refactor_change_code() if self.file_changes else False

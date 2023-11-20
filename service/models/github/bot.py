@@ -8,6 +8,8 @@ from account.models.pull_details import Pull_details
 from core.utils.requests import fetch
 from service.models.github.event import GithubEvent
 from service.models.github.refactor import GithubRefactorService
+from account.models.pull_details import Pull_details
+from account.proxies.github_account import GitHubAccount
 
 
 class GithubBot:
@@ -65,8 +67,51 @@ class GithubBot:
             Boolean indicating if configurations are valid.
         """
         branch_name: str = self.event.payload.get("ref").split("/")[-1]
-        print("branch name: ", branch_name, flush=True)
-        return not branch_name.__contains__("refactored-by-re-facto")
+        if not branch_name.__contains__("refactored-by-re-facto"):
+            user_config = GitHubAccount.fetch_configurations(self.event.account.account_id)
+            repo_details = self.find_repo_details(user_config['repositories'], self.repo.full_name.split("/")[1])
+
+            if repo_details:
+                self.target_branch = repo_details.get("target_branch")
+                branch_details = self.get_branch_details(repo_details.get("source_branches"), branch_name)
+                
+                if branch_details:
+                    self.max_lines = user_config["max_lines"]
+                    commit_number = branch_details["commit_number"]
+                    return True
+        return False
+
+    def get_repo_details(self, repo_list, name) -> dict:
+        """
+        Retrieve repository details by name.
+        
+        Args:
+            repo_list: List of repo details dictionaries.
+            name: Name of the repository.
+        
+        Returns:
+            Dictionary containing repository details.
+        """
+        for repo in repo_list:
+            if repo['name'] == name:
+                return repo
+        return None
+    
+    def get_branch_details(self, branch_list, name) -> dict:
+        """
+        Retrieve branch details by name.
+        
+        Args:
+            branch_list: List of branch details dictionaries.
+            name: Name of the branch.
+        
+        Returns:
+            Dictionary containing branch details.
+        """
+        for branch in branch_list:
+            if branch.get('name') == name:
+                return branch
+        return None
 
     def create_new_branch(self) -> None:
         """Creates new branch."""
@@ -116,38 +161,35 @@ class GithubBot:
             return
         branch_name = self.refactored_branch.ref.split("/")[-1]
         base_branch_name = self.event.payload.get("ref").split("/")[-1]
+        target_branch_name = self.target_branch if self.target_branch != "" else base_branch_name
         title = f"Refactor {base_branch_name} branch using re-facto plugin"
         body = "This pull request is raised automatically using re-facto plugin"
         pull_data = self.repo.create_pull(
-            title=title, body=body, base=base_branch_name, head=branch_name
+            title=title, body=body, base=target_branch_name, head=branch_name
         )
-        pull_id = pull_data.number
-        author_id = self.repo.full_name.split("/")[0]
-        repo_name = f"https://api.github.com/repos/{self.repo.full_name}"
-        pull_details = {
-            "pull_id": pull_id,
-            "Repo_name": repo_name,
-            "author": author_id,
-            "title": title,
-        }
+        pull_details = {'pull_id': pull_data.number,
+                        'Repo_name': f"https://api.github.com/repos/{self.repo.full_name}",
+                        'author': self.repo.full_name.split("/")[0],
+                        'title': title}
         Pull_details.save_pull_details(data_dict=pull_details)
 
     def refactor(self) -> None:
         """Refactors the given commit."""
-        if not self.validate_configurations():
-            return
-
         owner = self.event.payload.get("repository", {}).get("owner", {}).get("login")
         repo_name = self.event.payload.get("repository", {}).get("name")
         commit_id = self.event.payload.get("head_commit", {}).get("id")
+        self.repo = self.github.get_user().get_repo(repo_name)
+        if not self.validate_configurations():
+            return
+        
         self.commit = self.get_commit(owner, repo_name, commit_id)
         self.refactor_service = GithubRefactorService(
             account=self.event.account, commit=self.commit
         )
-        self.refactored_code = self.refactor_service.refactor()
+        self.refactored_code = self.refactor_service.refactor(self.max_lines)
         if not self.refactored_code:
             return
-        self.repo = self.github.get_user().get_repo(repo_name)
+        
         self.create_new_branch()
         self.commit_refactored_code()
         self.raise_pull_request()
