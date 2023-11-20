@@ -3,7 +3,7 @@ import List from "@mui/joy/List";
 import Sheet from "@mui/joy/Sheet";
 import Divider from "@mui/joy/Divider";
 import ListItem from "@mui/joy/ListItem";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Typography from "@mui/joy/Typography";
 import Avatar from "@mui/joy/Avatar";
 import IconButton from "@mui/joy/IconButton";
@@ -11,7 +11,6 @@ import logo from "../assets/images/logo.png";
 import { useNavigate } from "react-router-dom";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import { useColorScheme } from "@mui/joy/styles";
-import PersonIcon from "@mui/icons-material/Person";
 import ListItemContent from "@mui/joy/ListItemContent";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
@@ -33,40 +32,13 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const [data, setData] = useState();
   const { mode } = useColorScheme();
-  const [userName, setUserName] = useState<string>("");
   const { user = {}, avatar_url = "" }: any = useSelector(
     (state: AppState) => state.session
   );
 
-  const fetchAPI = async () => {
-    const response = await GET("api/account/github/configurations/");
-    console.log("Sidebar ------>", response.data.repositories[0].url);
-    console.log(
-      "Sidebar ------>",
-      response.data.repositories[0].url.split("/")[4]
-    );
-    setUserName(response.data.repositories[0].url.split("/")[4]);
-  };
-
-  useEffect(() => {
-    fetchAPI();
-  }, []);
-
   const [activeTab, setActiveTab] = useState<string>(
     window.location.pathname?.split("/")?.[2]
   );
-
-  // useEffect(() => {
-  //   POST("api/account/dashboard/home/")
-  //     .then(function (response) {
-  //       console.log("Data:", response.data.data);
-  //       setData(response.data);
-  //     })
-
-  //     .catch(function (error) {
-  //       console.error("Error:", error);
-  //     });
-  // }, []);
 
   const tabs = [
     {
@@ -93,7 +65,6 @@ export const Sidebar = () => {
 
   return (
     <>
-      {/* <Topbar /> */}
       <Sheet
         className="Sidebar"
         sx={{
@@ -159,9 +130,6 @@ export const Sidebar = () => {
                 padding: "0px",
                 paddingLeft: "2px",
                 margin: "0px",
-
-                // margin: "auto 1em",
-                // display: "inline-flex",
               }}
               src={logo}
               alt="logo"
@@ -214,12 +182,7 @@ export const Sidebar = () => {
         <Divider />
         <Box sx={{ display: "flex", gap: 1, alignItems: "center", pl: 1 }}>
           <Avatar variant="outlined" size="sm" src={avatar_url || ""} />
-          {/* <PersonIcon /> */}
           <Box sx={{ minWidth: 0, flex: 1 }}>
-            {/* <Typography level="title-sm" pl={1}>
-              {userName}
-            </Typography>
-            <Typography level="body-xs">ht760280@dal.ca</Typography> */}
             <Typography level="title-sm">{user?.user_name || ""}</Typography>
             <Typography level="body-xs">{user?.email || ""}</Typography>
           </Box>
