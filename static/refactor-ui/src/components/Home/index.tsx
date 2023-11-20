@@ -68,7 +68,7 @@ export const HomePage = () => {
   return (
     <>
       {/* <NavBar /> */}
-      <HeaderSection />
+      {/* <HeaderSection /> */}
       <Container
         sx={(theme) => ({
           position: "relative",
