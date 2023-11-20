@@ -7,7 +7,6 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import IconButton from "@mui/joy/IconButton";
-import InputBase from "@material-ui/core/InputBase/InputBase";
 // export {};
 export default function Topbar() {
   return (

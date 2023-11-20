@@ -148,13 +148,12 @@ class GitHubAccount(UserAccount):
             all_repos_data.append(repo_data)
         return all_repos_data
 
-    # todo:Kenil - use this function to get refactor configurations
     @classmethod
     def fetch_configurations(cls, user_id):
         """fetching configuration details related to the user"""
         user_instance = UserAccount.objects.get(account_id=user_id)
-        configuration_instance = UserConfiguration.getConfiguration(user_id)
-
+        configuration_instance = UserConfiguration.objects.get(user=user_instance)
+ 
         repositories = Repository.objects.filter(user=user_instance)
         repository_details = []
         for repository in repositories:
@@ -172,10 +171,14 @@ class GitHubAccount(UserAccount):
                     {"name": branch_name, "commit_number": commit_number}
                 )
             # fetching target configurations
-            target_configuration = TargetConfiguration.objects.get(
-                user=user_instance, repository=repository
-            )
-            target_branch = target_configuration.target_branch
+            try:
+                target_configuration = TargetConfiguration.objects.get(
+                    user=user_instance, repository=repository
+                )
+                target_branch = target_configuration.target_branch
+                target = target_branch.name
+            except TargetConfiguration.DoesNotExist:
+                target = ""
             # appending repo configs inside repository_details
             repository_details.append(
                 {
@@ -183,10 +186,10 @@ class GitHubAccount(UserAccount):
                     "name": repository.name,
                     "url": repository.url,
                     "source_branches": branch_details,
-                    "target_branch": target_branch.name,
+                    "target_branch": target,
                 }
             )
-
+ 
         return {
             "user_id": user_id,
             "commit_interval": configuration_instance.commit_interval,
