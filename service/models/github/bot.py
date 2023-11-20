@@ -4,6 +4,7 @@ from typing import Dict, Optional
 from django.http import HttpRequest
 from github import Branch, Github, InputGitTreeElement
 
+from account.models.pull_details import Pull_details
 from core.utils.requests import fetch
 from service.models.github.event import GithubEvent
 from service.models.github.refactor import GithubRefactorService
@@ -123,7 +124,13 @@ class GithubBot:
         pull_id = pull_data.number
         author_id = self.repo.full_name.split("/")[0]
         repo_name = f"https://api.github.com/repos/{self.repo.full_name}"
-        pass
+        pull_details = {
+            "pull_id": pull_id,
+            "Repo_name": repo_name,
+            "author": author_id,
+            "title": title,
+        }
+        Pull_details.save_pull_details(data_dict=pull_details)
 
     def refactor(self) -> None:
         """Refactors the given commit."""
