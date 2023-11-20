@@ -19,6 +19,7 @@ class GitHubConfigurationView(BaseView):
     def get(self, request, *args, **kwargs):
         """fetching user configurations"""
         user_id = request.session.get("user_id")
+
         user_instance = self.get_user_instance(user_id)
         user_configuration = UserConfiguration.objects.get(user=user_instance)
 
