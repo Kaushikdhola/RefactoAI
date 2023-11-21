@@ -2,10 +2,10 @@ from typing import Optional
 
 from django.conf import settings
 from django.http import HttpRequest
+import requests
 
 from account.proxies.github_account import GitHubAccount
 from core.utils.exceptions import ValidationError
-from core.utils.requests import fetch
 from service.models.base.event import BaseEvent
 
 
@@ -32,14 +32,13 @@ class GithubEvent(BaseEvent):
             "Content-Type": "application/x-www-form-urlencoded",
         }
         data = {"access_token": self.account.access_token}
-        status, response = fetch(
+        response = requests.post(
             url=f"https://api.github.com/applications/{settings.GITHUB_CLIENT_ID}/token",
-            method="POST",
             headers=headers,
-            payload=data,
+            data=data,
             auth=(settings.GITHUB_CLIENT_ID, settings.GITHUB_APP_SECRET),
         )
-        if status != 200:
+        if response.status_code != 200:
             raise ValidationError("Access token expired!!")
 
     def validate_account(self) -> None:

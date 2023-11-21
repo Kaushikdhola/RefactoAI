@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # plugins
     "corsheaders",
     "rest_framework",
+    # "django_nose",
     # apps
     "account",
     "service",
@@ -185,3 +186,10 @@ OPENAI_API_KEY = env("OPENAI_API_KEY")
 # GitHub author name and email
 GITHUB_AUTHOR_NAME = "re-factor"
 GITHUB_AUTHOR_EMAIL = "refactor1010@gmail.com"
+
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# NOSE_ARGS = [
+#     '--with-coverage',
+#     '--cover-package=account'
+# ]

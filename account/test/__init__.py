@@ -1,0 +1,1 @@
+from account.test.test_authorization import GitHubAccountTest
