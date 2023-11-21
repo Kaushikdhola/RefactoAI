@@ -4,10 +4,10 @@ import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 
-import { Autocomplete, Card, CardContent, Grid } from "@mui/joy";
-import { GET, POST } from "../utils/axios";
+import { Autocomplete, Card, CardContent, Grid, Stack } from "@mui/joy";
+import { POST } from "../utils/axios";
 
-const branchData = [
+const json_branch_data = [
   {
     sha: "3e20c598e585442d2e1f510d853eee442f1dbd7a",
     message: "Update Test3",
@@ -87,9 +87,9 @@ const branchData = [
   },
 ];
 
-const pullRequestData = [
+const json_pr_data = [
   {
-    Repo_name: "https://api.github.com/repos/Kaushikdhola/TestingRefacto",
+    Repo_name: "Kaushikdhola/TestingRefacto",
     pull_id: 4,
     author: "Kaushikdhola",
     title: "Update Test3",
@@ -101,7 +101,7 @@ const pullRequestData = [
     comments_count: 0,
   },
   {
-    Repo_name: "https://api.github.com/repos/Kaushikdhola/TestingRefacto",
+    Repo_name: "Kaushikdhola/TestingRefacto",
     pull_id: 2,
     author: "Kaushikdhola",
     title: "Create Test3",
@@ -113,7 +113,7 @@ const pullRequestData = [
     comments_count: 0,
   },
   {
-    Repo_name: "https://api.github.com/repos/JohnDoe/ProjectX",
+    Repo_name: "JohnDoe/ProjectX",
     pull_id: 5,
     author: "JohnDoe",
     title: "Fix Bug",
@@ -125,7 +125,7 @@ const pullRequestData = [
     comments_count: 2,
   },
   {
-    Repo_name: "https://api.github.com/repos/JaneSmith/ProjectY",
+    Repo_name: "JaneSmith/ProjectY",
     pull_id: 3,
     author: "JaneSmith",
     title: "Add Feature",
@@ -137,7 +137,7 @@ const pullRequestData = [
     comments_count: 5,
   },
   {
-    Repo_name: "https://api.github.com/repos/AliceJohnson/TestingImprovement",
+    Repo_name: "AliceJohnson/TestingImprovement",
     pull_id: 8,
     author: "AliceJohnson",
     title: "Enhance Test",
@@ -149,7 +149,7 @@ const pullRequestData = [
     comments_count: 1,
   },
   {
-    Repo_name: "https://api.github.com/repos/BobAnderson/CodeRefactoring",
+    Repo_name: "BobAnderson/CodeRefactoring",
     pull_id: 6,
     author: "BobAnderson",
     title: "Refactor Code",
@@ -161,7 +161,7 @@ const pullRequestData = [
     comments_count: 3,
   },
   {
-    Repo_name: "https://api.github.com/repos/ChrisWilliams/FeatureMerge",
+    Repo_name: "ChrisWilliams/FeatureMerge",
     pull_id: 11,
     author: "ChrisWilliams",
     title: "Merge Feature Branch",
@@ -173,7 +173,7 @@ const pullRequestData = [
     comments_count: 6,
   },
   {
-    Repo_name: "https://api.github.com/repos/EvaMartinez/SecurityFix",
+    Repo_name: "EvaMartinez/SecurityFix",
     pull_id: 7,
     author: "EvaMartinez",
     title: "Fix Security Issue",
@@ -185,7 +185,7 @@ const pullRequestData = [
     comments_count: 2,
   },
   {
-    Repo_name: "https://api.github.com/repos/FrankLee/DocumentationUpdate",
+    Repo_name: "FrankLee/DocumentationUpdate",
     pull_id: 9,
     author: "FrankLee",
     title: "Update Documentation",
@@ -197,7 +197,7 @@ const pullRequestData = [
     comments_count: 4,
   },
   {
-    Repo_name: "https://api.github.com/repos/SusanMiller/FeatureImplementation",
+    Repo_name: "SusanMiller/FeatureImplementation",
     pull_id: 10,
     author: "SusanMiller",
     title: "Implement New Feature",
@@ -209,6 +209,22 @@ const pullRequestData = [
     comments_count: 8,
   },
 ];
+
+interface pullData {
+  pull_id: number;
+  author: string;
+  title: string;
+  source_branch: string;
+  target_branch: string;
+  additions: number;
+}
+
+interface branchData {
+  message: string;
+  author_name: string;
+  date: string;
+  Repo_name: string;
+}
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -256,15 +272,35 @@ function stableSort<T>(
 export default function BranchTable() {
   const [order] = React.useState<Order>("desc");
   let [repoList, setRepoList] = React.useState<string[]>([]);
-  let [selectedRepo, setSelectedRepo] = React.useState<any>("");
+  let [selectedRepo, setSelectedRepo] = React.useState<any>();
   const [branchList, setBranchList] = React.useState<any>([]);
+  let [isDataEmpty, setIsDataEmpty] = React.useState(false);
+  const [isRepoSelected, setIsRepoSelected] = React.useState(false);
 
+  const [repoRows, setRepoRows] = React.useState<Array<pullData>>([]);
+  const [branchRows, setBranchRows] = React.useState<Array<branchData>>([]);
+
+  /**
+   * Fetches the repository branches from the API.
+   * Makes a POST request to the 'api/account/dashboard/home/' endpoint.
+   * Logs the received data and updates the state with the branch list.
+   * Sets the isDataEmpty state to true if no branch or PR data is found.
+   * Logs any errors that occur during the API request.
+   */
   const fetchRepoBranches = async () => {
     // Making a POST request to the 'api/account/dashboard/home/' endpoint
     await POST("api/account/dashboard/home/")
       .then(function (response) {
         // Logging the data received from the API response
-        console.log("Data:", response.data.data);
+        console.log("Data:", response.data);
+        if (response.data.json_branch_data.length === 0) {
+          setIsDataEmpty(true);
+          console.log(">>>>>>>> No Branch data found");
+        }
+        if (response.data.json_pr_data.length === 0) {
+          setIsDataEmpty(true);
+          console.log(">>>>>>>> No PR data found");
+        }
 
         // Updating the state with the received data
         setBranchList(response.data.data);
@@ -275,319 +311,297 @@ export default function BranchTable() {
       });
   };
 
+  /**
+   * Handles the change event when a repository is selected.
+   * @param value The selected repository value.
+   * @returns void
+   */
+  const onRepoChange = async (value: any) => {
+    setSelectedRepo(value);
+
+    if (!value) {
+      setIsRepoSelected(false);
+      return;
+    }
+
+    setIsRepoSelected(true);
+
+    const filteredBranchData = json_branch_data.filter(
+      (cur: any) => cur.Repo_name === value
+    );
+    const branchData = filteredBranchData.map((cur: any) => ({
+      message: cur.message,
+      author_name: cur.author_name,
+      date: cur.date,
+      Repo_name: cur.Repo_name,
+    }));
+
+    setBranchRows(branchData);
+
+    const filteredData = json_pr_data.filter(
+      (cur: any) => cur.Repo_name === value
+    );
+    const repoData = filteredData.map((cur: any) => ({
+      pull_id: cur.pull_id,
+      author: cur.author,
+      title: cur.title,
+      source_branch: cur.source_branch,
+      target_branch: cur.target_branch,
+      additions: cur.additions,
+    }));
+
+    console.log("Current Repo Data: ", { repoRows, repoData });
+
+    setRepoRows(repoData);
+    console.log("Temp Repo Data", repoData);
+    console.log("Selected Repo: " + value);
+    console.log("Updated Repo Data: ", { repoRows, repoData });
+  };
+
+  /**
+   * Retrieves the list of repositories from the json_pr_data and sets it in the state.
+   * Also logs each repository name to the console.
+   */
   const getRepoList = () => {
-    const uniqueRepos = pullRequestData.reduce((repos: string[], item) => {
-      const tempSplit = item.Repo_name.split("/");
-      const repoName = tempSplit.slice(-2).join("/");
-      if (!repos.includes(repoName)) {
-        repos.push(repoName);
+    let repos: string[] = [];
+
+    json_pr_data.forEach((item) => {
+      if (!repos.includes(item.Repo_name)) {
+        repos.push(item.Repo_name);
       }
-      return repos;
-    }, []);
+    });
+    setRepoList(repos);
 
-    setRepoList(uniqueRepos);
-
-    uniqueRepos.forEach((item: string) => {
+    repos.forEach((item: string) => {
       console.log("Repo: " + item);
     });
   };
 
   React.useEffect(() => {
     getRepoList();
-    fetchRepoBranches();
+    // fetchRepoBranches();
   }, []);
 
   return (
     <React.Fragment>
       <Autocomplete
         id="repo-select-dashboard"
-        placeholder="Select Repo"
+        placeholder="Select Repo for Statistics"
         openOnFocus={true}
         options={repoList}
         value={selectedRepo}
         onChange={(event, value) => {
-          setSelectedRepo(value);
-          console.log("Selected Repo: " + value);
+          onRepoChange(value);
         }}
         startDecorator={<KeyboardDoubleArrowRightIcon />}
       />
-      <Grid
-        container
-        rowGap={0}
-        rowSpacing={0}
-        spacing={2}
-        height={"auto"}
-        sx={{ flexGrow: 1 }}
-      >
-        <Grid
-          // xs={6}
-          // md={8}
-          sx={{
-            height: "auto",
-            maxHeight: "fit-content",
-          }}
-        >
-          <Card variant="soft">
-            <CardContent>
-              <Typography color="neutral" noWrap={false} variant="plain">
-                Branch Data
-              </Typography>
-              <Card
-                variant="soft"
-                sx={{
-                  padding: 0,
-                  // height: "16em",
 
-                  maxHeight: "16em",
-                  overflow: "auto",
-                }}
-              >
-                {/* <Table
-                  aria-labelledby="tableTitle"
-                  stickyHeader
-                  hoverRow
-                  sx={{
-                    "--TableCell-headBackground":
-                      "var(--joy-palette-background-level1)",
-                    "--Table-headerUnderlineThickness": "1px",
-                    "--TableRow-hoverBackground":
-                      "var(--joy-palette-background-level1)",
-                    "--TableCell-paddingY": "4px",
-                    "--TableCell-paddingX": "8px",
-                  }}
-                >
-                  <thead>
-                    <tr>
-                      <th
-                        style={{
-                          flex: "1",
-                          textAlign: "center",
-                          padding: "12px 6px",
-                        }}
-                      >
-                        Author
-                      </th>
-                      <th
-                        style={{
-                          flex: "1",
-                          padding: "12px 6px",
-                          textAlign: "center",
-                        }}
-                      >
-                        Repository
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stableSort(rows, getComparator(order, "id")).map((row) => (
-                      <tr
-                        key={row.id}
-                        className="branchlisting"
-                        style={{ textAlign: "center" }}
-                      >
-                        <td>
-                          <Typography level="body-xs" flex={1}>
-                            {row.branch}
-                          </Typography>
-                        </td>
-                        <td>
-                          <Typography level="body-xs">{row.id}</Typography>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table> */}
-                <Table
-                  aria-labelledby="tableTitle"
-                  stickyHeader
-                  hoverRow
-                  sx={{
-                    "--TableCell-headBackground":
-                      "var(--joy-palette-background-level1)",
-                    "--Table-headerUnderlineThickness": "1px",
-                    "--TableRow-hoverBackground":
-                      "var(--joy-palette-background-level1)",
-                    "--TableCell-paddingY": "4px",
-                    "--TableCell-paddingX": "8px",
-                  }}
-                >
-                  <thead>
-                    <tr>
-                      <th
-                        style={{
-                          flex: "1",
-                          textAlign: "center",
-                          padding: "12px 6px",
-                        }}
-                      >
-                        Author
-                      </th>
-                      <th
-                        style={{
-                          flex: "1",
-                          padding: "12px 6px",
-                          textAlign: "center",
-                        }}
-                      >
-                        Repository
-                      </th>
-                      <th
-                        style={{
-                          flex: "1",
-                          padding: "12px 6px",
-                          textAlign: "center",
-                        }}
-                      >
-                        Commit Message
-                      </th>
-                      <th
-                        style={{
-                          flex: "1",
-                          padding: "12px 6px",
-                          textAlign: "center",
-                        }}
-                      >
-                        Date
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stableSort(branchData, getComparator(order, "date")).map(
-                      (row) => (
-                        <tr
-                          key={row.date}
-                          className="branchlisting"
-                          style={{ textAlign: "center" }}
-                        >
-                          <td>
-                            <Typography level="body-xs" flex={1}>
-                              {row.author_name}
-                            </Typography>
-                          </td>
-                          <td>
-                            <Typography level="body-xs">
-                              {row.Repo_name}
-                            </Typography>
-                          </td>
-                          <td>
-                            <Typography level="body-xs">
-                              {row.message}
-                            </Typography>
-                          </td>
-                          <td>
-                            <Typography level="body-xs">{row.date}</Typography>
-                          </td>
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </Table>
-              </Card>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid
-          sx={{
-            maxHeight: "fit-content",
-            maxWidth: "fit-content",
-          }}
-        >
-          <Card variant="soft">
-            <CardContent>
-              <Typography color="neutral" noWrap={false} variant="plain">
-                Total Pull Requests Created
-              </Typography>
-              <Card
-                variant="soft"
+      {!isRepoSelected ? (
+        <Typography variant="plain">Please select a repository</Typography>
+      ) : null}
+      <Stack
+        spacing={2.5}
+        visibility={selectedRepo !== undefined || null ? "visible" : "hidden"}
+      >
+        <Card variant="outlined">
+          <CardContent>
+            <Typography color="neutral" noWrap={false} variant="plain">
+              Branch Commit Data
+            </Typography>
+            <Card
+              variant="soft"
+              sx={{
+                padding: 0,
+                maxHeight: "16em",
+                overflow: "auto",
+              }}
+            >
+              <Table
+                aria-labelledby="tableTitle"
+                stickyHeader
+                hoverRow
                 sx={{
-                  padding: 0,
-                  maxHeight: "16em",
-                  overflow: "auto",
+                  "--TableCell-headBackground":
+                    "var(--joy-palette-background-level1)",
+                  "--Table-headerUnderlineThickness": "1px",
+                  "--TableRow-hoverBackground":
+                    "var(--joy-palette-background-level1)",
+                  "--TableCell-paddingY": "4px",
+                  "--TableCell-paddingX": "8px",
                 }}
               >
-                <Table
-                  aria-labelledby="tableTitle"
-                  stickyHeader
-                  hoverRow
-                  sx={{
-                    "--TableCell-headBackground":
-                      "var(--joy-palette-background-level1)",
-                    "--Table-headerUnderlineThickness": "1px",
-                    "--TableRow-hoverBackground":
-                      "var(--joy-palette-background-level1)",
-                    "--TableCell-paddingY": "4px",
-                    "--TableCell-paddingX": "8px",
-                  }}
-                >
-                  <thead>
-                    <tr>
-                      <th
-                        style={{
-                          width: "40%",
-                          textAlign: "center",
-                          padding: "12px 6px",
-                        }}
-                      >
-                        Author
-                      </th>
-                      <th
-                        style={{
-                          width: "30%",
-                          textAlign: "center",
-                          padding: "12px 6px",
-                        }}
-                      >
-                        Repository
-                      </th>
-                      <th
-                        style={{
-                          width: "30%",
-                          textAlign: "center",
-                          padding: "12px 6px",
-                        }}
-                      >
-                        Title
-                      </th>
-                      <th
-                        style={{
-                          width: "30%",
-                          textAlign: "center",
-                          padding: "12px 6px",
-                        }}
-                      >
-                        Source Branch
-                      </th>
-                      <th
-                        style={{
-                          width: "30%",
-                          textAlign: "center",
-                          padding: "12px 6px",
-                        }}
-                      >
-                        Target Branch
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stableSort(
-                      pullRequestData,
-                      getComparator(order, "Repo_name")
-                    ).map((row) => (
-                      // row.Repo_name === selectedRepo ? (
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        flex: "1",
+                        textAlign: "center",
+                        padding: "12px 6px",
+                      }}
+                    >
+                      Author
+                    </th>
+                    <th
+                      style={{
+                        flex: "1",
+                        padding: "12px 6px",
+                        textAlign: "center",
+                      }}
+                    >
+                      Repository
+                    </th>
+                    <th
+                      style={{
+                        flex: "1",
+                        padding: "12px 6px",
+                        textAlign: "center",
+                      }}
+                    >
+                      Commit Message
+                    </th>
+                    <th
+                      style={{
+                        flex: "1",
+                        padding: "12px 6px",
+                        textAlign: "center",
+                      }}
+                    >
+                      Date
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stableSort(branchRows, getComparator(order, "date")).map(
+                    (row) => (
                       <tr
-                        key={row.Repo_name}
+                        key={row.date}
                         className="branchlisting"
                         style={{ textAlign: "center" }}
                       >
                         <td>
                           <Typography level="body-xs" flex={1}>
-                            {row.author}
+                            {row.author_name}
                           </Typography>
                         </td>
                         <td>
                           <Typography level="body-xs">
-                            {row.Repo_name.split("/").slice(-2).join("/")}
+                            {row.Repo_name}
                           </Typography>
+                        </td>
+                        <td>
+                          <Typography level="body-xs">{row.message}</Typography>
+                        </td>
+                        <td>
+                          <Typography level="body-xs">{row.date}</Typography>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </Table>
+            </Card>
+          </CardContent>
+        </Card>
+        <Card variant="outlined">
+          <CardContent>
+            <Typography color="neutral" noWrap={false} variant="plain">
+              Total Pull Requests Created
+            </Typography>
+            <Card
+              variant="soft"
+              sx={{
+                padding: 0,
+                maxHeight: "16em",
+                overflow: "auto",
+              }}
+            >
+              <Table
+                aria-labelledby="tableTitle"
+                stickyHeader
+                hoverRow
+                sx={{
+                  "--TableCell-headBackground":
+                    "var(--joy-palette-background-level1)",
+                  "--Table-headerUnderlineThickness": "1px",
+                  "--TableRow-hoverBackground":
+                    "var(--joy-palette-background-level1)",
+                  "--TableCell-paddingY": "4px",
+                  "--TableCell-paddingX": "8px",
+                }}
+              >
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        width: "40%",
+                        textAlign: "center",
+                        padding: "12px 6px",
+                      }}
+                    >
+                      Pull ID
+                    </th>
+                    <th
+                      style={{
+                        width: "30%",
+                        textAlign: "center",
+                        padding: "12px 6px",
+                      }}
+                    >
+                      Author
+                    </th>
+                    <th
+                      style={{
+                        width: "30%",
+                        textAlign: "center",
+                        padding: "12px 6px",
+                      }}
+                    >
+                      Title
+                    </th>
+                    <th
+                      style={{
+                        width: "30%",
+                        textAlign: "center",
+                        padding: "12px 6px",
+                      }}
+                    >
+                      Source Branch
+                    </th>
+                    <th
+                      style={{
+                        width: "30%",
+                        textAlign: "center",
+                        padding: "12px 6px",
+                      }}
+                    >
+                      Target Branch
+                    </th>
+                    <th
+                      style={{
+                        width: "30%",
+                        textAlign: "center",
+                        padding: "12px 6px",
+                      }}
+                    >
+                      Additions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stableSort(repoRows, getComparator(order, "pull_id")).map(
+                    (row) => (
+                      <tr
+                        key={row.pull_id}
+                        className="branchlisting"
+                        style={{ textAlign: "center" }}
+                      >
+                        <td>
+                          <Typography level="body-xs" flex={1}>
+                            {row.pull_id}
+                          </Typography>
+                        </td>
+                        <td>
+                          <Typography level="body-xs">{row.author}</Typography>
                         </td>
                         <td>
                           <Typography level="body-xs">{row.title}</Typography>
@@ -602,15 +616,33 @@ export default function BranchTable() {
                             {row.target_branch}
                           </Typography>
                         </td>
+                        <td>
+                          <Typography level="body-xs" textColor={"green"}>
+                            {row.additions}
+                          </Typography>
+                        </td>
                       </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </Card>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+                    )
+                  )}
+                </tbody>
+              </Table>
+            </Card>
+          </CardContent>
+        </Card>
+      </Stack>
+
+      <Typography
+        visibility={isDataEmpty ? "visible" : "hidden"}
+        alignSelf={"center"}
+        variant="plain"
+        sx={{
+          position: "absolute",
+          top: "50%",
+        }}
+      >
+        Oops! No Statistics to show. <br />
+        You need to use the bot first.
+      </Typography>
     </React.Fragment>
   );
 }
