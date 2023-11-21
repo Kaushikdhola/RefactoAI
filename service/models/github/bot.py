@@ -3,9 +3,9 @@ from typing import Dict, Optional
 
 from django.http import HttpRequest
 from github import Branch, Github, InputGitTreeElement
+import requests
 
 from account.models.pull_details import Pull_details
-from core.utils.requests import fetch
 from service.models.github.event import GithubEvent
 from service.models.github.refactor import GithubRefactorService
 from account.models.pull_details import Pull_details
@@ -47,8 +47,8 @@ class GithubBot:
             Dictionary containing commit information.
         """
         url = f"https://api.github.com/repos/{owner}/{repo}/commits/{commit_id}"
-        status, response = fetch(url=url, method="GET")
-        return response
+        response = requests.get(url=url)
+        return response.json()
 
     def validate_configurations(self) -> bool:
         """

@@ -1,17 +1,17 @@
 import copy
+import requests
 
 from django.conf import settings
 from django.middleware.csrf import rotate_token
 
-from account.models.account import UserAccount
 from account.models.branch import Branch
-from account.models.configuration import UserConfiguration
+from account.models.account import UserAccount
 from account.models.repository import Repository
+from core.utils.exceptions import ValidationError
+from account.models.configuration import UserConfiguration
 from account.models.source_configuration import SourceConfiguration
 from account.models.target_configuration import TargetConfiguration
 from account.serializers.serializer import UserAccountSerializer
-from core.utils.exceptions import ValidationError
-from core.utils.requests import fetch
 
 
 class GitHubAccount(UserAccount):
@@ -44,13 +44,12 @@ class GitHubAccount(UserAccount):
             "client_secret": settings.GITHUB_APP_SECRET,
             "code": oauth_code,
         }
-        status, response = fetch(
-            method="POST",
+        response = requests.post(
             url=cls.ACCESS_TOKEN_URL,
             headers={"Accept": "application/json", "scope": "repo"},
-            payload=token_payload,
+            data=token_payload,
         )
-        return response.get("access_token")
+        return response.json().get("access_token")
 
     @classmethod
     def fetch_user_data(cls, access_token):
@@ -68,8 +67,8 @@ class GitHubAccount(UserAccount):
             "Accept": "application/json",
             "Authorization": f"Bearer {access_token}",
         }
-        status, response = fetch(method="GET", url=user_url, headers=headers)
-        return response
+        response = requests.get(url=user_url, headers=headers)
+        return response.json()
 
     @classmethod
     def prepare_configurations(cls, user_id):
@@ -179,7 +178,7 @@ class GitHubAccount(UserAccount):
                 target = target_branch.name
             except TargetConfiguration.DoesNotExist:
                 target = ""
-            # appending repo configs inside repository_details
+            
             repository_details.append(
                 {
                     "repo_id": repo_id,
