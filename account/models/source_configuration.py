@@ -50,7 +50,9 @@ class SourceConfiguration(BaseModel):
         )
         source_configuration.current_commit = source_configuration.current_commit + 1
         user_configuration = UserConfiguration.objects.get(user=user_instance)
-        if source_configuration.current_commit > user_configuration.commit_interval:
+        if int(source_configuration.current_commit or 0) > int(
+            user_configuration.commit_interval or 0
+        ):
             source_configuration.current_commit = 1
         source_configuration.save()
 
@@ -62,7 +64,4 @@ class SourceConfiguration(BaseModel):
         configs = SourceConfiguration.objects.filter(
             repository=repo_instance, user=user_instance
         )
-        configured_branches = []
-        for config in configs:
-            configured_branches.append(config.source_branch.name)
-        return configured_branches
+        return [config.source_branch.name for config in configs]
