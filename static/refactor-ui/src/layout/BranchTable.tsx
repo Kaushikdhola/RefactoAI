@@ -5,6 +5,7 @@ import Typography from "@mui/joy/Typography";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 
 import { Autocomplete, Card, CardContent, Grid } from "@mui/joy";
+import { GET, POST } from "../utils/axios";
 
 const branchData = [
   {
@@ -258,6 +259,22 @@ export default function BranchTable() {
   let [selectedRepo, setSelectedRepo] = React.useState<any>("");
   const [branchList, setBranchList] = React.useState<any>([]);
 
+  const fetchRepoBranches = async () => {
+    // Making a POST request to the 'api/account/dashboard/home/' endpoint
+    await POST("api/account/dashboard/home/")
+      .then(function (response) {
+        // Logging the data received from the API response
+        console.log("Data:", response.data.data);
+
+        // Updating the state with the received data
+        setBranchList(response.data.data);
+      })
+      .catch(function (error) {
+        // Logging any errors that occur during the API request
+        console.error("Error:", error);
+      });
+  };
+
   const getRepoList = () => {
     const uniqueRepos = pullRequestData.reduce((repos: string[], item) => {
       const tempSplit = item.Repo_name.split("/");
@@ -277,6 +294,7 @@ export default function BranchTable() {
 
   React.useEffect(() => {
     getRepoList();
+    fetchRepoBranches();
   }, []);
 
   return (
