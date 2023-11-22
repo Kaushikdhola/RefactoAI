@@ -1,5 +1,3 @@
-
-
 # Dependencies
 
 ## Installation of Dependencies
@@ -81,4 +79,3 @@ We will be using node v19 or greater for our frontend application. To install no
 # Set default Node version
 > nvm alias default 19
 ```
-
