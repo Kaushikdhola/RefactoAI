@@ -217,6 +217,7 @@ interface pullData {
   source_branch: string;
   target_branch: string;
   additions: number;
+  deletions: number;
 }
 
 interface branchData {
@@ -270,7 +271,7 @@ function stableSort<T>(
 }
 
 export default function BranchTable() {
-  const [order] = React.useState<Order>("desc");
+  const [order] = React.useState<Order>("asc");
   let [repoList, setRepoList] = React.useState<string[]>([]);
   let [selectedRepo, setSelectedRepo] = React.useState<any>();
   const [branchList, setBranchList] = React.useState<any>([]);
@@ -348,6 +349,7 @@ export default function BranchTable() {
       source_branch: cur.source_branch,
       target_branch: cur.target_branch,
       additions: cur.additions,
+      deletions: cur.deletions,
     }));
 
     console.log("Current Repo Data: ", { repoRows, repoData });
@@ -379,7 +381,7 @@ export default function BranchTable() {
 
   React.useEffect(() => {
     getRepoList();
-    // fetchRepoBranches();
+    fetchRepoBranches();
   }, []);
 
   return (
@@ -387,6 +389,7 @@ export default function BranchTable() {
       <Autocomplete
         id="repo-select-dashboard"
         placeholder="Select Repo for Statistics"
+        sx={{ visibility: isDataEmpty ? "hidden" : "visible" }}
         openOnFocus={true}
         options={repoList}
         value={selectedRepo}
@@ -396,12 +399,17 @@ export default function BranchTable() {
         startDecorator={<KeyboardDoubleArrowRightIcon />}
       />
 
-      {!isRepoSelected ? (
-        <Typography variant="plain">Please select a repository</Typography>
-      ) : null}
+      <Typography
+        variant="plain"
+        visibility={isDataEmpty ? "hidden" : "visible"}
+      >
+        Please select a repository
+      </Typography>
       <Stack
         spacing={2.5}
-        visibility={selectedRepo !== undefined || null ? "visible" : "hidden"}
+        visibility={
+          isDataEmpty !== true || undefined || null ? "visible" : "hidden"
+        }
       >
         <Card variant="outlined">
           <CardContent>
@@ -585,6 +593,15 @@ export default function BranchTable() {
                     >
                       Additions
                     </th>
+                    <th
+                      style={{
+                        width: "30%",
+                        textAlign: "center",
+                        padding: "12px 6px",
+                      }}
+                    >
+                      Deletions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -619,6 +636,11 @@ export default function BranchTable() {
                         <td>
                           <Typography level="body-xs" textColor={"green"}>
                             {row.additions}
+                          </Typography>
+                        </td>
+                        <td>
+                          <Typography level="body-xs" textColor={"red"}>
+                            {row.deletions}
                           </Typography>
                         </td>
                       </tr>
