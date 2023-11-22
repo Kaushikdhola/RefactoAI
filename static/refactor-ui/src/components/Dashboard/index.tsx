@@ -33,9 +33,6 @@ interface DashboardData {
 }
 
 export const Dashboard = () => {
-  const navigate = useNavigate();
-  const [data, setData] = useState<DashboardData | null>(null);
-
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />

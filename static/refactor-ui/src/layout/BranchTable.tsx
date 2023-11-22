@@ -3,212 +3,8 @@ import * as React from "react";
 import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-
-import { Autocomplete, Card, CardContent, Grid, Stack } from "@mui/joy";
+import { Autocomplete, Card, CardContent, Stack } from "@mui/joy";
 import { POST } from "../utils/axios";
-
-const json_branch_data = [
-  {
-    sha: "3e20c598e585442d2e1f510d853eee442f1dbd7a",
-    message: "Update Test3",
-    author_name: "Kaushik Dhola",
-    date: "2023-11-18T18:41:21Z",
-    Repo_name: "Kaushikdhola/TestingRefacto",
-  },
-  {
-    sha: "e73406024f71a77fad7e8c4cee31948d1d4a36bf",
-    message: "Update Test3 2",
-    author_name: "Kaushik Dhola",
-    date: "2023-11-19T23:27:13Z",
-    Repo_name: "Kaushikdhola/TestingRefacto",
-  },
-  {
-    sha: "484ccf368923a27cff7995e91168e03850e554ab",
-    message: "Create Test3",
-    author_name: "Kaushik Dhola",
-    date: "2023-11-06T16:42:58Z",
-    Repo_name: "Kaushikdhola/TestingRefacto",
-  },
-  {
-    sha: "e2698be8b80acacf2630ed3830b5525b252b64e7",
-    message: "Update Test3",
-    author_name: "Kaushik Dhola",
-    date: "2023-11-06T18:50:03Z",
-    Repo_name: "Kaushikdhola/TestingRefacto",
-  },
-  {
-    sha: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
-    message: "Fix Bug",
-    author_name: "John Doe",
-    date: "2023-11-22T12:30:45Z",
-    Repo_name: "JohnDoe/ProjectX",
-  },
-  {
-    sha: "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0",
-    message: "Add Feature",
-    author_name: "Jane Smith",
-    date: "2023-11-25T09:15:30Z",
-    Repo_name: "JaneSmith/ProjectY",
-  },
-  {
-    sha: "b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0",
-    message: "Enhance Test",
-    author_name: "Alice Johnson",
-    date: "2023-11-28T15:45:00Z",
-    Repo_name: "AliceJohnson/TestingImprovement",
-  },
-  {
-    sha: "c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0",
-    message: "Refactor Code",
-    author_name: "Bob Anderson",
-    date: "2023-11-30T08:00:22Z",
-    Repo_name: "BobAnderson/CodeRefactoring",
-  },
-  {
-    sha: "d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0",
-    message: "Merge Feature Branch",
-    author_name: "Chris Williams",
-    date: "2023-12-02T14:20:17Z",
-    Repo_name: "ChrisWilliams/FeatureMerge",
-  },
-  {
-    sha: "e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1",
-    message: "Fix Security Issue",
-    author_name: "Eva Martinez",
-    date: "2023-12-05T10:55:45Z",
-    Repo_name: "EvaMartinez/SecurityFix",
-  },
-  {
-    sha: "f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
-    message: "Update Documentation",
-    author_name: "Frank Lee",
-    date: "2023-12-08T16:10:33Z",
-    Repo_name: "FrankLee/DocumentationUpdate",
-  },
-];
-
-const json_pr_data = [
-  {
-    Repo_name: "Kaushikdhola/TestingRefacto",
-    pull_id: 4,
-    author: "Kaushikdhola",
-    title: "Update Test3",
-    source_branch: "Testin3",
-    target_branch: "main",
-    state: "open",
-    additions: 2,
-    deletions: 0,
-    comments_count: 0,
-  },
-  {
-    Repo_name: "Kaushikdhola/TestingRefacto",
-    pull_id: 2,
-    author: "Kaushikdhola",
-    title: "Create Test3",
-    source_branch: "Testin3",
-    target_branch: "main",
-    state: "closed",
-    additions: 7,
-    deletions: 0,
-    comments_count: 0,
-  },
-  {
-    Repo_name: "JohnDoe/ProjectX",
-    pull_id: 5,
-    author: "JohnDoe",
-    title: "Fix Bug",
-    source_branch: "BugFix",
-    target_branch: "main",
-    state: "open",
-    additions: 3,
-    deletions: 1,
-    comments_count: 2,
-  },
-  {
-    Repo_name: "JaneSmith/ProjectY",
-    pull_id: 3,
-    author: "JaneSmith",
-    title: "Add Feature",
-    source_branch: "NewFeature",
-    target_branch: "main",
-    state: "closed",
-    additions: 10,
-    deletions: 2,
-    comments_count: 5,
-  },
-  {
-    Repo_name: "AliceJohnson/TestingImprovement",
-    pull_id: 8,
-    author: "AliceJohnson",
-    title: "Enhance Test",
-    source_branch: "TestEnhancement",
-    target_branch: "main",
-    state: "open",
-    additions: 5,
-    deletions: 0,
-    comments_count: 1,
-  },
-  {
-    Repo_name: "BobAnderson/CodeRefactoring",
-    pull_id: 6,
-    author: "BobAnderson",
-    title: "Refactor Code",
-    source_branch: "CodeRefactor",
-    target_branch: "main",
-    state: "closed",
-    additions: 8,
-    deletions: 3,
-    comments_count: 3,
-  },
-  {
-    Repo_name: "ChrisWilliams/FeatureMerge",
-    pull_id: 11,
-    author: "ChrisWilliams",
-    title: "Merge Feature Branch",
-    source_branch: "FeatureBranch",
-    target_branch: "main",
-    state: "open",
-    additions: 15,
-    deletions: 4,
-    comments_count: 6,
-  },
-  {
-    Repo_name: "EvaMartinez/SecurityFix",
-    pull_id: 7,
-    author: "EvaMartinez",
-    title: "Fix Security Issue",
-    source_branch: "SecurityFix",
-    target_branch: "main",
-    state: "closed",
-    additions: 6,
-    deletions: 1,
-    comments_count: 2,
-  },
-  {
-    Repo_name: "FrankLee/DocumentationUpdate",
-    pull_id: 9,
-    author: "FrankLee",
-    title: "Update Documentation",
-    source_branch: "DocumentationUpdate",
-    target_branch: "main",
-    state: "open",
-    additions: 4,
-    deletions: 0,
-    comments_count: 4,
-  },
-  {
-    Repo_name: "SusanMiller/FeatureImplementation",
-    pull_id: 10,
-    author: "SusanMiller",
-    title: "Implement New Feature",
-    source_branch: "NewFeatureImplementation",
-    target_branch: "main",
-    state: "closed",
-    additions: 12,
-    deletions: 2,
-    comments_count: 8,
-  },
-];
 
 interface pullData {
   pull_id: number;
@@ -274,13 +70,13 @@ export default function BranchTable() {
   const [order] = React.useState<Order>("asc");
   let [repoList, setRepoList] = React.useState<string[]>([]);
   let [selectedRepo, setSelectedRepo] = React.useState<any>();
-  const [branchList, setBranchList] = React.useState<any>([]);
   let [isDataEmpty, setIsDataEmpty] = React.useState(false);
   const [isRepoSelected, setIsRepoSelected] = React.useState(false);
 
   const [repoRows, setRepoRows] = React.useState<Array<pullData>>([]);
   const [branchRows, setBranchRows] = React.useState<Array<branchData>>([]);
-
+  const [fetchedPRData, setFetchedPRData] = React.useState<any>([]);
+  const [fetchedBranchData, setFetchedBranchData] = React.useState<any>([]);
   /**
    * Fetches the repository branches from the API.
    * Makes a POST request to the 'api/account/dashboard/home/' endpoint.
@@ -289,22 +85,25 @@ export default function BranchTable() {
    * Logs any errors that occur during the API request.
    */
   const fetchRepoBranches = async () => {
-    // Making a POST request to the 'api/account/dashboard/home/' endpoint
+    // // Making a POST request to the 'api/account/dashboard/home/' endpoint
     await POST("api/account/dashboard/home/")
-      .then(function (response) {
+      .then(async function (response) {
         // Logging the data received from the API response
         console.log("Data:", response.data);
+        console.log("Branch Data:", response.data.json_branch_data);
+        console.log("PR Data:", response.data.json_pr_data);
         if (response.data.json_branch_data.length === 0) {
           setIsDataEmpty(true);
           console.log(">>>>>>>> No Branch data found");
+        } else if (fetchedBranchData.length === 0) {
+          setFetchedBranchData(response.data.json_branch_data);
         }
         if (response.data.json_pr_data.length === 0) {
           setIsDataEmpty(true);
           console.log(">>>>>>>> No PR data found");
+        } else if (fetchedPRData.length === 0) {
+          setFetchedPRData(response.data.json_pr_data);
         }
-
-        // Updating the state with the received data
-        setBranchList(response.data.data);
       })
       .catch(function (error) {
         // Logging any errors that occur during the API request
@@ -327,7 +126,7 @@ export default function BranchTable() {
 
     setIsRepoSelected(true);
 
-    const filteredBranchData = json_branch_data.filter(
+    const filteredBranchData = fetchedBranchData.filter(
       (cur: any) => cur.Repo_name === value
     );
     const branchData = filteredBranchData.map((cur: any) => ({
@@ -339,10 +138,19 @@ export default function BranchTable() {
 
     setBranchRows(branchData);
 
-    const filteredData = json_pr_data.filter(
-      (cur: any) => cur.Repo_name === value
-    );
-    const repoData = filteredData.map((cur: any) => ({
+    let filteredRepoData: any = [];
+    fetchedPRData.forEach((cur: any) => {
+      console.log("Current Repo Data: ", cur.Repo_name);
+      if (String(cur.Repo_name).split("/").slice(-2).join("/") === value) {
+        filteredRepoData.push(cur);
+      }
+    });
+
+    console.log("Filtered Repo Data: ", filteredRepoData);
+
+    console.log("Repo name and Value: ", value);
+    console.log("Filtered Data: ", fetchedPRData);
+    const repoData = filteredRepoData.map((cur: any) => ({
       pull_id: cur.pull_id,
       author: cur.author,
       title: cur.title,
@@ -367,22 +175,22 @@ export default function BranchTable() {
   const getRepoList = () => {
     let repos: string[] = [];
 
-    json_pr_data.forEach((item) => {
+    fetchedPRData.forEach((item: any) => {
       if (!repos.includes(item.Repo_name)) {
-        repos.push(item.Repo_name);
+        repos.push(String(item.Repo_name).split("/").slice(-2).join("/"));
       }
     });
-    setRepoList(repos);
 
+    setRepoList(repos);
     repos.forEach((item: string) => {
       console.log("Repo: " + item);
     });
   };
 
   React.useEffect(() => {
-    getRepoList();
     fetchRepoBranches();
-  }, []);
+    getRepoList();
+  }, [fetchedBranchData, fetchedPRData]);
 
   return (
     <React.Fragment>
