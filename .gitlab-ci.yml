@@ -75,7 +75,7 @@ backend-deploy:
     - chmod og= $SSH_PRIVATE_KEY
     - apk update && apk add openssh-client
   script:
-    - ssh -i $SSH_PRIVATE_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "./deploy_prod.sh"
+    - ssh -i $SSH_PRIVATE_KEY $SERVER_USER@$SERVER_IP "./deploy_prod.sh"
   tags:
     - backend-build-deploy
   environment:
