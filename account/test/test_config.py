@@ -14,7 +14,7 @@ from account.models.target_configuration import TargetConfiguration
 class GitHubConfigurationViewTestCase(TestCase):
     
     def setUp(self):
-        user = UserAccount.objects.create(account_id=1234, access_token="ghu_lIUcljR6uTWBcBK0aO8U67wDbmuLBM4BsH9F", email="test@test.com", user_name="test", name="test")
+        user = UserAccount.objects.create(account_id=1234, access_token=" ", user_name="test")
         user_conf = UserConfiguration.objects.create(user=user,commit_interval=5,max_lines=10)
         repo = Repository.objects.create(repo_id=98765,name="repo1",url="https://api.github.com/repos/test/repo1",user=user)
         branch1 = Branch.objects.create(name="main",repository=repo,user=user)
