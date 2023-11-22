@@ -442,6 +442,8 @@ const Settings = (props: Props) => {
                       size="md"
                       value={minLines}
                       onChange={(e) => {
+                        console.log("Before Min Lines: " + e.target.value);
+                        // minLines = e.target.value;
                         setMinLines(e.target.value);
                         console.log("Min Lines: " + minLines);
                       }}
@@ -462,6 +464,7 @@ const Settings = (props: Props) => {
                   <FormLabel>Select Repository</FormLabel>
                   <Autocomplete
                     id="repoAutocomplete"
+                    // color="danger"
                     size="md"
                     placeholder="Select Repo"
                     openOnFocus={true}
@@ -477,11 +480,13 @@ const Settings = (props: Props) => {
                   <FormControl sx={{ flexGrow: 1 }}>
                     <FormLabel>Select Branch to Track</FormLabel>
                     <Autocomplete
+                      id="trkedBranchAutocomplete"
                       multiple
                       size="md"
                       placeholder="Select the branches to track for refactoring."
                       openOnFocus={true}
                       options={trackedBranch.map((e: any) => e.name)}
+                      // defaultValue={repoSelected?}
                       value={repoSelected ? trkedBranchValue : []}
                       onChange={(event, newValue) => {
                         trackedBranchOnchange(newValue);

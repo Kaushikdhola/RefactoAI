@@ -14,8 +14,6 @@ import { prepareQueryParamsFromObject } from "../../utils/helpers";
 import { POST } from "../../utils/axios";
 import { useAuth } from "../../hooks/useAuth";
 import HeroImage from "../../layout/Hero Image";
-import HeaderSection from "../../layout/HNavBar";
-// import { NavBar } from "../../layout/HomeNavBar";
 
 const HERO_STYLES = {
   BG_WRAPPER: "hero-fixer",
@@ -67,8 +65,6 @@ export const HomePage = () => {
 
   return (
     <>
-      {/* <NavBar /> */}
-      {/* <HeaderSection /> */}
       <Container
         sx={(theme) => ({
           position: "relative",

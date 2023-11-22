@@ -1,11 +1,9 @@
 import React from "react";
-// import { NavBar } from "../../layout/HomeNavBar";
 import { Box, Container, Typography, typographyClasses } from "@mui/joy";
 
 export const About = () => {
   return (
     <>
-      {/* <NavBar /> */}
       <Container
         sx={(theme) => ({
           position: "relative",

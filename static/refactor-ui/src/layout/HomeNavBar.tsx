@@ -14,8 +14,6 @@ import { Router, useNavigate } from "react-router-dom";
 
 import logo from "../assets/images/logo.png";
 
-import { Link } from "react-router-dom";
-
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 const pages = ["About Us", "Documentation"];
 const logoSrc = require("../assets/images/logo.png");
