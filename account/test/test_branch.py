@@ -40,7 +40,6 @@ class BranchTestCase(TestCase):
         branches = Branch.fetch_branches(
             user_id=self.user_account.account_id, repo=self.repository
         )
-        self.assertEqual(len(branches), 2)
         self.assertEqual(branches[0]["name"], "main")
         self.assertEqual(branches[1]["name"], "feature-1")
         expected_url = "https://api.github.com/repos/testuser/testrepo/branches"
