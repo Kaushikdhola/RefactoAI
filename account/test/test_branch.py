@@ -52,10 +52,10 @@ class BranchTestCase(TestCase):
         )
 
     def test_cleanup(self):
-        branch1 = Branch.objects.create(
+        Branch.objects.create(
             name="branch1", user=self.user_account, repository=self.repository
         )
-        branch2 = Branch.objects.create(
+        Branch.objects.create(
             name="branch2", user=self.user_account, repository=self.repository
         )
         Branch.cleanup(

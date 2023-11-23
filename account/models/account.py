@@ -12,13 +12,13 @@ class UserAccount(BaseModel):
 
     account_id = models.CharField(max_length=255, unique=True)
     access_token = models.CharField(max_length=255)
-    email = models.CharField(max_length=255, null=True)
+    email = models.CharField(max_length=255, blank=True)
     account_type = models.CharField(
         choices=ACCOUNT_TYPES, max_length=255, default=GITHUB
     )
     user_name = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=255, null=True)
-    company = models.CharField(max_length=255, null=True)
+    name = models.CharField(max_length=255, blank=True)
+    company = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

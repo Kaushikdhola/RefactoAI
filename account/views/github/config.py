@@ -25,7 +25,7 @@ class GitHubConfigurationView(BaseView):
 
         repositories_data = self.fetch_repositories_data(user_id)
         for each_repository in repositories_data:
-            repo_instance = self.configure_repository_instance(
+            self.configure_repository_instance(
                 user_instance, each_repository
             )
             self.configure_source_branches(
@@ -162,9 +162,9 @@ class GitHubConfigurationView(BaseView):
     @classmethod
     def validate_configuration(cls, max_lines, commit_interval):
         """validating configurations"""
-        if not max_lines > 0:
+        if max_lines <= 0:
             raise ValidationError(
                 "The maximum number of lines cannot be less than zero."
             )
-        if not commit_interval > 0:
+        if commit_interval <= 0:
             raise ValidationError("The commit interval cannot be less than zero")

@@ -4,7 +4,7 @@ from account.models import UserAccount
 from core.models.base import BaseModel
 
 
-class Pull_details(BaseModel):
+class PullDetails(BaseModel):
 
     """Model/Manager for Pull details"""
 
@@ -17,7 +17,7 @@ class Pull_details(BaseModel):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "Pull_details"
+        db_table = "PullDetails"
 
     @classmethod
     def save_pull_details(cls, data_dict):

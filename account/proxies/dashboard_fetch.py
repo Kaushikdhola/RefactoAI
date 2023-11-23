@@ -6,12 +6,12 @@ from django.conf import settings
 from django.core.serializers import serialize
 
 from account.models.account import UserAccount
-from account.models.pull_details import Pull_details
+from account.models.pull_details import PullDetails
 
 logger = logging.getLogger("dashboard_fetch")
 
 
-class DashBoardFetch(Pull_details):
+class DashBoardFetch(PullDetails):
     class Meta:
         proxy = True
 
@@ -64,7 +64,7 @@ class DashBoardFetch(Pull_details):
             str: JSON-formatted string containing pull details.
         """
 
-        pull_details_instance = Pull_details.objects.filter(author_id=username)
+        pull_details_instance = PullDetails.objects.filter(author_id=username)
         serialized_data = serialize("json", pull_details_instance)
         deserialized_data = json.loads(serialized_data)
         extracted_data = []
@@ -145,7 +145,7 @@ class DashBoardFetch(Pull_details):
         Returns:
             str: JSON string containing branch details including all commits.
         """
-        pull_requests = Pull_details.objects.filter(author_id=account.user_name)
+        pull_requests = PullDetails.objects.filter(author_id=account.user_name)
         all_commits = [
             cls.extract_commit_details(commit, account)
             for pull_request in pull_requests
