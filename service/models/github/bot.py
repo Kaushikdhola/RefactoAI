@@ -10,6 +10,7 @@ from service.models.github.event import GithubEvent
 from service.models.github.refactor import GithubRefactorService
 from account.proxies.github_account import GitHubAccount
 from account.models.source_configuration import SourceConfiguration
+from account.models.configuration import UserConfiguration
 
 class GithubBot:
     """Class for managing operations on GitHub repos"""
@@ -58,7 +59,7 @@ class GithubBot:
         """
         branch_name: str = self.event.payload.get("ref").split("/")[-1]
         if not branch_name.__contains__("refactored-by-re-facto"):
-            user_config = GitHubAccount.fetch_configurations(self.event.account.account_id)
+            user_config = UserConfiguration.fetch_configurations(self.event.account.account_id)
             repo_details = self.get_repo_details(user_config['repositories'], self.repo.full_name.split("/")[1])
 
             if repo_details:

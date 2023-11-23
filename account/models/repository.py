@@ -1,3 +1,4 @@
+import copy
 import requests
 from django.db import models
 
@@ -52,3 +53,23 @@ class Repository(BaseModel):
         headers = {"Accept": "application/json", "Authorization": f"Bearer {token}"}
         response = requests.get(repo_api, headers=headers, data=token_payload)
         return response.json()
+
+    @classmethod
+    def read_repositories(cls, user_id):
+        """fetching repository details related to the user"""
+        from account.models.branch import Branch
+        user_instance = UserAccount.objects.get(account_id=user_id)
+        repos = Repository.objects.filter(user=user_instance)
+        all_repos_data = []
+        for repo in repos:
+            branches = Branch.fetch_branches(user_id, repo)
+            branches_copy = copy.deepcopy(branches)
+            repo_data = {
+                "repo_id": repo.repo_id,
+                "name": repo.name,
+                "url": repo.url,
+                "source_branches": branches,
+                "target_branches": branches_copy,
+            }
+            all_repos_data.append(repo_data)
+        return all_repos_data

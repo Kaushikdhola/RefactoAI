@@ -77,7 +77,7 @@ class GitHubConfigurationView(BaseView):
     def fetch_repositories_data(self, user_id):
         """fetches all the repository details
         including source and target branches"""
-        return self.model.fetch_repositories(user_id=user_id)
+        return Repository.read_repositories(user_id=user_id)
 
     def configure_repository_instance(self, user_instance, repository):
         """create or get repository with

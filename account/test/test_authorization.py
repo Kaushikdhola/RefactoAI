@@ -6,6 +6,8 @@ from core.utils.exceptions import ValidationError
 from unittest.mock import patch, MagicMock
 from account.proxies.github_account import GitHubAccount
 from account.serializers.serializer import UserAccountSerializer
+from account.models.repository import Repository
+from account.models.configuration import UserConfiguration
 
 
 class GitHubAccountTest(TestCase):
@@ -153,7 +155,7 @@ class GitHubAccountTest(TestCase):
         branches = [{"name": "branch1"}, {"name": "branch2"}]
         mock_fetch_branches.side_effect = [branches, branches]
 
-        result = GitHubAccount.fetch_repositories(user_id)
+        result = Repository.read_repositories(user_id)
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["repo_id"], repo_instance.repo_id)
         self.assertEqual(result[0]["name"], repo_instance.name)
@@ -198,7 +200,7 @@ class GitHubAccountTest(TestCase):
         target_config_instance.target_branch.name = "branch2"
         mock_get_target.return_value = target_config_instance
 
-        result = GitHubAccount.fetch_configurations(user_id)
+        result = UserConfiguration.fetch_configurations(user_id)
         self.assertEqual(result["user_id"], user_id)
         self.assertEqual(result["commit_interval"], config_instance.commit_interval)
         self.assertEqual(result["max_lines"], config_instance.max_lines)
