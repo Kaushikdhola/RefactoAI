@@ -134,26 +134,67 @@ class DashBoardFetch(PullDetails):
             "Repo_name": branch_name,
         }
 
+    # @classmethod
+    # def fetch_branch(cls, account):
+    #     """
+    #     Fetch commit data for branches associated with a user's account.
+
+    #     Args:
+    #         account: Instance of UserAccount model.
+
+    #     Returns:
+    #         str: JSON string containing branch details including all commits.
+    #     """
+    #     pull_requests = PullDetails.objects.filter(author_id=account.user_name)
+    #     print(pull_requests)
+    #     all_commits = [
+    #         cls.extract_commit_details(commit, account)
+    #         for pull_request in pull_requests
+    #         for commit in cls.get_pull_request_commits(
+    #             pull_request.Repo_name, pull_request.pull_id, account.access_token
+    #         )
+    #     ]
+    #     return all_commits
+
+    
     @classmethod
-    def fetch_branch(cls, account):
+    def fetch_branch(cls, user_account_instance):
         """
         Fetch commit data for branches associated with a user's account.
-
+ 
         Args:
-            account: Instance of UserAccount model.
-
+            user_account_instance: Instance of UserAccount model.
+ 
         Returns:
             str: JSON string containing branch details including all commits.
         """
-        pull_requests = PullDetails.objects.filter(author_id=account.user_name)
-        all_commits = [
-            cls.extract_commit_details(commit, account)
-            for pull_request in pull_requests
-            for commit in cls.get_pull_request_commits(
-                pull_request.Repo_name, pull_request.pull_id, account.access_token
+ 
+        username = user_account_instance.user_name
+        access_token = user_account_instance.access_token
+ 
+        pull_requests = PullDetails.objects.filter(author_id=username)
+ 
+        commit_json = json.dumps([])
+ 
+        all_commits_details = []
+ 
+        for pull_request in pull_requests:
+            pull_request_number = pull_request.pull_id
+            commits = cls.get_pull_request_commits(
+                pull_request.Repo_name, pull_request_number, access_token
             )
-        ]
-        return all_commits
+ 
+            pull_request_commits_details = []
+            if commits:
+                for commit in commits:
+                    commit_details = cls.extract_commit_details(
+                        commit, user_account_instance
+                    )
+                    pull_request_commits_details.append(commit_details)
+                    all_commits_details.append(commit_details)
+                    
+        commit_json = json.dumps(all_commits_details)
+        return commit_json
 
     @classmethod
     def fetch_dashboard_data(cls, request):
@@ -169,7 +210,7 @@ class DashBoardFetch(PullDetails):
         user_id = request.session.get("user_id")
         user_account_instance = UserAccount.objects.get(account_id=user_id)
         username = user_account_instance.user_name
-        json_branch_data = cls.fetch_branch(account=user_account_instance)
+        json_branch_data = cls.fetch_branch(user_account_instance=user_account_instance)
         json_pr_data = cls.fetch_pr_details(username=username)
         return {
             "json_branch_data": json_branch_data,
