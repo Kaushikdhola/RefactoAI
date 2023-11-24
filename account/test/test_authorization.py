@@ -6,12 +6,16 @@ from core.utils.exceptions import ValidationError
 from unittest.mock import patch, MagicMock
 from account.proxies.github_account import GitHubAccount
 from account.serializers.serializer import UserAccountSerializer
+from account.models.repository import Repository
+from account.models.configuration import UserConfiguration
 
 
 class GitHubAccountTest(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
+        self.email = "test@test.com"
+        self.company = "Test Co"
 
     @patch('requests.post')
     def test_fetch_access_token(self, mock_post):
@@ -68,10 +72,10 @@ class GitHubAccountTest(TestCase):
         user_data = {
             "account_id": 1,
             "access_token": "test_token",
-            "email": "test@test.com",
+            "email": self.email,
             "login": "test",
             "name": "Test",
-            "company": "Test Co"
+            "company": self.company
         }
         UserAccount.objects.create(**user_data)
         mock_create.assert_called_once_with(**user_data)
@@ -82,10 +86,10 @@ class GitHubAccountTest(TestCase):
         mock_filter.return_value.first.return_value = mock_instance
         user_data = {
             "id": 1,
-            "email": "test@test.com",
+            "email": self.email,
             "login": "test",
             "name": "Test",
-            "company": "Test Co"
+            "company": self.company
         }
         access_token = "test_token"
         GitHubAccount.create_account(user_data, access_token)
@@ -107,10 +111,10 @@ class GitHubAccountTest(TestCase):
     def test_prepare_session(self, mock_rotate_token, mock_get):
         user_data = {
             "id": 1,
-            "email": "test@test.com",
+            "email": self.email,
             "login": "test",
             "name": "Test",
-            "company": "Test Co",
+            "company": self.company,
             "avatar_url": "xyz.png"
         }
         user_instance = UserAccount.objects.create(account_id=user_data["id"])
@@ -151,7 +155,7 @@ class GitHubAccountTest(TestCase):
         branches = [{"name": "branch1"}, {"name": "branch2"}]
         mock_fetch_branches.side_effect = [branches, branches]
 
-        result = GitHubAccount.fetch_repositories(user_id)
+        result = Repository.read_repositories(user_id)
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["repo_id"], repo_instance.repo_id)
         self.assertEqual(result[0]["name"], repo_instance.name)
@@ -196,7 +200,7 @@ class GitHubAccountTest(TestCase):
         target_config_instance.target_branch.name = "branch2"
         mock_get_target.return_value = target_config_instance
 
-        result = GitHubAccount.fetch_configurations(user_id)
+        result = UserConfiguration.fetch_configurations(user_id)
         self.assertEqual(result["user_id"], user_id)
         self.assertEqual(result["commit_interval"], config_instance.commit_interval)
         self.assertEqual(result["max_lines"], config_instance.max_lines)
@@ -228,7 +232,7 @@ class GitHubAccountTest(TestCase):
         request = self.factory.get("/")
 
         access_token = "test_token"
-        user_data = {"id": 1, "email": "test@test.com", "login": "test", "name": "Test", "company": "Test Co"}
+        user_data = {"id": 1, "email": self.email, "login": "test", "name": "Test", "company": self.company}
 
         mock_fetch_access_token.return_value = access_token
         mock_fetch_user_data.return_value = user_data

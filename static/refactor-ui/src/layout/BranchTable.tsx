@@ -95,7 +95,7 @@ export default function BranchTable() {
         if (response.data.json_branch_data.length === 0) {
           setIsDataEmpty(true);
           console.log(">>>>>>>> No Branch data found");
-        } else if (fetchedBranchData.length === 0) {
+        } else if (fetchedBranchData?.length === 0) {
           setFetchedBranchData(response.data.json_branch_data);
         }
         if (response.data.json_pr_data.length === 0) {
@@ -126,15 +126,16 @@ export default function BranchTable() {
 
     setIsRepoSelected(true);
 
-    const filteredBranchData = fetchedBranchData.filter(
+    console.log("fetchedBranchData", fetchedBranchData)
+    const filteredBranchData = fetchedBranchData?.filter(
       (cur: any) => cur.Repo_name === value
-    );
-    const branchData = filteredBranchData.map((cur: any) => ({
+    ) || [];
+    const branchData = filteredBranchData?.map((cur: any) => ({
       message: cur.message,
       author_name: cur.author_name,
       date: cur.date,
       Repo_name: cur.Repo_name,
-    }));
+    })) || [];
 
     setBranchRows(branchData);
 

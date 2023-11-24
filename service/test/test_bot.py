@@ -9,6 +9,8 @@ from account.models.source_configuration import SourceConfiguration
 
 class BotTestCase(TestCase):
     def setUp(self):
+        self.description = 'Second repository'
+        self.url = 'https://github.com/username/repo2'
         self.bot = GithubBot(request=MagicMock(), is_event=True)
         self.bot.event = MagicMock()
         self.bot.github = MagicMock()
@@ -83,8 +85,8 @@ class BotTestCase(TestCase):
             {
                 'repo_id': 2,
                 'name': 'repo2',
-                'description': 'Second repository',
-                'url': 'https://github.com/username/repo2',
+                'description': self.description,
+                'url': self.url,
                 'source_branches': [
                     {'name': 'main', 'commit_number': 20},
                     {'name': 'bugfix_branch', 'commit_number': 10},
@@ -99,14 +101,14 @@ class BotTestCase(TestCase):
 
         expected_result = {
             'name': 'repo2',
-            'description': 'Second repository',
+            'description': self.description,
             'repo_id': 2,
             'source_branches': [
                 {'name': 'main', 'commit_number': 20},
                 {'name': 'bugfix_branch', 'commit_number': 10},
             ],
             'target_branch': 'main',
-            'url': 'https://github.com/username/repo2'
+            'url': self.url
         }
         self.assertEqual(result, expected_result)
 
@@ -128,8 +130,8 @@ class BotTestCase(TestCase):
             {
                 'repo_id': 2,
                 'name': 'repo2',
-                'description': 'Second repository',
-                'url': 'https://github.com/username/repo2',
+                'description': self.description,
+                'url': self.url,
                 'source_branches': [
                     {'name': 'main', 'commit_number': 20},
                     {'name': 'bugfix_branch', 'commit_number': 10},

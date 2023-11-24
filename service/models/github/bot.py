@@ -5,12 +5,12 @@ from django.http import HttpRequest
 from github import Branch, Github, InputGitTreeElement
 import requests
 
-from account.models.pull_details import Pull_details
+from account.models.pull_details import PullDetails
 from service.models.github.event import GithubEvent
 from service.models.github.refactor import GithubRefactorService
-from account.models.pull_details import Pull_details
 from account.proxies.github_account import GitHubAccount
 from account.models.source_configuration import SourceConfiguration
+from account.models.configuration import UserConfiguration
 
 class GithubBot:
     """Class for managing operations on GitHub repos"""
@@ -59,7 +59,7 @@ class GithubBot:
         """
         branch_name: str = self.event.payload.get("ref").split("/")[-1]
         if not branch_name.__contains__("refactored-by-re-facto"):
-            user_config = GitHubAccount.fetch_configurations(self.event.account.account_id)
+            user_config = UserConfiguration.fetch_configurations(self.event.account.account_id)
             repo_details = self.get_repo_details(user_config['repositories'], self.repo.full_name.split("/")[1])
 
             if repo_details:
@@ -89,7 +89,7 @@ class GithubBot:
         for repo in repo_list:
             if repo['name'] == name:
                 return repo
-        return None
+        return next((repo for repo in repo_list if repo['name'] == name), None)
     
     def get_branch_details(self, branch_list, name) -> dict:
         """
@@ -105,7 +105,9 @@ class GithubBot:
         for branch in branch_list:
             if branch.get('name') == name:
                 return branch
-        return None
+        return next(
+            (branch for branch in branch_list if branch.get('name') == name), None
+        )
 
     def create_new_branch(self) -> None:
         """Creates new branch."""
@@ -165,7 +167,7 @@ class GithubBot:
                         'Repo_name': f"https://api.github.com/repos/{self.repo.full_name}",
                         'author': self.repo.full_name.split("/")[0],
                         'title': title}
-        Pull_details.save_pull_details(data_dict=pull_details)
+        PullDetails.save_pull_details(data_dict=pull_details)
 
     def refactor(self) -> None:
         """Refactors the given commit."""

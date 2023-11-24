@@ -5,22 +5,26 @@ from unittest.mock import MagicMock, patch
 from django.test import RequestFactory, TestCase
 
 from account.models.account import UserAccount
-from account.models.pull_details import Pull_details
+from account.models.pull_details import PullDetails
 from account.proxies.dashboard_fetch import DashBoardFetch
 
 
 class DashBoardFetchTests(TestCase):
     def setUp(self):
         # Setting up initial data for testing
+        self.title = "Test Pull Request"
+        self.commit_message = "Commit message"
+        self.date = "2023-01-01T00:00:00Z"
+        self.repo_name = "test_user/test_repo"
         self.user_account = UserAccount.objects.create(
             user_name="test_user",
             access_token="test_token",
         )
-        self.pull_request = Pull_details.objects.create(
+        self.pull_request = PullDetails.objects.create(
             author=self.user_account,
             Repo_name="test_repo",
             pull_id=1,
-            title="Test Pull Request",
+            title=self.title,
         )
 
     @mock.patch("requests.get")
@@ -68,7 +72,7 @@ class DashBoardFetchTests(TestCase):
                         "Repo_name": "test_repo",
                         "pull_id": 1,
                         "author": "test_user",
-                        "title": "Test Pull Request",
+                        "title": self.title,
                     }
                 ]
             )
@@ -83,14 +87,14 @@ class DashBoardFetchTests(TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = [
-            {"sha": "abc123", "commit": {"message": "Commit message"}}
+            {"sha": "abc123", "commit": {"message": self.commit_message}}
         ]
         mock_requests_get.return_value = mock_response
         result = DashBoardFetch.get_pull_request_commits("test_repo", 1, "test_token")
         mock_requests_get.assert_called_once_with(
             "test_repo/pulls/1/commits", headers={"Authorization": "token test_token"}
         )
-        expected_result = [{"sha": "abc123", "commit": {"message": "Commit message"}}]
+        expected_result = [{"sha": "abc123", "commit": {"message": self.commit_message}}]
         self.assertEqual(result, expected_result)
 
     def test_extract_commit_details(self):
@@ -98,9 +102,9 @@ class DashBoardFetchTests(TestCase):
         mock_commit = {
             "sha": "abc123",
             "commit": {
-                "message": "Commit message",
+                "message": self.commit_message,
                 "author": {"name": "Author"},
-                "committer": {"date": "2023-01-01T00:00:00Z"},
+                "committer": {"date": self.date},
             },
             "url": "https://api.github.com/repos/test_user/test_repo/commits/abc123",
         }
@@ -111,10 +115,10 @@ class DashBoardFetchTests(TestCase):
         )
         expected_result = {
             "sha": "abc123",
-            "message": "Commit message",
+            "message": self.commit_message,
             "author_name": "Author",
             "date": None,
-            "Repo_name": "test_user/test_repo",
+            "Repo_name": self.repo_name,
         }
         self.assertEqual(result, expected_result)
 
@@ -125,9 +129,9 @@ class DashBoardFetchTests(TestCase):
             {
                 "sha": "abc123",
                 "commit": {
-                    "message": "Commit message",
+                    "message": self.commit_message,
                     "author": {"name": "Author"},
-                    "committer": {"date": "2023-01-01T00:00:00Z"},
+                    "committer": {"date": self.date},
                 },
                 "url": "https://api.github.com/repos/test_user/test_repo/commits/abc123",
             }
@@ -139,10 +143,10 @@ class DashBoardFetchTests(TestCase):
         expected_result = [
             {
                 "sha": "abc123",
-                "message": "Commit message",
+                "message": self.commit_message,
                 "author_name": "Author",
                 "date": None,
-                "Repo_name": "test_user/test_repo",
+                "Repo_name": self.repo_name,
             }
         ]
         self.assertEqual(result, expected_result)
@@ -155,10 +159,10 @@ class DashBoardFetchTests(TestCase):
         mock_fetch_branch.return_value = [
             {
                 "sha": "abc123",
-                "message": "Commit message",
+                "message": self.commit_message,
                 "author_name": "Author",
-                "date": "2023-01-01T00:00:00Z",
-                "Repo_name": "test_user/test_repo",
+                "date": self.date,
+                "Repo_name": self.repo_name,
             }
         ]
         mock_fetch_pr_details.return_value = [
@@ -166,7 +170,7 @@ class DashBoardFetchTests(TestCase):
                 "Repo_name": "test_repo",
                 "pull_id": 1,
                 "author": "test_user",
-                "title": "Test Pull Request",
+                "title": self.title,
                 "source_branch": "feature-branch",
                 "target_branch": "main",
                 "state": "open",
@@ -194,10 +198,10 @@ class DashBoardFetchTests(TestCase):
             "json_branch_data": [
                 {
                     "sha": "abc123",
-                    "message": "Commit message",
+                    "message": self.commit_message,
                     "author_name": "Author",
-                    "date": "2023-01-01T00:00:00Z",
-                    "Repo_name": "test_user/test_repo",
+                    "date": self.date,
+                    "Repo_name": self.repo_name,
                 }
             ],
             "json_pr_data": [
@@ -205,7 +209,7 @@ class DashBoardFetchTests(TestCase):
                     "Repo_name": "test_repo",
                     "pull_id": 1,
                     "author": "test_user",
-                    "title": "Test Pull Request",
+                    "title": self.title,
                     "source_branch": "feature-branch",
                     "target_branch": "main",
                     "state": "open",

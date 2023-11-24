@@ -15,13 +15,13 @@ class GitHubConfigurationViewTestCase(TestCase):
     
     def setUp(self):
         user = UserAccount.objects.create(account_id=1234, access_token=" ", user_name="test")
-        user_conf = UserConfiguration.objects.create(user=user,commit_interval=5,max_lines=10)
+        UserConfiguration.objects.create(user=user,commit_interval=5,max_lines=10)
         repo = Repository.objects.create(repo_id=98765,name="repo1",url="https://api.github.com/repos/test/repo1",user=user)
         branch1 = Branch.objects.create(name="main",repository=repo,user=user)
         branch2 = Branch.objects.create(name="develop",repository=repo,user=user)
-        source_config1 = SourceConfiguration.objects.create(source_branch=branch1,repository=repo,user=user)
-        source_config2 = SourceConfiguration.objects.create(source_branch=branch2,repository=repo,user=user)
-        target_config = TargetConfiguration.objects.create(target_branch=branch1,repository=repo,user=user)
+        SourceConfiguration.objects.create(source_branch=branch1,repository=repo,user=user)
+        SourceConfiguration.objects.create(source_branch=branch2,repository=repo,user=user)
+        TargetConfiguration.objects.create(target_branch=branch1,repository=repo,user=user)
         self.view = GitHubConfigurationView()
 
     def create_mock_request(self, method='GET', data=None):

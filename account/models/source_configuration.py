@@ -25,10 +25,10 @@ class SourceConfiguration(BaseModel):
         repository_instance = Repository.objects.get(
             repo_id=repo_id, user=user_instance
         )
-        branch, created = Branch.objects.get_or_create(
+        branch, _ = Branch.objects.get_or_create(
             repository=repository_instance, name=branch_name, user=user_instance
         )
-        source_configuration, created = SourceConfiguration.objects.get_or_create(
+        source_configuration, _ = SourceConfiguration.objects.get_or_create(
             source_branch=branch, user=user_instance, repository=repository_instance
         )
         return source_configuration
