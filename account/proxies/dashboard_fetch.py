@@ -104,7 +104,7 @@ class DashBoardFetch(PullDetails):
             return None
 
     @classmethod
-    def extract_commit_details(cls, commit, user_account_instance):
+    def extract_commit_details(cls, commit, user_account_instance, pull_request_number):
         """
         Extract relevant details from a commit.
 
@@ -126,6 +126,7 @@ class DashBoardFetch(PullDetails):
         branch_name = username + "/" + branch_url.split("/")[5]
 
         return {
+            "pull_id": pull_request_number,
             "sha": sha,
             "message": message,
             "author_name": author_name,
@@ -164,7 +165,7 @@ class DashBoardFetch(PullDetails):
             if commits:
                 for commit in commits:
                     commit_details = cls.extract_commit_details(
-                        commit, user_account_instance
+                        commit, user_account_instance, pull_request_number
                     )
                     pull_request_commits_details.append(commit_details)
                     all_commits_details.append(commit_details)
