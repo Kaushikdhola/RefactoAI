@@ -38,8 +38,10 @@ export const Dashboard = () => {
       <CssBaseline />
       <Box
         sx={{
+          padding: 0,
           display: "flex",
-          minHeight: "100dvh",
+          minHeight: "100%",
+          // flex: 1,
         }}
       >
         <Box
@@ -57,7 +59,7 @@ export const Dashboard = () => {
             display: "flex",
             flexDirection: "column",
             minWidth: 0,
-            height: "100dvh",
+            height: "100%",
             gap: 1,
           }}
         >

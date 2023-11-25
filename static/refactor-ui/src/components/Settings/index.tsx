@@ -10,7 +10,6 @@ import {
   Alert,
 } from "@mui/joy";
 import CancelIcon from "@mui/icons-material/Cancel";
-
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -41,15 +40,14 @@ let configs = [
     maxLines: "null",
     repo: "null",
     config_trackedBranch: ["null"],
-    targetBranch: "null",
+    targetBranch: "",
   },
 ];
 
 const Settings = (props: Props) => {
   const navigate = useNavigate();
   const inputRef = React.useRef<HTMLInputElement | null>(null);
-  const [responseData, setAPIResponse] = React.useState<any>(null);
-  let [trgBranchValue, setTrgBranchValue] = React.useState<string | null>(null);
+  let [trgBranchValue, setTrgBranchValue] = React.useState<string>();
   let [trkedBranchValue, setTrkedBranchValue] = React.useState<any>([]);
   const [selectedRepo, setSelectedRepo] = React.useState<string | null>(null);
   const [repoData, setRepoData] = React.useState<any>([]);
@@ -111,7 +109,7 @@ const Settings = (props: Props) => {
     configs[0].repo = newValue as string;
     console.log("Selected Repo: " + configs[0].repo);
     console.log("Index Repo: " + indexOf(repoOptions, newValue));
-    let defaultTargetBranch = "null";
+    let defaultTargetBranch = "";
     let defaultTrackedBranch = ["null"];
 
     if (indexOf(repoOptions, newValue) !== -1) {
@@ -395,7 +393,7 @@ const Settings = (props: Props) => {
                       placeholder="Select Target Branch to merge to."
                       openOnFocus={true}
                       options={targetBranch.map((e: any) => e.name)}
-                      value={repoSelected ? trgBranchValue : null}
+                      value={repoSelected ? trgBranchValue : ""}
                       onChange={(event, newValue) => {
                         targetBranchOnchange(newValue);
                       }}
@@ -504,7 +502,7 @@ const Settings = (props: Props) => {
                       placeholder="Select Target Branch to merge to."
                       openOnFocus={true}
                       options={targetBranch.map((e: any) => e.name)}
-                      value={repoSelected ? trgBranchValue : null}
+                      value={repoSelected ? trgBranchValue : ""}
                       onChange={(event, newValue) => {
                         targetBranchOnchange(newValue);
                       }}
@@ -528,11 +526,11 @@ const Settings = (props: Props) => {
                   onClick={() => {
                     setRepoSelected(false);
                     setSelectedRepo(null);
-                    setTrgBranchValue(null);
+                    setTrgBranchValue("");
                     setTrkedBranchValue([]);
                     configs[0].repo = "null";
                     configs[0].config_trackedBranch = ["null"];
-                    configs[0].targetBranch = "null";
+                    configs[0].targetBranch = "";
                   }}
                 >
                   Discard

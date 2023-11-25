@@ -9,7 +9,7 @@ import {
   typographyClasses,
 } from "@mui/joy";
 import { useEffect } from "react";
-import { CssVarsProvider } from "@mui/joy/styles";
+import { CssVarsProvider, useColorScheme } from "@mui/joy/styles";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { prepareQueryParamsFromObject } from "../../utils/helpers";
