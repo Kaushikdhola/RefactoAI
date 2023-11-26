@@ -7,7 +7,7 @@ stages:
 variables:
   NODE: node:19-bullseye
   FRONTEND_BUILD_PATH: "static/refactor-ui/build/"
-  INSTANCE_BUILD_PATH: "/home/deployer/Group10/static/refactor-ui/build/"
+  INSTANCE_BUILD_PATH: "/home/deployer/Group10/static/refactor-ui/"
 
 include:
   - template: Code-Quality.gitlab-ci.yml
