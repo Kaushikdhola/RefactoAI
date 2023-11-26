@@ -1,15 +1,15 @@
 import { Fragment, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
 import { Box, CssBaseline } from "@mui/joy";
+import { Route, Routes } from "react-router-dom";
 
 import { HomePage } from "./components/Home";
 import Settings from "./components/Settings";
+import { About } from "./components/AboutUs";
 import { HomeLayout } from "./layout/HomeLayout";
 import { Dashboard } from "./components/Dashboard";
+import { Documentation } from "./components/Documentation";
 import { ProtectedLayout } from "./layout/ProtectedLayout";
 import { prepareSessionData } from "./redux/actions/SessionActions";
-import { About } from "./components/AboutUs";
-import { Documentation } from "./components/Documentation";
 
 const App = () => {
   useEffect(() => {

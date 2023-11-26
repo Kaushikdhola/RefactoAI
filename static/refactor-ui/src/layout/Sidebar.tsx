@@ -1,28 +1,28 @@
 import Box from "@mui/joy/Box";
+import { useState } from "react";
 import List from "@mui/joy/List";
 import Sheet from "@mui/joy/Sheet";
+import Avatar from "@mui/joy/Avatar";
 import Divider from "@mui/joy/Divider";
 import ListItem from "@mui/joy/ListItem";
-import { useState } from "react";
-import Typography from "@mui/joy/Typography";
-import Avatar from "@mui/joy/Avatar";
 import IconButton from "@mui/joy/IconButton";
-import logo from "../assets/images/logo.png";
+import Typography from "@mui/joy/Typography";
 import { useNavigate } from "react-router-dom";
-import GlobalStyles from "@mui/joy/GlobalStyles";
 import { useColorScheme } from "@mui/joy/styles";
+import GlobalStyles from "@mui/joy/GlobalStyles";
 import ListItemContent from "@mui/joy/ListItemContent";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
 
+import { AppState } from "../redux";
 import { closeSidebar } from "./utils";
 import { DELETE } from "../utils/axios";
-import { useAuth } from "../hooks/useAuth";
-import ColorSchemeToggle from "../components/ColorSchemeToggle";
 import { useSelector } from "react-redux";
-import { AppState } from "../redux";
+import { useAuth } from "../hooks/useAuth";
+import logo from "../assets/images/logo.png";
+import ColorSchemeToggle from "../components/ColorSchemeToggle";
 
 export const Sidebar = () => {
   const { logout }: any = useAuth();

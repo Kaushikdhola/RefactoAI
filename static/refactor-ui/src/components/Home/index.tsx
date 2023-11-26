@@ -1,22 +1,19 @@
-import { GitHub } from "@mui/icons-material";
 import {
   Box,
   Button,
   Container,
-  CssBaseline,
   Link,
   Typography,
   typographyClasses,
 } from "@mui/joy";
 import { useEffect } from "react";
-import { CssVarsProvider } from "@mui/joy/styles";
+import { GitHub } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { prepareQueryParamsFromObject } from "../../utils/helpers";
 import { POST } from "../../utils/axios";
 import { useAuth } from "../../hooks/useAuth";
 import HeroImage from "../../layout/Hero Image";
-import { NavBar } from "../../layout/HomeNavBar";
+import { prepareQueryParamsFromObject } from "../../utils/helpers";
 
 const HERO_STYLES = {
   BG_WRAPPER: "hero-fixer",
@@ -61,94 +58,76 @@ export const HomePage = () => {
   };
 
   return (
-    <CssVarsProvider disableTransitionOnChange>
-      <CssBaseline />
-      <Box
-        display={"flex"}
-        flexDirection={"column"}
-        flex={1}
-        position={"absolute"}
-        width={"100%"}
-        height={"100%"}
-      >
-        <NavBar />
-        <Container
-          sx={(theme) => ({
-            position: "relative",
-            // minHeight: "100%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+    <Container
+      sx={(theme) => ({
+        position: "relative",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
 
-            py: 10,
-            gap: 4,
-            [theme.breakpoints.up(834)]: {
-              flexDirection: "row",
-              gap: 6,
-            },
-            [theme.breakpoints.up(1199)]: {
-              gap: 12,
-            },
-          })}
+        py: 10,
+        gap: 4,
+        [theme.breakpoints.up(834)]: {
+          flexDirection: "row",
+          gap: 6,
+        },
+        [theme.breakpoints.up(1199)]: {
+          gap: 12,
+        },
+      })}
+    >
+      <Box
+        sx={(theme) => ({
+          display: "flex",
+          marginBottom: "10%",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "1rem",
+          maxWidth: "50ch",
+          textAlign: "center",
+          flexShrink: 999,
+          [theme.breakpoints.up(834)]: {
+            minWidth: 420,
+            alignItems: "flex-start",
+            textAlign: "initial",
+          },
+          [`& .${typographyClasses.root}`]: {
+            textWrap: "balance",
+          },
+        })}
+      >
+        <Typography color="primary" fontSize="lg" fontWeight="lg">
+          Worry less, Code more
+        </Typography>
+        <Typography
+          level="h1"
+          fontWeight="xl"
+          fontSize="clamp(1.875rem, 1.3636rem + 2.1818vw, 3rem)"
         >
-          <Box
-            sx={(theme) => ({
-              display: "flex",
-              marginBottom: "10%",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "1rem",
-              maxWidth: "50ch",
-              textAlign: "center",
-              flexShrink: 999,
-              [theme.breakpoints.up(834)]: {
-                minWidth: 420,
-                alignItems: "flex-start",
-                textAlign: "initial",
-              },
-              [`& .${typographyClasses.root}`]: {
-                textWrap: "balance",
-              },
-            })}
-          >
-            <Typography color="primary" fontSize="lg" fontWeight="lg">
-              Worry less, Code more
-            </Typography>
-            <Typography
-              level="h1"
-              fontWeight="xl"
-              fontSize="clamp(1.875rem, 1.3636rem + 2.1818vw, 3rem)"
-            >
-              Re-Facto 123
-            </Typography>
-            <Typography
-              fontSize="lg"
-              textColor="text.secondary"
-              lineHeight="lg"
-            >
-              A refactoring bot made using the power of Artificial Intelligence.
-              Start by integrating it into your repositories.
-            </Typography>
-            <Button
-              size="lg"
-              endDecorator={<GitHub fontSize="large" />}
-              onClick={handleLogin}
-            >
-              Get started with
-            </Button>
-            <Typography>
-              Already a member?{" "}
-              <Link fontWeight="lg" onClick={handleLogin}>
-                Sign in
-              </Link>
-            </Typography>
-          </Box>
-          <div className={HERO_STYLES.BG_WRAPPER}>
-            <HeroImage />
-          </div>
-        </Container>
+          Re-Facto
+        </Typography>
+        <Typography fontSize="lg" textColor="text.secondary" lineHeight="lg">
+          A refactoring bot made using the power of Artificial Intelligence.
+          Start by integrating it into your repositories.
+        </Typography>
+        <Button
+          size="lg"
+          endDecorator={<GitHub fontSize="large" />}
+          onClick={handleLogin}
+        >
+          Get started with
+        </Button>
+        <Typography>
+          Already a member?{" "}
+          <Link fontWeight="lg" onClick={handleLogin}>
+            Sign in
+          </Link>
+        </Typography>
       </Box>
-    </CssVarsProvider>
+      <div className={HERO_STYLES.BG_WRAPPER}>
+        <HeroImage />
+      </div>
+    </Container>
   );
 };

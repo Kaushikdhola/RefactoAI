@@ -1,13 +1,11 @@
-import { CssVarsProvider } from "@mui/joy/styles";
-import CssBaseline from "@mui/joy/CssBaseline";
-
-import Breadcrumbs from "@mui/joy/Breadcrumbs";
-
 import Box from "@mui/joy/Box";
+import { Typography } from "@mui/joy";
+import CssBaseline from "@mui/joy/CssBaseline";
+import Breadcrumbs from "@mui/joy/Breadcrumbs";
+import { CssVarsProvider } from "@mui/joy/styles";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 
-import { Typography } from "@mui/joy";
 import BranchTable from "../../layout/BranchTable";
 
 export const Dashboard = () => {
@@ -19,7 +17,6 @@ export const Dashboard = () => {
           padding: 0,
           display: "flex",
           minHeight: "100%",
-          // flex: 1,
         }}
       >
         <Box

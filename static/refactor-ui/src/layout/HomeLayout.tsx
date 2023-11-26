@@ -1,7 +1,8 @@
 import { isEmpty } from "lodash";
-import { Fragment } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
 
+import { NavBar } from "./HomeNavBar";
 import { useAuth } from "../hooks/useAuth";
 
 export const HomeLayout = () => {
@@ -12,8 +13,19 @@ export const HomeLayout = () => {
   }
 
   return (
-    <Fragment>
-      <Outlet />
-    </Fragment>
+    <CssVarsProvider disableTransitionOnChange>
+      <CssBaseline />
+      <Box
+        display={"flex"}
+        flexDirection={"column"}
+        flex={1}
+        position={"absolute"}
+        width={"100%"}
+        height={"100%"}
+      >
+        <NavBar />
+        <Outlet />
+      </Box>
+    </CssVarsProvider>
   );
 };
