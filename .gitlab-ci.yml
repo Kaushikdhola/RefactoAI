@@ -85,10 +85,8 @@ backend-deploy:
     - main
 
 frontend-deploy:
-  needs:
-    - app-build
   stage: deploy
-  image: $NODE
+  image: alpine:latest
   before_script:
     - chmod og= $SSH_PRIVATE_KEY
     - apk update && apk add openssh-client
