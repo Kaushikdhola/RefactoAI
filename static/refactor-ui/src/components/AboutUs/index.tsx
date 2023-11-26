@@ -15,7 +15,7 @@ import GlobalStyles from "@mui/joy/GlobalStyles";
 import { useColorScheme } from "@mui/joy/styles";
 
 export const About = () => {
-  const { mode } = useColorScheme();
+  // const { mode } = useColorScheme();
 
   return (
     <CssVarsProvider disableTransitionOnChange>
