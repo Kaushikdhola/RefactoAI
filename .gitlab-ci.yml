@@ -7,7 +7,7 @@ stages:
 variables:
   NODE: node:19-bullseye
   FRONTEND_BUILD_PATH: "static/refactor-ui/build/"
-  INSTANCE_BUILD_PATH: "home/deployer/Group10/static/refactor-ui/build/"
+  INSTANCE_BUILD_PATH: "/home/deployer/Group10/static/refactor-ui/"
 
 include:
   - template: Code-Quality.gitlab-ci.yml
@@ -85,13 +85,16 @@ backend-deploy:
     - main
 
 frontend-deploy:
+  needs:
+    - backend-deploy
+    - app-build
   stage: deploy
   image: alpine:latest
   before_script:
     - chmod og= $SSH_PRIVATE_KEY
     - apk update && apk add openssh-client
   script:
-    - scp -i $SSH_PRIVATE_KEY -o StrictHostKeyChecking=no -r $FRONTEND_BUILD_PATH $SERVER_USER@$SERVER_IP:$INSTANCE_BUILD_PATH"
+    - scp -i $SSH_PRIVATE_KEY -o StrictHostKeyChecking=no -r $FRONTEND_BUILD_PATH $SERVER_USER@$SERVER_IP:$INSTANCE_BUILD_PATH
     - ssh -i $SSH_PRIVATE_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "./deploy_prod.sh"
   tags:
     - frontend-build-deploy

@@ -3,6 +3,8 @@ import { Fragment } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
+import { NavBar } from "./HomeNavBar";
+import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
 
 export const HomeLayout = () => {
   const { session }: any = useAuth();
@@ -12,8 +14,19 @@ export const HomeLayout = () => {
   }
 
   return (
-    <Fragment>
-      <Outlet />
-    </Fragment>
+    <CssVarsProvider disableTransitionOnChange>
+      <CssBaseline />
+      <Box
+        display={"flex"}
+        flexDirection={"column"}
+        flex={1}
+        position={"absolute"}
+        width={"100%"}
+        height={"100%"}
+      >
+        <NavBar />
+        <Outlet />
+      </Box>
+    </CssVarsProvider>
   );
 };
