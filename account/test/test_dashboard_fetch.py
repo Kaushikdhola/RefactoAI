@@ -110,8 +110,9 @@ class DashBoardFetchTests(TestCase):
         }
         user_account_instance = MagicMock()
         user_account_instance.user_name = "test_user"
+        pull_request_number = 1
         result = DashBoardFetch.extract_commit_details(
-            mock_commit, user_account_instance
+            mock_commit, user_account_instance,pull_request_number
         )
         expected_result = {
             "sha": "abc123",
@@ -119,6 +120,7 @@ class DashBoardFetchTests(TestCase):
             "author_name": "Author",
             "date": None,
             "Repo_name": self.repo_name,
+            "pull_id": 1,
         }
         self.assertEqual(result, expected_result)
 
@@ -142,6 +144,7 @@ class DashBoardFetchTests(TestCase):
         )
         expected_result = [
             {
+                "pull_id" : 1,
                 "sha": "abc123",
                 "message": self.commit_message,
                 "author_name": "Author",
@@ -188,7 +191,7 @@ class DashBoardFetchTests(TestCase):
         result = DashBoardFetch.fetch_dashboard_data(request)
 
         # Assert that fetch_branch and fetch_pr_details were called with the correct arguments
-        mock_fetch_branch.assert_called_once_with(account=self.user_account)
+        mock_fetch_branch.assert_called_once_with(user_account_instance=self.user_account)
         mock_fetch_pr_details.assert_called_once_with(
             username=self.user_account.user_name
         )
