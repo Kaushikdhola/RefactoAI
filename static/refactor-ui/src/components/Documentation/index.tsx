@@ -27,6 +27,7 @@ export const Documentation = () => {
           flex: 1,
           flexDirection: "column",
           alignItems: "left",
+          height: 1,
           gap: 1,
           textAlign: "initial",
         })}
@@ -132,7 +133,7 @@ export const Documentation = () => {
           <Typography fontFamily={"monospace"}>4.</Typography>
           Approving the pull request on GitHub
         </Typography>
-        <Typography level="body-md">
+        <Typography level="body-md" paddingBottom={6}>
           When a Re-Facto bot raises a pull request, the user can manually
           reviews the refactored code in order to ensure quality of code. If
           user satisfies with the code quality then PR can be approved. However,
