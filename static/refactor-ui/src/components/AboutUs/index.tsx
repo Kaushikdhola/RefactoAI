@@ -90,6 +90,25 @@ export const About = () => {
           merge request, presenting the enhanced code for your consideration.
         </Typography>
       </Box>
+      <Card
+        component="li"
+        sx={{
+          backgroundColor: "transparent",
+          borderColor: "transparent",
+          minWidth: 300,
+          padding: 0,
+          flexGrow: 1,
+        }}
+      >
+        <img
+          src={logo}
+          alt="logo"
+          style={{
+            maxWidth: "50ch",
+            filter: mode === "dark" ? "invert(1)" : "invert(0)",
+          }}
+        />
+      </Card>
     </Container>
   );
 };
