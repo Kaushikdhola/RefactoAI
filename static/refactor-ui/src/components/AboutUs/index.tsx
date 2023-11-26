@@ -1,7 +1,9 @@
 import React from "react";
 import { TypeAnimation } from "react-type-animation";
+import logo from "../../assets/images/logo.png";
 import {
   Box,
+  Card,
   Container,
   CssBaseline,
   CssVarsProvider,
@@ -9,8 +11,12 @@ import {
   typographyClasses,
 } from "@mui/joy";
 import { NavBar } from "../../layout/HomeNavBar";
+import GlobalStyles from "@mui/joy/GlobalStyles";
+import { useColorScheme } from "@mui/joy/styles";
 
 export const About = () => {
+  const { mode } = useColorScheme();
+
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
@@ -23,11 +29,13 @@ export const About = () => {
         height={"100%"}
       >
         <NavBar />
+
         <Container
           sx={(theme) => ({
             position: "relative",
             // minHeight: "100%",
-            height: "100%",
+            // height: 1,
+
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -75,7 +83,6 @@ export const About = () => {
             </Typography>
             <TypeAnimation
               sequence={[
-                // Same substring at the start will only be typed once, initially
                 "We refactor code for Computers",
                 1000,
                 "We refactor code for Servers",
@@ -104,6 +111,24 @@ export const About = () => {
               for your consideration.
             </Typography>
           </Box>
+          <Card
+            component="li"
+            sx={{
+              borderColor: "transparent",
+              minWidth: 300,
+              padding: 0,
+              flexGrow: 1,
+            }}
+          >
+            <img
+              src={logo}
+              alt="logo"
+              style={{
+                maxWidth: "50ch",
+                // color: "inherit",
+              }}
+            />
+          </Card>
         </Container>
       </Box>
     </CssVarsProvider>
