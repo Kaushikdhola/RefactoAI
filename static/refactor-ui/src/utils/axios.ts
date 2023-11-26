@@ -15,7 +15,7 @@ const instance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 30000, // Adjust the timeout as needed
+  timeout: 300000,
 });
 
 // Optional: Add request/response interceptors to handle global configurations, error handling, etc.
