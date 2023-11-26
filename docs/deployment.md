@@ -1,37 +1,84 @@
-# GitLab CI/CD Pipeline Explanation
+# Build and Deployment
 
-This `.gitlab-ci.yml` file is a configuration file for GitLab's CI/CD (Continuous Integration/Continuous Deployment) pipeline. It defines stages, jobs, and actions that should be performed when certain conditions are met. Here's a step-by-step explanation of the deployment process:
+## Building the application
 
-## Stages
+Once you have installed all the dependencies, you can proceed with building the application.
 
-The pipeline is divided into four stages: `test`, `quality`, `build`, and `deploy`. Each stage contains one or more jobs that are executed in the order they are defined.
+### Backend Application
+For the backend python/django application, navigate to the project directory and run the following command to build the application:
 
-## Variables
+1. Navigate to the project directory: `cd Group10/`
+2. Install the backend dependencies: `poetry install`
+3. Run the server: `poetry run python manage.py runserver`
 
-Global variables are defined that can be used in any job. For example, `NODE` is defined as `node:19-bullseye` and `FRONTEND_BUILD_PATH` as `static/refactor-ui/build/`.
+To run test cases on the backend application
 
-## Include
+```
+python manage.py test
+```
 
-This section includes external CI/CD configuration files. Here, `Code-Quality.gitlab-ci.yml` is included.
+Building/Checking backend in CI/CD pipeline:
 
-## code-test Job
+* There exists a job name `code-test` in which the backend application gets build and tested
+* The section in `before-script` installs all the dependencies in the docker environment.
+* The `script` block runs the script for checking the backend application with all the basics runtime checks and test operations.
+* The backend application is then deployed on the Virtual Machine (Instance/Server)
+* It belongs to the `deploy` stage and uses the `alpine:latest` Docker image.
+* Configuration setup includes changing SSH key permissions and installing the `openssh-client` package. The main script connects to a server via SSH, executing the `deploy_prod.sh` script.
 
-This job runs in the `test` stage. It uses a Python image to run tests. The `before_script` section sets up the environment, and the `script` section runs the tests.
+The `deploy_prod.sh` looks like this 
 
-## code_quality Job
+```
+#!/bin/bash
 
-This job runs in the `quality` stage. It uses a Docker image to check the code quality. The `artifacts` section specifies that the quality report should be saved as an artifact.
+INSTANCE_PASS="password"
+PROJECT_DIR="/home/deployer/Group10"
 
-## app-build Job
+# Change to project directory or exit if unsuccessful
+cd "$PROJECT_DIR" || { echo "Failed to change directory. Exiting."; exit 1; }
 
-This job runs in the `build` stage. It uses a Node.js image to build the frontend application. The `before_script` section sets up the environment, and the `script` section builds the application.
+echo "Directory changed to $PROJECT_DIR"
 
-## backend-deploy Job
+# Switch to the main branch and pull the latest changes
+git checkout main
+git pull origin main
 
-This job runs in the `deploy` stage. It uses an Alpine image to deploy the backend application to a server. The `before_script` section sets up the environment, and the `script` section deploys the application.
+# Reset local changes to match the main branch
+git reset --hard origin/main
 
-## frontend-deploy Job
+# Install project dependencies using Poetry
+python3 -m poetry install
 
-This job also runs in the `deploy` stage. It uses a Node.js image to deploy the frontend application to Netlify. The `before_script` section sets up the environment, and the `script` section deploys the application.
+# Reload systemd daemon to apply changes
+echo "$INSTANCE_PASS" | sudo -S systemctl daemon-reload
 
-Each job has `tags` that can be used to select specific runners, `rules` that determine when the job should be run, and `needs` that specify dependencies between jobs.
+# Restart Gunicorn socket and service
+echo "$INSTANCE_PASS" | sudo -S systemctl restart gunicorn.socket gunicorn.service
+
+# Check Nginx configuration and restart Nginx
+echo "$INSTANCE_PASS" | sudo -S nginx -t && sudo -S systemctl restart nginx
+```
+
+If you go to your VM host with respective port you can see your backend code running.
+
+### Frontend Application
+For the frontend React application, navigate to the project directory and run the following commands to install the required dependencies:
+
+1. Navigate to the frontend directory: `cd static/refactor-ui`
+2. Install the frontend dependencies: `yarn install`
+3. Build the frontend: `yarn start`
+
+Building frontend application in CI/CD pipeline:
+
+* There exists a job name `app-build` in which the frontend application gets build
+* The section in `before-script` installs all the dependencies in the docker environment which are there in `package.json`.
+* The `script` block runs the script for building the application with the command `yarn build`.
+* The frontend application is then deployed on the Virtual Machine (Instance/Server)
+* The script uses SCP (`scp` command) to securely copy the contents of the `$FRONTEND_BUILD_PATH` on the local machine to a specified destination on a remote server (`$SERVER_USER@$SERVER_IP:$INSTANCE_BUILD_PATH`). This is done using the SSH private key specified in `$SSH_PRIVATE_KEY`. The `-o StrictHostKeyChecking=no` flag disables strict host key checking for the SCP and SSH commands.
+* Then it runs the `deploy_prod.sh` again to update the instance with the latest build.
+
+To check whether the frontend application has been successfully deployed, you can navigate to the URL of the of host server.
+
+By following the steps outlined in this document, you should be able to build and deploy your web application using GitLab CI/CD.
+
+[**Go back to README.md**](../README.md)
