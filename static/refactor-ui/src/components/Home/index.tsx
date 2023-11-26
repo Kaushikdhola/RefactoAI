@@ -120,7 +120,7 @@ export const HomePage = () => {
               fontWeight="xl"
               fontSize="clamp(1.875rem, 1.3636rem + 2.1818vw, 3rem)"
             >
-              Re-Facto
+              Re-Facto 123
             </Typography>
             <Typography
               fontSize="lg"
