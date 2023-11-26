@@ -12,7 +12,6 @@ import {
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Button from "@mui/joy/Button";
 import Divider from "@mui/joy/Divider";
 import FormControl from "@mui/joy/FormControl";
@@ -45,7 +44,6 @@ let configs = [
 ];
 
 const Settings = (props: Props) => {
-  const navigate = useNavigate();
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   let [trgBranchValue, setTrgBranchValue] = React.useState<string>();
   let [trkedBranchValue, setTrkedBranchValue] = React.useState<any>([]);
@@ -57,7 +55,6 @@ const Settings = (props: Props) => {
   let [repoSelected, setRepoSelected] = useState(false);
   let [commit_interval, setCommitInterval] = useState("null");
   let [minLines, setMinLines] = useState("null");
-  let [isFetched, setIsFetched] = useState(false);
   let [alertOpen, setAlertOpen] = useState(false);
   let [errorAlert, setErrorAlert] = useState(false);
 
@@ -86,7 +83,6 @@ const Settings = (props: Props) => {
         trackedBranches: repo.source_branches,
       }))
     );
-    setIsFetched(true);
     console.log("------>Repo Data: ", repoData);
   };
 

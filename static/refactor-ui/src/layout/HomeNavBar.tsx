@@ -1,49 +1,14 @@
 import * as React from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  IconButton,
-  Tab,
-  TabList,
-  Tabs,
-  tabClasses,
-  useColorScheme,
-} from "@mui/joy";
-import Typography from "@mui/joy/Typography";
-import Avatar from "@mui/joy/Avatar";
-import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
+import { Box, Button, Card, CardActions, useColorScheme } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 
 import logo from "../assets/images/logo.png";
 import ColorSchemeToggle from "../components/ColorSchemeToggle";
 import { Link } from "react-router-dom";
 
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
-
-const pages = ["About Us", "Documentation"];
-const logoSrc = require("../assets/images/logo.png");
-
 export const NavBar = () => {
   const navigate = useNavigate();
   const { mode } = useColorScheme();
-
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
 
   return (
     <Box
@@ -78,6 +43,7 @@ export const NavBar = () => {
           >
             <img
               src={logo}
+              alt="logo"
               style={{
                 filter: mode === "dark" ? "invert(1)" : "invert(0)",
               }}

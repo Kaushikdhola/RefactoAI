@@ -1,4 +1,4 @@
-import { Css, GitHub } from "@mui/icons-material";
+import { GitHub } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -9,7 +9,7 @@ import {
   typographyClasses,
 } from "@mui/joy";
 import { useEffect } from "react";
-import { CssVarsProvider, useColorScheme } from "@mui/joy/styles";
+import { CssVarsProvider } from "@mui/joy/styles";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { prepareQueryParamsFromObject } from "../../utils/helpers";
@@ -21,12 +21,6 @@ import { NavBar } from "../../layout/HomeNavBar";
 const HERO_STYLES = {
   BG_WRAPPER: "hero-fixer",
 };
-
-const renderBackgroundImage = (): React.ReactNode => (
-  <div className={HERO_STYLES.BG_WRAPPER}>
-    <HeroImage />
-  </div>
-);
 
 export const HomePage = () => {
   const { login }: any = useAuth();
@@ -87,7 +81,6 @@ export const HomePage = () => {
             flexDirection: "column",
             alignItems: "center",
 
-            // backgroundColor: "white",
             py: 10,
             gap: 4,
             [theme.breakpoints.up(834)]: {
@@ -104,9 +97,7 @@ export const HomePage = () => {
               display: "flex",
               marginBottom: "10%",
               flexDirection: "column",
-              // flex: 1,
               alignItems: "center",
-              // backgroundColor: "yellow",
               gap: "1rem",
               maxWidth: "50ch",
               textAlign: "center",
@@ -153,7 +144,6 @@ export const HomePage = () => {
               </Link>
             </Typography>
           </Box>
-          {/* {renderBackgroundImage()} */}
           <div className={HERO_STYLES.BG_WRAPPER}>
             <HeroImage />
           </div>

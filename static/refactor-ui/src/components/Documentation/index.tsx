@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Box,
   Container,
@@ -7,14 +7,9 @@ import {
   Divider,
   Link,
   Typography,
-  typographyClasses,
 } from "@mui/joy";
 import { NavBar } from "../../layout/HomeNavBar";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 export const Documentation = () => {
-  const [markdown, setMarkdown] = useState("");
-
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
