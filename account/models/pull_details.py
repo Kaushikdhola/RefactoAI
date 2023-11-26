@@ -8,7 +8,7 @@ class PullDetails(BaseModel):
 
     """Model/Manager for Pull details"""
 
-    pull_id = models.IntegerField(unique=True)
+    pull_id = models.IntegerField()
     Repo_name = models.CharField(max_length=255)
     author = models.ForeignKey(
         UserAccount, on_delete=models.CASCADE, to_field="user_name"
