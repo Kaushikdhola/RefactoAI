@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Box, Button, Card, CardActions, CssVarsProvider, useColorScheme } from "@mui/joy";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { Box, Button, Card, CardActions, useColorScheme } from "@mui/joy";
 
 import logo from "../assets/images/logo.png";
 import ColorSchemeToggle from "../components/ColorSchemeToggle";
-import { Link } from "react-router-dom";
 
 export const NavBar = () => {
   const navigate = useNavigate();

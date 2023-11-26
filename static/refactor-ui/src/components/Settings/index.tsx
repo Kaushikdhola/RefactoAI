@@ -9,27 +9,25 @@ import {
   Grid,
   Alert,
 } from "@mui/joy";
-import CancelIcon from "@mui/icons-material/Cancel";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import React, { useEffect, useState } from "react";
+import { indexOf } from "lodash";
+import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import Divider from "@mui/joy/Divider";
-import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
-import Input from "@mui/joy/Input";
-import RadarIcon from "@mui/icons-material/Radar";
-import { POST, GET } from "../../utils/axios";
-
-import CardActions from "@mui/joy/CardActions";
-import CardOverflow from "@mui/joy/CardOverflow";
-
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
-
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import { indexOf } from "lodash";
 import { HashLoader } from "react-spinners";
+import CardActions from "@mui/joy/CardActions";
+import FormControl from "@mui/joy/FormControl";
+import CardOverflow from "@mui/joy/CardOverflow";
+import RadarIcon from "@mui/icons-material/Radar";
+import React, { useEffect, useState } from "react";
+import CancelIcon from "@mui/icons-material/Cancel";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+
+import { POST, GET } from "../../utils/axios";
 
 type Props = {};
 
@@ -58,22 +56,13 @@ const Settings = (props: Props) => {
   let [alertOpen, setAlertOpen] = useState(false);
   let [errorAlert, setErrorAlert] = useState(false);
 
-  /**
-   * Fetches data from the API and updates the component state.
-   */
   const fetchAPI = async () => {
     const apiResponse = await GET("api/account/github/configurations/");
-    console.log("------>API Response: ", apiResponse.data);
 
-    console.log("------>Post Data: ", apiResponse.data);
-    console.log("------>", apiResponse.data.repositories);
-    console.log("------>Commit: ", apiResponse.data.commit_interval);
-    console.log("------>Max Lines: ", apiResponse.data.max_lines);
     configs[0].interval = apiResponse.data.commit_interval;
     configs[0].maxLines = apiResponse.data.max_lines;
     setCommitInterval(apiResponse.data.commit_interval);
     setMinLines(apiResponse.data.max_lines);
-    console.log("------>Configs: ", configs);
     setLoading(false);
     await setRepoData(
       apiResponse.data.repositories.map((repo: any) => ({
@@ -83,28 +72,21 @@ const Settings = (props: Props) => {
         trackedBranches: repo.source_branches,
       }))
     );
-    console.log("------>Repo Data: ", repoData);
   };
 
   const targetBranchOnchange = (newValue: any) => {
     setTrgBranchValue(newValue);
     configs[0].targetBranch = newValue as string;
-    console.log("Target Branch: " + configs[0].targetBranch);
-    console.log("Updated Branch Config: ", configs);
   };
 
   const trackedBranchOnchange = (newValue: any) => {
     setTrkedBranchValue(newValue);
     configs[0].config_trackedBranch = newValue as string[];
-    console.log("Updated Tracked Branch Config: ", configs);
-    console.log("Tracked Branch: " + newValue);
   };
 
   const repoOnchange = (newValue: any) => {
     setSelectedRepo(newValue);
     configs[0].repo = newValue as string;
-    console.log("Selected Repo: " + configs[0].repo);
-    console.log("Index Repo: " + indexOf(repoOptions, newValue));
     let defaultTargetBranch = "";
     let defaultTrackedBranch = ["null"];
 
@@ -129,7 +111,6 @@ const Settings = (props: Props) => {
           }
         }
       );
-      console.log(repoData[indexOf(repoOptions, newValue)].targetBranches);
     } else {
       setRepoSelected(false);
       setTrackedBranch([]);
@@ -137,19 +118,14 @@ const Settings = (props: Props) => {
     }
     configs[0].targetBranch = defaultTargetBranch;
     configs[0].config_trackedBranch = defaultTrackedBranch;
-    setTrkedBranchValue(defaultTrackedBranch); // Clear the value of trkedBranchAutocomplete
-    setTrgBranchValue(defaultTargetBranch); // Clear the value of trgBranchAutocomplete
+    setTrkedBranchValue(defaultTrackedBranch);
+    setTrgBranchValue(defaultTargetBranch);
   };
 
-  /**
-   * Sends a POST request to the API to update the GitHub configurations.
-   * @returns {Promise<void>} A promise that resolves when the request is complete.
-   */
   const postAPI = async () => {
     setLoading(true);
     const apiPostResponse = await GET("api/account/github/configurations/");
     let tempResponse = apiPostResponse.data;
-    console.log("------>Post Data: ", tempResponse);
     let repoJson = tempResponse.repositories;
     tempResponse.commit_interval = Number(commit_interval);
     tempResponse.max_lines = Number(minLines);
@@ -177,30 +153,23 @@ const Settings = (props: Props) => {
     });
 
     tempResponse.repositories = repoJson;
-    console.log("------>Temp Post Data: ", tempResponse);
     let postResponse = await POST(
       "api/account/github/configurations/",
       tempResponse
     ).catch(function (error) {
       setLoading(false);
       setErrorAlert(true);
-      // Logging any errors that occur during the API request
       console.error("Error:", error);
       return;
     });
     setLoading(false);
     setAlertOpen(true);
-    console.log("------>Post Response: ", postResponse);
   };
 
   useEffect(() => {
     fetchAPI();
   }, []);
 
-  /**
-   * Array of repository options.
-   * @type {any[]}
-   */
   let repoOptions: any =
     repoData.length > 0 ? repoData?.map((option: any) => option.reponame) : [];
   return (
@@ -249,7 +218,6 @@ const Settings = (props: Props) => {
             display: "contents",
             flexDirection: "column",
             alignItems: "center",
-            // flexGrow: 1,
             height: 1,
             position: "absolute",
             width: 1,
@@ -306,7 +274,6 @@ const Settings = (props: Props) => {
                       value={commit_interval}
                       onChange={(e) => {
                         setCommitInterval(e.target.value);
-                        console.log("Commit Interval: " + commit_interval);
                       }}
                       slotProps={{
                         input: {
@@ -327,10 +294,7 @@ const Settings = (props: Props) => {
                       size="md"
                       value={minLines}
                       onChange={(e) => {
-                        console.log("Before Min Lines: " + e.target.value);
-                        // minLines = e.target.value;
                         setMinLines(e.target.value);
-                        console.log("Min Lines: " + minLines);
                       }}
                       slotProps={{
                         input: {
@@ -349,7 +313,6 @@ const Settings = (props: Props) => {
                   <FormLabel>Select Repository</FormLabel>
                   <Autocomplete
                     id="repoAutocomplete"
-                    // color="danger"
                     size="md"
                     placeholder="Select Repo"
                     openOnFocus={true}
@@ -371,7 +334,6 @@ const Settings = (props: Props) => {
                       placeholder="Select the branches to track for refactoring."
                       openOnFocus={true}
                       options={trackedBranch.map((e: any) => e.name)}
-                      // defaultValue={repoSelected?}
                       value={repoSelected ? trkedBranchValue : []}
                       onChange={(event, newValue) => {
                         trackedBranchOnchange(newValue);
@@ -415,7 +377,6 @@ const Settings = (props: Props) => {
                       value={commit_interval}
                       onChange={(e) => {
                         setCommitInterval(e.target.value);
-                        console.log("Commit Interval: " + commit_interval);
                       }}
                       slotProps={{
                         input: {
@@ -436,10 +397,7 @@ const Settings = (props: Props) => {
                       size="md"
                       value={minLines}
                       onChange={(e) => {
-                        console.log("Before Min Lines: " + e.target.value);
-                        // minLines = e.target.value;
                         setMinLines(e.target.value);
-                        console.log("Min Lines: " + minLines);
                       }}
                       slotProps={{
                         input: {
@@ -458,7 +416,6 @@ const Settings = (props: Props) => {
                   <FormLabel>Select Repository</FormLabel>
                   <Autocomplete
                     id="repoAutocomplete"
-                    // color="danger"
                     size="md"
                     placeholder="Select Repo"
                     openOnFocus={true}
@@ -480,7 +437,6 @@ const Settings = (props: Props) => {
                       placeholder="Select the branches to track for refactoring."
                       openOnFocus={true}
                       options={trackedBranch.map((e: any) => e.name)}
-                      // defaultValue={repoSelected?}
                       value={repoSelected ? trkedBranchValue : []}
                       onChange={(event, newValue) => {
                         trackedBranchOnchange(newValue);
@@ -535,11 +491,6 @@ const Settings = (props: Props) => {
                   size="sm"
                   variant="solid"
                   onClick={() => {
-                    console.log(
-                      "Is Tracking Branch Empty: ",
-                      configs[0].config_trackedBranch
-                    );
-
                     if (
                       configs[0].repo === "null" ||
                       configs[0].config_trackedBranch[0] === undefined ||
@@ -549,7 +500,6 @@ const Settings = (props: Props) => {
                       setErrorAlert(true);
                       return;
                     }
-                    console.log("POST: ", configs);
                     postAPI();
                   }}
                 >

@@ -1,6 +1,6 @@
 import { isEmpty } from "lodash";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import Header from "./Header";
 import { Sidebar } from "./Sidebar";

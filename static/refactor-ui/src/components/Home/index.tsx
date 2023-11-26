@@ -1,22 +1,19 @@
-import { GitHub } from "@mui/icons-material";
 import {
   Box,
   Button,
   Container,
-  CssBaseline,
   Link,
   Typography,
   typographyClasses,
 } from "@mui/joy";
-import { Fragment, useEffect } from "react";
-import { CssVarsProvider } from "@mui/joy/styles";
+import { useEffect } from "react";
+import { GitHub } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { prepareQueryParamsFromObject } from "../../utils/helpers";
 import { POST } from "../../utils/axios";
 import { useAuth } from "../../hooks/useAuth";
 import HeroImage from "../../layout/Hero Image";
-import { NavBar } from "../../layout/HomeNavBar";
+import { prepareQueryParamsFromObject } from "../../utils/helpers";
 
 const HERO_STYLES = {
   BG_WRAPPER: "hero-fixer",
@@ -64,7 +61,6 @@ export const HomePage = () => {
     <Container
       sx={(theme) => ({
         position: "relative",
-        // minHeight: "100%",
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -109,7 +105,7 @@ export const HomePage = () => {
           fontWeight="xl"
           fontSize="clamp(1.875rem, 1.3636rem + 2.1818vw, 3rem)"
         >
-          Re-Facto 123
+          Re-Facto
         </Typography>
         <Typography fontSize="lg" textColor="text.secondary" lineHeight="lg">
           A refactoring bot made using the power of Artificial Intelligence.

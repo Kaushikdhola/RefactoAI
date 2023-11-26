@@ -1,14 +1,5 @@
-import React, { Fragment } from "react";
-import {
-  Box,
-  Container,
-  CssBaseline,
-  CssVarsProvider,
-  Divider,
-  Link,
-  Typography,
-} from "@mui/joy";
-import { NavBar } from "../../layout/HomeNavBar";
+import React from "react";
+import { Box, Container, Divider, Link, Typography } from "@mui/joy";
 export const Documentation = () => {
   return (
     <Container
@@ -18,7 +9,6 @@ export const Documentation = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "left",
-
         pt: 2,
         pb: 10,
         gap: 4,
