@@ -1,14 +1,5 @@
-import React, { Fragment } from "react";
-import {
-  Box,
-  Container,
-  CssBaseline,
-  CssVarsProvider,
-  Divider,
-  Link,
-  Typography,
-} from "@mui/joy";
-import { NavBar } from "../../layout/HomeNavBar";
+import React from "react";
+import { Box, Container, Divider, Link, Typography } from "@mui/joy";
 export const Documentation = () => {
   return (
     <Container
@@ -18,7 +9,6 @@ export const Documentation = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "left",
-
         pt: 2,
         pb: 10,
         gap: 4,
@@ -37,6 +27,7 @@ export const Documentation = () => {
           flex: 1,
           flexDirection: "column",
           alignItems: "left",
+          height: 1,
           gap: 1,
           textAlign: "initial",
         })}
@@ -142,7 +133,7 @@ export const Documentation = () => {
           <Typography fontFamily={"monospace"}>4.</Typography>
           Approving the pull request on GitHub
         </Typography>
-        <Typography level="body-md">
+        <Typography level="body-md" paddingBottom={6}>
           When a Re-Facto bot raises a pull request, the user can manually
           reviews the refactored code in order to ensure quality of code. If
           user satisfies with the code quality then PR can be approved. However,

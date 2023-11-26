@@ -1,7 +1,9 @@
 import React from "react";
 import { TypeAnimation } from "react-type-animation";
+import logo from "../../assets/images/logo.png";
 import {
   Box,
+  Card,
   Container,
   Typography,
   typographyClasses,
@@ -15,13 +17,10 @@ export const About = () => {
     <Container
       sx={(theme) => ({
         position: "relative",
-        // minHeight: "100%",
         height: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-
-        // backgroundColor: "white",
         py: 10,
         gap: 4,
         [theme.breakpoints.up(834)]: {
@@ -38,9 +37,7 @@ export const About = () => {
           display: "flex",
           marginBottom: "10%",
           flexDirection: "column",
-          // flex: 1,
           alignItems: "center",
-          // backgroundColor: "yellow",
           gap: "1rem",
           maxWidth: "55ch",
           textAlign: "center",
@@ -64,7 +61,6 @@ export const About = () => {
         </Typography>
         <TypeAnimation
           sequence={[
-            // Same substring at the start will only be typed once, initially
             "We refactor code for Computers",
             1000,
             "We refactor code for Servers",
@@ -88,6 +84,25 @@ export const About = () => {
           merge request, presenting the enhanced code for your consideration.
         </Typography>
       </Box>
+      <Card
+        component="li"
+        sx={{
+          backgroundColor: "transparent",
+          borderColor: "transparent",
+          minWidth: 300,
+          padding: 0,
+          flexGrow: 1,
+        }}
+      >
+        <img
+          src={logo}
+          alt="logo"
+          style={{
+            maxWidth: "50ch",
+            filter: mode === "dark" ? "invert(1)" : "invert(0)",
+          }}
+        />
+      </Card>
     </Container>
   );
 };

@@ -2,8 +2,9 @@
 import * as React from "react";
 import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import { Autocomplete, Card, CardContent, Stack } from "@mui/joy";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+
 import { POST } from "../utils/axios";
 
 interface pullData {
@@ -47,10 +48,6 @@ function getComparator<Key extends keyof any>(
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort<T>(
   array: readonly T[],
   comparator: (a: T, b: T) => number
@@ -75,49 +72,29 @@ export default function BranchTable() {
   const [branchRows, setBranchRows] = React.useState<Array<branchData>>([]);
   const [fetchedPRData, setFetchedPRData] = React.useState<any>([]);
   const [fetchedBranchData, setFetchedBranchData] = React.useState<any>([]);
-  /**
-   * Fetches the repository branches from the API.
-   * Makes a POST request to the 'api/account/dashboard/home/' endpoint.
-   * Logs the received data and updates the state with the branch list.
-   * Sets the isDataEmpty state to true if no branch or PR data is found.
-   * Logs any errors that occur during the API request.
-   */
+
   const fetchRepoBranches = async () => {
-    // // Making a POST request to the 'api/account/dashboard/home/' endpoint
     await POST("api/account/dashboard/home/")
       .then(async function (response) {
-        // Logging the data received from the API response
-        console.log("Data:", response.data);
-        console.log("Branch Data:", response.data.json_branch_data);
-        console.log("PR Data:", response.data.json_pr_data);
         if (response.data.json_branch_data.length === 0) {
           setIsDataEmpty(true);
-          console.log(">>>>>>>> No Branch data found");
         } else if (fetchedBranchData?.length === 0) {
           setFetchedBranchData(response.data.json_branch_data);
         }
         if (response.data.json_pr_data.length === 0) {
           setIsDataEmpty(true);
-          console.log(">>>>>>>> No PR data found");
         } else if (fetchedPRData.length === 0) {
           setFetchedPRData(response.data.json_pr_data);
         }
       })
       .catch(function (error) {
-        // Logging any errors that occur during the API request
         console.error("Error:", error);
       });
   };
 
-  /**
-   * Handles the change event when a repository is selected.
-   * @param value The selected repository value.
-   * @returns void
-   */
   const onRepoChange = async (value: any) => {
     setSelectedRepo(value);
 
-    console.log("fetchedBranchData", fetchedBranchData);
     const filteredBranchData =
       fetchedBranchData?.filter((cur: any) => cur.Repo_name === value) || [];
     const branchData =
@@ -131,16 +108,11 @@ export default function BranchTable() {
 
     let filteredRepoData: any = [];
     fetchedPRData.forEach((cur: any) => {
-      console.log("Current Repo Data: ", cur.Repo_name);
       if (String(cur.Repo_name).split("/").slice(-2).join("/") === value) {
         filteredRepoData.push(cur);
       }
     });
 
-    console.log("Filtered Repo Data: ", filteredRepoData);
-
-    console.log("Repo name and Value: ", value);
-    console.log("Filtered Data: ", fetchedPRData);
     const repoData = filteredRepoData.map((cur: any) => ({
       pull_id: cur.pull_id,
       author: cur.author,
@@ -151,18 +123,9 @@ export default function BranchTable() {
       deletions: cur.deletions,
     }));
 
-    console.log("Current Repo Data: ", { repoRows, repoData });
-
     setRepoRows(repoData);
-    console.log("Temp Repo Data", repoData);
-    console.log("Selected Repo: " + value);
-    console.log("Updated Repo Data: ", { repoRows, repoData });
   };
 
-  /**
-   * Retrieves the list of repositories from the json_pr_data and sets it in the state.
-   * Also logs each repository name to the console.
-   */
   const getRepoList = () => {
     let repos: string[] = [];
 
@@ -175,9 +138,6 @@ export default function BranchTable() {
     repos = Array.from(new Set(repos));
 
     setRepoList(repos);
-    repos.forEach((item: string) => {
-      console.log("Repo: " + item);
-    });
   };
 
   React.useEffect(() => {
@@ -188,11 +148,9 @@ export default function BranchTable() {
   if (isDataEmpty !== true || undefined) {
     return (
       <React.Fragment>
-        {/* <Skeleton loading={!isDataEmpty} variant="overlay"> */}
         <Autocomplete
           id="repo-select-dashboard"
           placeholder="Select Repo for Statistics"
-          // sx={{ visibility: !isDataEmpty ? "visible" : "hidden" }}
           openOnFocus={true}
           options={repoList}
           value={selectedRepo}
@@ -202,16 +160,8 @@ export default function BranchTable() {
           startDecorator={<KeyboardDoubleArrowRightIcon />}
         />
 
-        <Typography
-          variant="plain"
-          // visibility={!isDataEmpty ? "visible" : "hidden"}
-        >
-          Please select a repository
-        </Typography>
-        <Stack
-          spacing={2.5}
-          // sx={{ visibility: isDataEmpty ? "hidden" : "visible" }}
-        >
+        <Typography variant="plain">Please select a repository</Typography>
+        <Stack spacing={2.5}>
           <Card variant="outlined">
             <CardContent>
               <Typography color="neutral" noWrap={false} variant="plain">
@@ -282,35 +232,30 @@ export default function BranchTable() {
                   <tbody>
                     {stableSort(branchRows, getComparator(order, "date")).map(
                       (row) => (
-                        console.log("----row", row),
-                        (
-                          <tr
-                            key={row.date}
-                            className="branchlisting"
-                            style={{ textAlign: "center" }}
-                          >
-                            <td>
-                              <Typography level="body-xs" flex={1}>
-                                {row.author_name}
-                              </Typography>
-                            </td>
-                            <td>
-                              <Typography level="body-xs">
-                                {row.Repo_name}
-                              </Typography>
-                            </td>
-                            <td>
-                              <Typography level="body-xs">
-                                {row.message}
-                              </Typography>
-                            </td>
-                            <td>
-                              <Typography level="body-xs">
-                                {row.date}
-                              </Typography>
-                            </td>
-                          </tr>
-                        )
+                        <tr
+                          key={row.date}
+                          className="branchlisting"
+                          style={{ textAlign: "center" }}
+                        >
+                          <td>
+                            <Typography level="body-xs" flex={1}>
+                              {row.author_name}
+                            </Typography>
+                          </td>
+                          <td>
+                            <Typography level="body-xs">
+                              {row.Repo_name}
+                            </Typography>
+                          </td>
+                          <td>
+                            <Typography level="body-xs">
+                              {row.message}
+                            </Typography>
+                          </td>
+                          <td>
+                            <Typography level="body-xs">{row.date}</Typography>
+                          </td>
+                        </tr>
                       )
                     )}
                   </tbody>
@@ -465,7 +410,6 @@ export default function BranchTable() {
       </React.Fragment>
     );
   } else {
-    console.log("inside isDataEmpty", isDataEmpty);
     return (
       <Stack
         direction="column"

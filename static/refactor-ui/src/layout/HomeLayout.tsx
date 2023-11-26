@@ -1,10 +1,9 @@
 import { isEmpty } from "lodash";
-import { Fragment } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-
-import { useAuth } from "../hooks/useAuth";
-import { NavBar } from "./HomeNavBar";
 import { Box, CssBaseline, CssVarsProvider } from "@mui/joy";
+
+import { NavBar } from "./HomeNavBar";
+import { useAuth } from "../hooks/useAuth";
 
 export const HomeLayout = () => {
   const { session }: any = useAuth();
