@@ -94,7 +94,7 @@ frontend-deploy:
     - chmod og= $SSH_PRIVATE_KEY
     - apk update && apk add openssh-client
   script:
-    - scp -i $SSH_PRIVATE_KEY -o StrictHostKeyChecking=no -r $FRONTEND_BUILD_PATH $SERVER_USER@$SERVER_IP:$INSTANCE_BUILD_PATH"
+    - scp -i $SSH_PRIVATE_KEY -o StrictHostKeyChecking=no -r $FRONTEND_BUILD_PATH $SERVER_USER@$SERVER_IP:$INSTANCE_BUILD_PATH
     - ssh -i $SSH_PRIVATE_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "./deploy_prod.sh"
   tags:
     - frontend-build-deploy
