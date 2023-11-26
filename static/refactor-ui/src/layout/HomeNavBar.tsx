@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, Button, Card, CardActions, useColorScheme } from "@mui/joy";
+import { Box, Button, Card, CardActions, CssVarsProvider, useColorScheme } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 
 import logo from "../assets/images/logo.png";
