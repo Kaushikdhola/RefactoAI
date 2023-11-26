@@ -17,7 +17,7 @@ export const ProtectedLayout = () => {
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
-      <Box sx={{ display: "flex", minHeight: "100dvh", flex: 1 }}>
+      <Box sx={{ display: "flex", flex: 1, minHeight: "100%" }}>
         <Sidebar />
         <Header />
         <Box
@@ -35,9 +35,9 @@ export const ProtectedLayout = () => {
             },
             flex: 1,
             display: "flex",
+            height: "100%",
             flexDirection: "column",
             minWidth: 0,
-            height: "100dvh",
             gap: 1,
             overflow: "auto",
           }}
