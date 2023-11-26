@@ -151,8 +151,6 @@ class DashBoardFetch(PullDetails):
 
         pull_requests = PullDetails.objects.filter(author_id=username)
 
-        commit_json = json.dumps([])
-
         all_commits_details = []
 
         for pull_request in pull_requests:
