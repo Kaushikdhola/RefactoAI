@@ -85,7 +85,6 @@ backend-deploy:
 
 frontend-deploy:
   needs:
-    - backend-deploy
     - app-build
   stage: deploy
   image: $NODE
