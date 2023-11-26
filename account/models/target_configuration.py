@@ -27,10 +27,10 @@ class TargetConfiguration(BaseModel):
         """adding or updating target branch in a repository"""
         user_account = UserAccount.objects.get(account_id=user_id)
         repo = Repository.objects.get(repo_id=repo_id, user=user_account)
-        branch, created = Branch.objects.get_or_create(
+        branch, _ = Branch.objects.get_or_create(
             repository=repo, name=target_branch, user=user_account
         )
-        target_configuration, created = TargetConfiguration.objects.get_or_create(
+        target_configuration, _ = TargetConfiguration.objects.get_or_create(
             user=user_account, repository=repo
         )
         target_configuration.target_branch = branch

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Optional
 
 from django.http import HttpRequest, QueryDict
 from django.http.request import HttpHeaders
@@ -16,7 +16,7 @@ class BaseEvent:
         """
         self.request: HttpRequest = request
         self.headers: HttpHeaders = None
-        self.payload: Dict[str, Any] = None
+        self.payload: Optional[dict] = None
         self._parse_request()
 
     def _parse_request(self) -> None:

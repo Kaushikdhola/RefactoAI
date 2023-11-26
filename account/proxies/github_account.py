@@ -1,4 +1,3 @@
-import copy
 import requests
 
 from django.conf import settings
@@ -127,74 +126,6 @@ class GitHubAccount(UserAccount):
         request.session["avatar_url"] = user_data.get("avatar_url")
         request.session.save()
         request.session.set_expiry(settings.SESSION_EXPIRY)
-
-    @classmethod
-    def fetch_repositories(cls, user_id):
-        """fetching repository details related to the user"""
-        user_instance = UserAccount.objects.get(account_id=user_id)
-        repos = Repository.objects.filter(user=user_instance)
-        all_repos_data = []
-        for repo in repos:
-            branches = Branch.fetch_branches(user_id, repo)
-            branches_copy = copy.deepcopy(branches)
-            repo_data = {
-                "repo_id": repo.repo_id,
-                "name": repo.name,
-                "url": repo.url,
-                "source_branches": branches,
-                "target_branches": branches_copy,
-            }
-            all_repos_data.append(repo_data)
-        return all_repos_data
-
-    @classmethod
-    def fetch_configurations(cls, user_id):
-        """fetching configuration details related to the user"""
-        user_instance = UserAccount.objects.get(account_id=user_id)
-        configuration_instance = UserConfiguration.objects.get(user=user_instance)
- 
-        repositories = Repository.objects.filter(user=user_instance)
-        repository_details = []
-        for repository in repositories:
-            repo_id = repository.repo_id
-            # fetching source configurations
-            source_configurations = SourceConfiguration.objects.filter(
-                repository=repository, user=user_instance
-            )
-            branch_details = []
-            for source_configuration in source_configurations:
-                source_branch = source_configuration.source_branch
-                branch_name = source_branch.name
-                commit_number = source_configuration.current_commit
-                branch_details.append(
-                    {"name": branch_name, "commit_number": commit_number}
-                )
-            # fetching target configurations
-            try:
-                target_configuration = TargetConfiguration.objects.get(
-                    user=user_instance, repository=repository
-                )
-                target_branch = target_configuration.target_branch
-                target = target_branch.name
-            except TargetConfiguration.DoesNotExist:
-                target = ""
-            
-            repository_details.append(
-                {
-                    "repo_id": repo_id,
-                    "name": repository.name,
-                    "url": repository.url,
-                    "source_branches": branch_details,
-                    "target_branch": target,
-                }
-            )
- 
-        return {
-            "user_id": user_id,
-            "commit_interval": configuration_instance.commit_interval,
-            "max_lines": configuration_instance.max_lines,
-            "repositories": repository_details,
-        }
 
     @classmethod
     def authorize(cls, oauth_code, request):

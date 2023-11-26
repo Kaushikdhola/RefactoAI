@@ -30,7 +30,6 @@ DEBUG = env("DEBUG") if APP_ENV != "PRODUCTION" else False
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
 
-# TODO(Hatim): Needs to be handled while deploying the code
 ALLOWED_HOSTS = [env("ALLOWED_HOST")]
 
 # Application definition
@@ -183,10 +182,3 @@ OPENAI_API_KEY = env("OPENAI_API_KEY")
 # GitHub author name and email
 GITHUB_AUTHOR_NAME = "re-factor"
 GITHUB_AUTHOR_EMAIL = "refactor1010@gmail.com"
-
-# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-# NOSE_ARGS = [
-#     '--with-coverage',
-#     '--cover-package=account'
-# ]

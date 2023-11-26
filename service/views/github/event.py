@@ -10,7 +10,7 @@ from service.models.github.bot import GithubBot
 class GitHubEventListenerService(BaseView):
     """Github event listener service"""
 
-    model: GithubBot = GithubBot
+    model = GithubBot
 
     @csrf_exempt
     def post(self, request: HttpRequest, *args: tuple, **kwargs: dict) -> JsonResponse:

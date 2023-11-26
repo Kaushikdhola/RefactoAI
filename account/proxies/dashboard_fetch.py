@@ -6,12 +6,12 @@ from django.conf import settings
 from django.core.serializers import serialize
 
 from account.models.account import UserAccount
-from account.models.pull_details import Pull_details
+from account.models.pull_details import PullDetails
 
 logger = logging.getLogger("dashboard_fetch")
 
 
-class DashBoardFetch(Pull_details):
+class DashBoardFetch(PullDetails):
     class Meta:
         proxy = True
 
@@ -29,7 +29,6 @@ class DashBoardFetch(Pull_details):
 
         for pull_request in pull_requests:
             status_url = f"{pull_request['Repo_name']}/pulls/{pull_request['pull_id']}"
-
             response = requests.get(status_url)
 
             if response.status_code == 200:
@@ -64,7 +63,7 @@ class DashBoardFetch(Pull_details):
             str: JSON-formatted string containing pull details.
         """
 
-        pull_details_instance = Pull_details.objects.filter(author_id=username)
+        pull_details_instance = PullDetails.objects.filter(author_id=username)
         serialized_data = serialize("json", pull_details_instance)
         deserialized_data = json.loads(serialized_data)
         extracted_data = []
@@ -105,7 +104,7 @@ class DashBoardFetch(Pull_details):
             return None
 
     @classmethod
-    def extract_commit_details(cls, commit, user_account_instance):
+    def extract_commit_details(cls, commit, user_account_instance, pull_request_number):
         """
         Extract relevant details from a commit.
 
@@ -127,6 +126,7 @@ class DashBoardFetch(Pull_details):
         branch_name = username + "/" + branch_url.split("/")[5]
 
         return {
+            "pull_id": pull_request_number,
             "sha": sha,
             "message": message,
             "author_name": author_name,
@@ -135,25 +135,42 @@ class DashBoardFetch(Pull_details):
         }
 
     @classmethod
-    def fetch_branch(cls, account):
+    def fetch_branch(cls, user_account_instance):
         """
         Fetch commit data for branches associated with a user's account.
 
         Args:
-            account: Instance of UserAccount model.
+            user_account_instance: Instance of UserAccount model.
 
         Returns:
             str: JSON string containing branch details including all commits.
         """
-        pull_requests = Pull_details.objects.filter(author_id=account.user_name)
-        all_commits = [
-            cls.extract_commit_details(commit, account)
-            for pull_request in pull_requests
-            for commit in cls.get_pull_request_commits(
-                pull_request.Repo_name, pull_request.pull_id, account.access_token
+
+        username = user_account_instance.user_name
+        access_token = user_account_instance.access_token
+
+        pull_requests = PullDetails.objects.filter(author_id=username)
+
+        commit_json = json.dumps([])
+
+        all_commits_details = []
+
+        for pull_request in pull_requests:
+            pull_request_number = pull_request.pull_id
+            commits = cls.get_pull_request_commits(
+                pull_request.Repo_name, pull_request_number, access_token
             )
-        ]
-        return all_commits
+
+            pull_request_commits_details = []
+            if commits:
+                for commit in commits:
+                    commit_details = cls.extract_commit_details(
+                        commit, user_account_instance, pull_request_number
+                    )
+                    pull_request_commits_details.append(commit_details)
+                    all_commits_details.append(commit_details)
+
+        return all_commits_details
 
     @classmethod
     def fetch_dashboard_data(cls, request):
@@ -169,7 +186,7 @@ class DashBoardFetch(Pull_details):
         user_id = request.session.get("user_id")
         user_account_instance = UserAccount.objects.get(account_id=user_id)
         username = user_account_instance.user_name
-        json_branch_data = cls.fetch_branch(account=user_account_instance)
+        json_branch_data = cls.fetch_branch(user_account_instance=user_account_instance)
         json_pr_data = cls.fetch_pr_details(username=username)
         return {
             "json_branch_data": json_branch_data,

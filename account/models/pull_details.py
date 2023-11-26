@@ -4,11 +4,11 @@ from account.models import UserAccount
 from core.models.base import BaseModel
 
 
-class Pull_details(BaseModel):
+class PullDetails(BaseModel):
 
     """Model/Manager for Pull details"""
 
-    pull_id = models.IntegerField(unique=True)
+    pull_id = models.IntegerField()
     Repo_name = models.CharField(max_length=255)
     author = models.ForeignKey(
         UserAccount, on_delete=models.CASCADE, to_field="user_name"
@@ -17,7 +17,7 @@ class Pull_details(BaseModel):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "Pull_details"
+        db_table = "PullDetails"
 
     @classmethod
     def save_pull_details(cls, data_dict):

@@ -33,7 +33,7 @@ class GithubEvent(BaseEvent):
             "Content-Type": "application/x-www-form-urlencoded",
         }
         data = {"access_token": self.account.access_token}
-        status, response = fetch(
+        status, _ = fetch(
             url=f"https://api.github.com/applications/{settings.GITHUB_CLIENT_ID}/token",
             method="POST",
             headers=headers,
