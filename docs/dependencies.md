@@ -79,3 +79,18 @@ We will be using node v19 or greater for our frontend application. To install no
 # Set default Node version
 > nvm alias default 19
 ```
+
+
+#### GitLab Runner
+To install your own GitLab Runner instance, follow the official documentation: https://docs.gitlab.com/runner/install/  
+A private GitLab runner is recommended to ensure the security and reliability of your CI/CD pipeline.
+By using a private runner, you can have more control over the environment and resources used for your builds.  
+After installation, verify runner is installed by running:  
+
+```
+gitlab-runner --version  
+```
+
+### Usage
+
+Once the server is running, you can access the backend application at `http://localhost:8000/` and the frontend application on `http://localhost:3000/`.
