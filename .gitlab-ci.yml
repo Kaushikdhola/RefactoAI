@@ -85,6 +85,9 @@ backend-deploy:
     - main
 
 frontend-deploy:
+  needs:
+    - backend-deploy
+    - app-build
   stage: deploy
   image: alpine:latest
   before_script:
