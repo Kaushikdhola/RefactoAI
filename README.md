@@ -41,7 +41,7 @@ All of the features provided by the application, as well as the various scenario
 
 Thanks to the following contributors for their hard work:
 
-- [Kaushik Dhola](https://git.cs.dal.ca/kdhola)
+- [Kaushik Dhola](https://github.com/Kaushikdhola)
 - [Hatim Patrawala](https://git.cs.dal.ca/patrawala)
 - [Sruthi Shaji](https://git.cs.dal.ca/sshaji)
 - [Kenil Patel](https://git.cs.dal.ca/kenil)
