@@ -14,7 +14,7 @@ Introducing Re-Factor, your trusty companion in the quest for cleaner code! This
 
 Re-Factor analyzes your commits in any programming language, employing advanced Language Model models to understand the intricacies of your codebase. It doesn't just stop at identifying issues; it actively suggests improvements, refactoring your code to align with best practices and coding standards.
 
-Re-Facto is a comprehensive Django and React application designed to streamline your coding process. With a Django backend and a React frontend, Re-Facto provides a seamless user experience, allowing you to focus on what matters most: your code. 
+Re-Facto is a comprehensive Django and React application designed to streamline your coding process. With a Django backend and a React frontend, Re-Facto provides a seamless user experience, allowing you to focus on what matters most: your code.
 
 ## Technologies Used
 
@@ -26,23 +26,23 @@ Re-Facto is a comprehensive Django and React application designed to streamline 
 ## Documentation
 
 ### External Dependencies
-These are programming languages, frameworks, and other pieces of software required to run the application. A detailed list of dependencies, along with instructions on how to install and configure them are given in the document below:  
+These are programming languages, frameworks, and other pieces of software required to run the application. A detailed list of dependencies, along with instructions on how to install and configure them are given in the document below:
 [**External Dependencies**](docs/dependencies.md)
 
 ### Build and Deployment
-In order for the application to be used by users anywhere in the world, it must be built and deployed onto a server. Detailed instructions on how to deploy the application are given in the document below:  
+In order for the application to be used by users anywhere in the world, it must be built and deployed onto a server. Detailed instructions on how to deploy the application are given in the document below:
 [**Build and Deployment**](docs/deployment.md)
 
 ### User Scenarios
-All of the features provided by the application, as well as the various scenarios of interaction with the app by a user is documented in the file below:  
+All of the features provided by the application, as well as the various scenarios of interaction with the app by a user is documented in the file below:
 [**User Scenarios**](docs/scenarios.md)
 
 ## Contributors
 
 Thanks to the following contributors for their hard work:
 
+- [Kaushik Dhola](https://git.cs.dal.ca/kdhola)
 - [Hatim Patrawala](https://git.cs.dal.ca/patrawala)
 - [Sruthi Shaji](https://git.cs.dal.ca/sshaji)
-- [Kaushik Dhola](https://git.cs.dal.ca/kdhola)
 - [Kenil Patel](https://git.cs.dal.ca/kenil)
 - [Dhruvik Kakadiya](https://git.cs.dal.ca/dkakadiya)
