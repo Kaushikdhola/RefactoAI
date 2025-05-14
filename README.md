@@ -6,7 +6,6 @@
 - [About](#about)
 - [Technologies Used](#technologies-used)
 - [Documentation](#documentation)
-- [Contributors](#contributors)
 
 ## About
 
