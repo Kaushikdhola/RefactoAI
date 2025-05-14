@@ -36,13 +36,3 @@ In order for the application to be used by users anywhere in the world, it must 
 ### User Scenarios
 All of the features provided by the application, as well as the various scenarios of interaction with the app by a user is documented in the file below:
 [**User Scenarios**](docs/scenarios.md)
-
-## Contributors
-
-Thanks to the following contributors for their hard work:
-
-- [Kaushik Dhola](https://github.com/Kaushikdhola)
-- [Hatim Patrawala](https://git.cs.dal.ca/patrawala)
-- [Sruthi Shaji](https://git.cs.dal.ca/sshaji)
-- [Kenil Patel](https://git.cs.dal.ca/kenil)
-- [Dhruvik Kakadiya](https://git.cs.dal.ca/dkakadiya)
